@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoVision | Sorting Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <h1>Algo<span>Vision</span></h1>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <button id="generate-btn" class="btn secondary">Random Array</button>
+            </div>
+        
+            <div class="control-group custom-input-group">
+                <input type="text" id="custom-array" placeholder="e.g. 10, 50, 20, 99">
+                <button id="load-custom-btn" class="btn secondary">Load</button>
+            </div>
+        
+            <div class="control-group">
+                <label for="array-size">Size/Speed:</label>
+                <input type="range" id="array-size" min="5" max="150" value="50">
+            </div>
+        
+            <div id="playback-controls" class="control-group hidden">
+                <button id="prev-btn" class="btn media-btn">⏮ Prev</button>
+                <button id="play-pause-btn" class="btn media-btn primary">⏸ Pause</button>
+                <button id="next-btn" class="btn media-btn">Next ⏭</button>
+            </div>
+        
+            <div class="control-group algo-buttons-group">
+                <button id="bubble-sort-btn" class="btn primary algo-btn">Bubble Sort</button>
+                <button id="merge-sort-btn" class="btn primary algo-btn">Merge Sort</button>
+                <button id="quick-sort-btn" class="btn primary algo-btn">Quick Sort</button>
+            </div>
+        </div>
+    </header>
+
+<main class="split-layout">
+    <div class="visualizer-section">
+        <div id="visualization-container"></div>
+    </div>
+
+    <div class="analytics-section">
+
+        <div id="info-panel" class="hidden">
+            <div class="algo-header">
+                <h2 id="algo-title">Algorithm Name</h2>
+            </div>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <h3>Time Complexity</h3>
+                    <p>Worst: <span id="tc-worst" class="highlight">-</span></p>
+                    <p>Best: <span id="tc-best" class="highlight">-</span></p>
+                </div>
+                <div class="stat-box live-stats">
+                    <h3>Live Operations</h3>
+                    <p>Comparisons: <span id="live-comparisons" class="counter">0</span></p>
+                    <p>Swaps: <span id="live-swaps" class="counter">0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="code-panel" class="hidden">
+            <div class="code-header">
+                <h3>Live Execution</h3>
+            </div>
+            <div class="code-viewer">
+                <pre><code id="code-block">Select an algorithm to view code...</code></pre>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+    <script src="js/app.js"></script>
+    <script src="js/algorithms.js"></script>
+    <script src="js/visualizer.js"></script>
+</body>
+
+</html>
