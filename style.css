@@ -1,0 +1,258 @@
+/* --- Base Theme & Color Variables --- */
+:root {
+    --bg-dark: #0f172a;
+    --bg-panel: #1e293b;
+    --text-main: #f8fafc;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #2563eb;
+    --bar-default: #60a5fa;
+    /* Light Blue */
+    --bar-compare: #f59e0b;
+    /* Yellow/Orange */
+    --bar-swap: #ef4444;
+    /* Red */
+    --bar-sorted: #10b981;
+    /* Green */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- Navigation / Dashboard --- */
+header {
+    background-color: var(--bg-panel);
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+.logo h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.logo span {
+    color: var(--accent-blue);
+}
+
+.controls {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+/* --- Buttons --- */
+.btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn.primary {
+    background-color: var(--accent-blue);
+    color: white;
+}
+
+.btn.primary:hover {
+    background-color: var(--accent-blue-hover);
+    transform: translateY(-2px);
+}
+
+.btn.secondary {
+    background-color: transparent;
+    border: 1px solid var(--text-main);
+    color: var(--text-main);
+}
+
+.btn.secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Disabled state for when the animation is running */
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- The Visualizer Canvas --- */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+#visualization-container {
+    width: 100%;
+    max-width: 1200px;
+    height: 65vh;
+    background-color: var(--bg-panel);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    /* This forces the bars to stand on the bottom edge */
+    justify-content: center;
+    padding: 1rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* The individual bars (JS will control the height) */
+.array-bar {
+    background-color: var(--bar-default);
+    margin: 0 1px;
+    border-radius: 4px 4px 0 0;
+
+    /* --- NEW: Text Alignment --- */
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    /* Puts the number at the bottom */
+    padding-bottom: 5px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+    overflow: hidden;
+    /* Hides text if the bar gets too thin */
+}
+
+/* --- Info Panel --- */
+#info-panel {
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--bg-panel);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* --- Split Layout --- */
+.split-layout {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.visualizer-section {
+    flex: 6;
+    /* Takes up 60% of the screen */
+}
+
+.analytics-section {
+    flex: 4;
+    /* Takes up 40% of the screen */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* --- Code Viewer Styling (Looks like an IDE) --- */
+#code-panel {
+    background-color: #1e1e1e;
+    /* VS Code dark background */
+    border-radius: 8px;
+    border: 1px solid #333;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.code-header {
+    background-color: #2d2d2d;
+    padding: 0.8rem 1.5rem;
+    border-bottom: 1px solid #444;
+}
+
+.code-header h3 {
+    font-size: 0.9rem;
+    color: #cccccc;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.code-viewer {
+    padding: 1rem 0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #d4d4d4;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+/* The magic class that will highlight the current executing line */
+.code-line {
+    padding: 0.2rem 1.5rem;
+    display: block;
+    transition: background-color 0.1s ease;
+}
+
+.active-line {
+    background-color: #062f4a;
+    /* A nice deep blue highlight */
+    border-left: 4px solid #38bdf8;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* --- Custom Array Input & Playback Controls --- */
+.custom-input-group input {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #475569;
+    background-color: #0f172a;
+    color: white;
+    width: 160px;
+    outline: none;
+}
+
+.custom-input-group input:focus {
+    border-color: var(--accent-blue);
+}
+
+.media-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
+/* Hide groups dynamically */
+.hidden {
+    display: none !important;
+}
