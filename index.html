@@ -12,80 +12,41 @@
 </head>
 
 <body>
-    <header>
-        <div class="logo">
-            <h1>Algo<span>Vision</span></h1>
+    <section id="welcome-screen" class="screen active">
+        <div class="hero-content">
+            <h1>AlgoVision</h1>
+            <p>Master Data Structures & Algorithms through interactive visualization.</p>
+            <button id="get-started-btn" class="primary-btn">Get Started</button>
         </div>
+    </section>
 
-        <div class="controls">
-            <div class="control-group">
-                <button id="generate-btn" class="btn secondary">Random Array</button>
+    <section id="dashboard-screen" class="screen hidden">
+        <h2>Select a Workspace</h2>
+        <div class="category-grid">
+            <div class="category-card">
+                <h3>Sorting Algorithms</h3>
+                <p>Visualize Bubble, Merge, and Quick Sort in real-time.</p>
+                <button id="open-sorting-btn" class="primary-btn">Launch Workspace</button>
             </div>
-        
-            <div class="control-group custom-input-group">
-                <input type="text" id="custom-array" placeholder="e.g. 10, 50, 20, 99">
-                <button id="load-custom-btn" class="btn secondary">Load</button>
-            </div>
-        
-            <div class="control-group">
-                <label for="array-size">Size/Speed:</label>
-                <input type="range" id="array-size" min="5" max="150" value="50">
-            </div>
-        
-            <div id="playback-controls" class="control-group hidden">
-                <button id="prev-btn" class="btn media-btn">⏮ Prev</button>
-                <button id="play-pause-btn" class="btn media-btn primary">⏸ Pause</button>
-                <button id="next-btn" class="btn media-btn">Next ⏭</button>
-            </div>
-        
-            <div class="control-group algo-buttons-group">
-                <button id="bubble-sort-btn" class="btn primary algo-btn">Bubble Sort</button>
-                <button id="merge-sort-btn" class="btn primary algo-btn">Merge Sort</button>
-                <button id="quick-sort-btn" class="btn primary algo-btn">Quick Sort</button>
+
+            <div class="category-card locked">
+                <h3>Pathfinding Grid</h3>
+                <p>Dijkstra, A*, and BFS.</p>
+                <button disabled>Coming in Phase 2</button>
             </div>
         </div>
-    </header>
+    </section>
 
-<main class="split-layout">
-    <div class="visualizer-section">
-        <div id="visualization-container"></div>
-    </div>
-
-    <div class="analytics-section">
-
-        <div id="info-panel" class="hidden">
-            <div class="algo-header">
-                <h2 id="algo-title">Algorithm Name</h2>
-            </div>
-            <div class="stats-container">
-                <div class="stat-box">
-                    <h3>Time Complexity</h3>
-                    <p>Worst: <span id="tc-worst" class="highlight">-</span></p>
-                    <p>Best: <span id="tc-best" class="highlight">-</span></p>
-                </div>
-                <div class="stat-box live-stats">
-                    <h3>Live Operations</h3>
-                    <p>Comparisons: <span id="live-comparisons" class="counter">0</span></p>
-                    <p>Swaps: <span id="live-swaps" class="counter">0</span></p>
-                </div>
-            </div>
+    <section id="workspace-screen" class="screen hidden">
+        <div class="workspace-nav">
+            <button id="back-to-dashboard-btn" class="secondary-btn">← Back to Dashboard</button>
         </div>
 
-        <div id="code-panel" class="hidden">
-            <div class="code-header">
-                <h3>Live Execution</h3>
-            </div>
-            <div class="code-viewer">
-                <pre><code id="code-block">Select an algorithm to view code...</code></pre>
-            </div>
-        </div>
+    </section>
 
-    </div>
-</main>
-
-    <script src="js/app.js"></script>
-    <script src="js/algorithms.js"></script>
-    <script src="js/visualizer.js"></script>
+    <script src="app.js"></script>
+    <script src="algorithms.js"></script>
+    <script src="visualizer.js"></script>
 </body>
 
 </html>

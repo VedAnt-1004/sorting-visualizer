@@ -1,3 +1,34 @@
+// --- SPA ROUTER (Navigation) ---
+const welcomeScreen = document.getElementById('welcome-screen');
+const dashboardScreen = document.getElementById('dashboard-screen');
+const workspaceScreen = document.getElementById('workspace-screen');
+
+function navigateTo(targetScreen) {
+    // 1. Hide all screens
+    welcomeScreen.classList.remove('active');
+    dashboardScreen.classList.remove('active');
+    workspaceScreen.classList.remove('active');
+    
+    // 2. Show the target screen
+    targetScreen.classList.add('active');
+}
+
+// Button Listeners
+document.getElementById('get-started-btn').addEventListener('click', () => {
+    navigateTo(dashboardScreen);
+});
+
+document.getElementById('open-sorting-btn').addEventListener('click', () => {
+    navigateTo(workspaceScreen);
+    // Optional: Auto-generate a new array when entering the workspace
+    if (array.length === 0) generateArray(); 
+});
+
+document.getElementById('back-to-dashboard-btn').addEventListener('click', () => {
+    navigateTo(dashboardScreen);
+});
+// --------------------------------
+
 // --- js/app.js ---
 
 const container = document.getElementById('visualization-container');

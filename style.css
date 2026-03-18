@@ -120,7 +120,7 @@ main {
     /* This forces the bars to stand on the bottom edge */
     justify-content: center;
     padding: 1rem;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* The individual bars (JS will control the height) */
@@ -255,4 +255,125 @@ main {
 /* Hide groups dynamically */
 .hidden {
     display: none !important;
+}
+
+/* --- SPA Navigation & Screens --- */
+.screen {
+    display: none;
+    /* Hides all screens by default */
+    min-height: 100vh;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Welcome Screen --- */
+#welcome-screen {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.hero-content h1 {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+
+    /* Safari/Old Chrome support */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    /* Standard modern browser support (THE FIX) */
+    background-clip: text;
+    color: transparent;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    margin-bottom: 30px;
+}
+
+/* --- Dashboard Screen --- */
+#dashboard-screen {
+    padding: 50px 10vw;
+    background-color: #0f172a;
+}
+
+#dashboard-screen h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+}
+
+.category-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.category-card {
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 12px;
+    width: 300px;
+    text-align: center;
+    border: 1px solid #334155;
+    transition: transform 0.2s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+}
+
+.category-card.locked {
+    opacity: 0.6;
+}
+
+/* --- Buttons --- */
+.primary-btn {
+    background-color: #3b82f6;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.primary-btn:hover {
+    background-color: #2563eb;
+}
+
+.secondary-btn {
+    background-color: transparent;
+    color: #94a3b8;
+    border: 1px solid #475569;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 15px;
+}
+
+.secondary-btn:hover {
+    background-color: #334155;
+    color: white;
 }
