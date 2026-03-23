@@ -377,3 +377,21 @@ main {
     background-color: #334155;
     color: white;
 }
+
+/* Screen Visibility Rules */
+.screen {
+    display: none;
+    /* Hide everything by default */
+    width: 100%;
+    min-height: 100vh;
+}
+
+.screen.active {
+    display: flex !important;
+    /* Show only the active one */
+    flex-direction: column;
+}
+
+.hidden {
+    display: none !important;
+}

@@ -1,215 +1,120 @@
-// --- SPA ROUTER (Navigation) ---
+// ==========================================
+// 1. SPA ROUTER & NAVIGATION
+// ==========================================
 const welcomeScreen = document.getElementById('welcome-screen');
 const dashboardScreen = document.getElementById('dashboard-screen');
 const workspaceScreen = document.getElementById('workspace-screen');
 
+const getStartedBtn = document.getElementById('get-started-btn');
+const openSortingBtn = document.getElementById('open-sorting-btn');
+const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+
+/**
+ * Switch between screens safely
+ */
 function navigateTo(targetScreen) {
-    // 1. Hide all screens
-    welcomeScreen.classList.remove('active');
-    dashboardScreen.classList.remove('active');
-    workspaceScreen.classList.remove('active');
+    const screens = [welcomeScreen, dashboardScreen, workspaceScreen];
     
-    // 2. Show the target screen
-    targetScreen.classList.add('active');
+    screens.forEach(screen => {
+        if (screen) {
+            screen.classList.remove('active');
+            screen.classList.add('hidden');
+        }
+    });
+
+    if (targetScreen) {
+        targetScreen.classList.remove('hidden');
+        targetScreen.classList.add('active');
+        console.log("Navigated to:", targetScreen.id);
+    }
 }
 
-// Button Listeners
-document.getElementById('get-started-btn').addEventListener('click', () => {
-    navigateTo(dashboardScreen);
+// Attach Navigation Listeners
+if (getStartedBtn) getStartedBtn.addEventListener('click', () => navigateTo(dashboardScreen));
+if (backToDashboardBtn) backToDashboardBtn.addEventListener('click', () => navigateTo(dashboardScreen));
+if (openSortingBtn) {
+    openSortingBtn.addEventListener('click', () => {
+        navigateTo(workspaceScreen);
+        // Initialize an array if the workspace is empty
+        if (typeof generateArray === 'function') generateArray();
+    });
+}
+
+// ==========================================
+// 2. SORTING CONTROLS (Safety Shielded)
+// ==========================================
+const sortBtn = document.getElementById('sort-btn');
+const newArrayBtn = document.getElementById('new-array-btn');
+const sizeSlider = document.getElementById('size-slider');
+const speedSlider = document.getElementById('speed-slider');
+const algoSelect = document.getElementById('algo-select');
+
+// These 'if' checks prevent the "null" crash on page load
+if (sortBtn) {
+    sortBtn.addEventListener('click', () => {
+        const selectedAlgo = algoSelect ? algoSelect.value : 'bubble';
+        if (selectedAlgo === 'bubble') bubbleSort();
+        if (selectedAlgo === 'merge') mergeSort();
+        if (selectedAlgo === 'quick') quickSort();
+    });
+}
+
+if (newArrayBtn) newArrayBtn.addEventListener('click', () => {
+    if (typeof generateArray === 'function') generateArray();
 });
 
-document.getElementById('open-sorting-btn').addEventListener('click', () => {
-    navigateTo(workspaceScreen);
-    // Optional: Auto-generate a new array when entering the workspace
-    if (array.length === 0) generateArray(); 
-});
-
-document.getElementById('back-to-dashboard-btn').addEventListener('click', () => {
-    navigateTo(dashboardScreen);
-});
-// --------------------------------
-
-// --- js/app.js ---
-
-const container = document.getElementById('visualization-container');
-const generateBtn = document.getElementById('generate-btn');
-const sizeSpeedSlider = document.getElementById('array-size');
-const algoButtons = document.querySelectorAll('.algo-btn');
-
+// ==========================================
+// 3. DATA & CONFIGURATION
+// ==========================================
 let array = [];
-let delay = 250; 
+let delay = 50;
 
-function generateArray() {
-    array = [];
-    container.innerHTML = ''; 
-    const noOfBars = parseInt(sizeSpeedSlider.value);
-    const barWidth = (100 / noOfBars) - 0.2; 
-
-    for (let i = 0; i < noOfBars; i++) {
-        const value = Math.floor(Math.random() * 390) + 10;
-        array.push(value);
-        const bar = document.createElement('div');
-        bar.classList.add('array-bar');
-        bar.style.height = `${value}px`;
-        bar.style.width = `${barWidth}%`;
-        bar.innerText = value;
-        container.appendChild(bar);
-        
-    
-    }
-}
-
-// --- Custom Array Logic ---
-const customInput = document.getElementById('custom-array');
-const loadCustomBtn = document.getElementById('load-custom-btn');
-
-function loadCustomArray() {
-    const val = customInput.value;
-    if (!val) return;
-
-    // Convert string "10, 20, 30" into an array of integers [10, 20, 30]
-    const stringArr = val.split(',');
-    let numArr = stringArr.map(num => parseInt(num.trim())).filter(num => !isNaN(num));
-    
-    if (numArr.length === 0) return;
-
-    // Reset UI
-    array = [];
-    container.innerHTML = '';
-    
-    // Find the maximum value to scale the heights perfectly on screen
-    const maxVal = Math.max(...numArr);
-    const barWidth = (100 / numArr.length) - 0.2;
-
-    numArr.forEach(num => {
-        // 1. Push the REAL number into the engine
-        array.push(num); 
-        
-        // 2. Compute visual height
-        const scaledHeight = Math.floor(Math.max((num / maxVal) * 390, 10)); 
-        
-        // 3. Draw the HTML bar
-        const bar = document.createElement('div');
-        bar.classList.add('array-bar');
-        bar.style.height = `${scaledHeight}px`;
-        bar.style.width = `${barWidth}%`;
-        bar.innerText = num; // Stamp the real number
-        container.appendChild(bar);
-    });
-
-    // Sync slider visually
-    sizeSpeedSlider.value = numArr.length;
-    updateSpeed();
-}
-
-// Listen for the Load button or the "Enter" key
-loadCustomBtn.addEventListener('click', loadCustomArray);
-customInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') loadCustomArray();
-});
-
-function updateSpeed() {
-    const noOfBars = parseInt(sizeSpeedSlider.value);
-    delay = 10000 / (Math.pow(noOfBars, 2)); 
-}
-
-function disableControls() {
-    generateBtn.disabled = true;
-    sizeSpeedSlider.disabled = true;
-    algoButtons.forEach(btn => btn.disabled = true);
-    customInput.disabled = true;
-    loadCustomBtn.disabled = true;
-}
-
-function enableControls() {
-    generateBtn.disabled = false;
-    sizeSpeedSlider.disabled = false;
-    algoButtons.forEach(btn => btn.disabled = false);
-    customInput.disabled = false;
-    loadCustomBtn.disabled = false;
-}
-
-// --- Dashboard Logic ---
-const algoInfo = {
-    'bubble': { name: 'Bubble Sort', tcWorst: 'O(n²)', tcAvg: 'O(n²)', tcBest: 'O(n)', scWorst: 'O(1)' },
-    'merge': { name: 'Merge Sort', tcWorst: 'O(n log n)', tcAvg: 'O(n log n)', tcBest: 'O(n log n)', scWorst: 'O(n)' },
-    'quick': { name: 'Quick Sort', tcWorst: 'O(n²)', tcAvg: 'O(n log n)', tcBest: 'O(n log n)', scWorst: 'O(log n)' }
-};
-
-const infoPanel = document.getElementById('info-panel');
-const liveComparisons = document.getElementById('live-comparisons');
-const liveSwaps = document.getElementById('live-swaps');
-
-function updateDashboard(algoType) {
-    infoPanel.classList.remove('hidden');
-    const info = algoInfo[algoType];
-    document.getElementById('algo-title').innerText = info.name;
-    document.getElementById('tc-worst').innerText = info.tcWorst;
-    document.getElementById('tc-best').innerText = info.tcBest;
-    liveComparisons.innerText = '0';
-    liveSwaps.innerText = '0';
-}
-
-// --- Code Highlighting Database ---
-const algoCode = {
-    'bubble': [
-        "for (int i = 0; i < n - 1; i++) {",              
-        "    let swapped = false;",                       
-        "    for (int j = 0; j < n - i - 1; j++) {",      
-        "        if (arr[j] > arr[j + 1]) {",             
-        "            swap(arr[j], arr[j + 1]);",          
-        "            swapped = true;",                    
-        "        }",                                      
-        "    }",                                          
-        "    if (!swapped) break;",                       
-        "}"                                               
-    ],
-    'merge': [
-        "void mergeSort(arr, l, r) {",           
-        "    if (l >= r) return;",               
-        "    int m = l + (r - l) / 2;",          
-        "    mergeSort(arr, l, m);",             
-        "    mergeSort(arr, m + 1, r);",         
-        "    merge(arr, l, m, r);",              
-        "}"                                      
-    ],
-    'quick': [
-        "void quickSort(arr, low, high) {",      
-        "    if (low < high) {",                 
-        "        int pi = partition(arr, low, high);", 
-        "        quickSort(arr, low, pi - 1);",  
-        "        quickSort(arr, pi + 1, high);", 
-        "    }",                                 
-        "}"                                      
-    ]
-};
-
-const codePanel = document.getElementById('code-panel');
-const codeBlock = document.getElementById('code-block');
-
-function renderCode(algoType) {
-    codePanel.classList.remove('hidden');
-    codeBlock.innerHTML = ''; 
-    const lines = algoCode[algoType];
-    
-    lines.forEach((lineText, index) => {
-        const lineElement = document.createElement('span');
-        lineElement.classList.add('code-line');
-        lineElement.id = `code-line-${index}`; 
-        lineElement.innerHTML = lineText.replace(/ /g, '&nbsp;'); 
-        codeBlock.appendChild(lineElement);
+if (speedSlider) {
+    speedSlider.addEventListener('input', () => {
+        delay = 101 - speedSlider.value; // Invert so higher value = faster
     });
 }
 
-function highlightLine(lineNumber) {
-    const allLines = document.querySelectorAll('.code-line');
-    allLines.forEach(line => line.classList.remove('active-line'));
-    if (lineNumber !== undefined && lineNumber !== null) {
-        const targetLine = document.getElementById(`code-line-${lineNumber}`);
-        if (targetLine) targetLine.classList.add('active-line');
+const complexityData = {
+    bubble: { time: "O(n²)", space: "O(1)" },
+    merge: { time: "O(n log n)", space: "O(n)" },
+    quick: { time: "O(n log n)", space: "O(log n)" }
+};
+
+// ==========================================
+// 4. CORE UTILITIES
+// ==========================================
+function updateComplexity(algo) {
+    const timeDisplay = document.getElementById('time-complexity');
+    const spaceDisplay = document.getElementById('space-complexity');
+    if (timeDisplay && spaceDisplay) {
+        timeDisplay.innerText = complexityData[algo].time;
+        spaceDisplay.innerText = complexityData[algo].space;
     }
 }
 
-generateBtn.addEventListener('click', generateArray);
-sizeSpeedSlider.addEventListener('input', () => { generateArray(); updateSpeed(); });
-window.onload = () => { generateArray(); updateSpeed(); };
+/**
+ * Simple sleep function for animations
+ */
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ==========================================
+// 5. ALGORITHMS (Placeholder Logic)
+// Note: Ensure your real logic in algorithms.js uses the 'array' and 'delay' variables
+// ==========================================
+async function bubbleSort() {
+    console.log("Bubble Sort Started");
+    // Your specific visualizer logic goes here or in algorithms.js
+}
+
+async function mergeSort() {
+    console.log("Merge Sort Started");
+}
+
+async function quickSort() {
+    console.log("Quick Sort Started");
+}
+
+console.log("AlgoVision app.js loaded successfully!");
