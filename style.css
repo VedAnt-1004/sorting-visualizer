@@ -395,3 +395,96 @@ main {
 .hidden {
     display: none !important;
 }
+
+/* ==========================================
+   NEW PRO DASHBOARD STYLES
+   ========================================== */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* The Main Category Boxes (Array, Stack, etc.) */
+.ds-section {
+    background-color: #1e293b;
+    /* Deep slate */
+    border: 1px solid #334155;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    padding: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.ds-section h2 {
+    color: #f8fafc;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+}
+
+.ds-category {
+    margin-top: 24px;
+}
+
+/* The Sub-category Headers (Searching, Sorting) */
+.ds-category h3 {
+    border-left: 4px solid #3b82f6;
+    /* Neon blue accent line */
+    padding-left: 12px;
+    font-size: 1.1rem;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+}
+
+.card-grid {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+/* --- THE MAGIC: INTERACTIVE CARDS --- */
+.algo-card {
+    background-color: #0f172a;
+    /* Darker background for contrast */
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 240px;
+    /* Fixed width for uniformity */
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    /* Smooth animations */
+}
+
+/* The Hover Effect (The Vibe Check) */
+.algo-card:hover {
+    background-color: #1e293b;
+    border-color: #3b82f6;
+    /* Glows blue on hover */
+    transform: translateY(-4px);
+    /* Lifts off the page slightly */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.15);
+    /* Soft blue glow */
+    color: #ffffff;
+}
+
+.algo-card .arrow {
+    color: #64748b;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Arrow slides to the right on hover */
+.algo-card:hover .arrow {
+    color: #3b82f6;
+    transform: translateX(4px);
+}
