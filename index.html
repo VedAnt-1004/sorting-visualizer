@@ -21,72 +21,54 @@
     </section>
 
     <section id="dashboard-screen" class="screen hidden">
-        <div class="dashboard-container" style="max-width: 1200px; margin: 0 auto; padding: 40px 20px; color: white;">
+        <div class="dashboard-header">
+            <h2>Select a Workspace</h2>
+        </div>
 
-            <div class="ds-section"
-                style="background: #111; border: 1px solid #222; border-radius: 8px; margin-bottom: 30px; padding: 20px;">
-                <h2 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
-                    <span style="color: #3b82f6;">›</span> Array
-                </h2>
+        <div class="dashboard-container">
 
-                <div class="ds-category" style="margin-top: 20px;">
-                    <h3 style="border-left: 3px solid #3b82f6; padding-left: 10px; font-size: 16px; color: #ccc;">
-                        Searching</h3>
-                    <div class="card-grid" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Linear
-                            Search <span style="color: #666;">›</span></button>
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Binary
-                            Search <span style="color: #666;">›</span></button>
+            <div class="ds-section">
+                <h2><span class="ds-icon">›</span> Array</h2>
+
+                <div class="ds-category">
+                    <h3>Searching</h3>
+                    <div class="card-grid">
+                        <button class="algo-card" data-target="linear-search">Linear Search <span
+                                class="arrow">›</span></button>
+                        <button class="algo-card" data-target="binary-search">Binary Search <span
+                                class="arrow">›</span></button>
                     </div>
                 </div>
 
-                <div class="ds-category" style="margin-top: 30px;">
-                    <h3 style="border-left: 3px solid #3b82f6; padding-left: 10px; font-size: 16px; color: #ccc;">
-                        Sorting</h3>
-                    <div class="card-grid" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                        <button id="open-sorting-btn" class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Bubble
-                            Sort <span style="color: #666;">›</span></button>
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Selection
-                            Sort <span style="color: #666;">›</span></button>
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Insertion
-                            Sort <span style="color: #666;">›</span></button>
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Merge
-                            Sort <span style="color: #666;">›</span></button>
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Quick
-                            Sort <span style="color: #666;">›</span></button>
+                <div class="ds-category">
+                    <h3>Sorting</h3>
+                    <div class="card-grid">
+                        <button id="open-sorting-btn" class="algo-card" data-target="bubble-sort">Bubble Sort <span
+                                class="arrow">›</span></button>
+                        <button class="algo-card" data-target="selection-sort">Selection Sort <span
+                                class="arrow">›</span></button>
+                        <button class="algo-card" data-target="insertion-sort">Insertion Sort <span
+                                class="arrow">›</span></button>
+                        <button class="algo-card" data-target="merge-sort">Merge Sort <span
+                                class="arrow">›</span></button>
+                        <button class="algo-card" data-target="quick-sort">Quick Sort <span
+                                class="arrow">›</span></button>
                     </div>
                 </div>
             </div>
 
-            <div class="ds-section"
-                style="background: #111; border: 1px solid #222; border-radius: 8px; margin-bottom: 30px; padding: 20px;">
-                <h2 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
-                    <span style="color: #3b82f6;">›</span> Stack
-                </h2>
+            <div class="ds-section">
+                <h2><span class="ds-icon">›</span> Stack</h2>
 
-                <div class="ds-category" style="margin-top: 20px;">
-                    <h3 style="border-left: 3px solid #3b82f6; padding-left: 10px; font-size: 16px; color: #ccc;">
-                        Operations</h3>
-                    <div class="card-grid" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Push
-                            & Pop <span style="color: #666;">›</span></button>
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Peek
-                            <span style="color: #666;">›</span></button>
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Is
-                            Empty <span style="color: #666;">›</span></button>
-                        <button class="algo-card"
-                            style="background: #0a0a0a; border: 1px solid #333; color: white; padding: 15px 20px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; width: 200px;">Is
-                            Full <span style="color: #666;">›</span></button>
+                <div class="ds-category">
+                    <h3>Operations</h3>
+                    <div class="card-grid">
+                        <button class="algo-card" data-target="stack-push-pop">Push & Pop <span
+                                class="arrow">›</span></button>
+                        <button class="algo-card" data-target="stack-peek">Peek <span class="arrow">›</span></button>
+                        <button class="algo-card" data-target="stack-empty">Is Empty <span
+                                class="arrow">›</span></button>
+                        <button class="algo-card" data-target="stack-full">Is Full <span class="arrow">›</span></button>
                     </div>
                 </div>
             </div>
@@ -95,35 +77,30 @@
     </section>
 
     <section id="workspace-screen" class="screen hidden">
-        <div class="workspace-nav" style="padding: 10px 20px; background: #0f172a;">
-            <button id="back-to-dashboard-btn" class="secondary-btn"
-                style="background: transparent; color: white; border: 1px solid #334155; padding: 8px 16px; border-radius: 6px; cursor: pointer;">←
-                Back to Dashboard</button>
+        <div class="workspace-nav">
+            <button id="back-to-dashboard-btn" class="secondary-btn">← Back to Dashboard</button>
         </div>
 
-        <header style="padding: 20px; text-align: center; color: white;">
+        <header>
             <h1 id="workspace-title">Sorting Visualizer</h1>
-            <div class="controls" style="margin-top: 15px;">
-                <button id="new-array-btn" style="padding: 8px 16px; margin: 0 5px;">New Array</button>
-                <div class="slider-container" style="display: inline-block; margin: 0 15px;">
+            <div class="controls">
+                <button id="new-array-btn">New Array</button>
+                <div class="slider-container">
                     <label>Size: <input type="range" id="size-slider" min="5" max="100" value="50"></label>
                     <label>Speed: <input type="range" id="speed-slider" min="1" max="100" value="50"></label>
                 </div>
-                <select id="algo-select" style="padding: 8px; margin: 0 5px;">
+                <select id="algo-select">
                     <option value="bubble">Bubble Sort</option>
                     <option value="merge">Merge Sort</option>
                     <option value="quick">Quick Sort</option>
                 </select>
-                <button id="sort-btn"
-                    style="padding: 8px 16px; margin: 0 5px; background: #3b82f6; color: white; border: none; border-radius: 4px;">Sort!</button>
+                <button id="sort-btn">Sort!</button>
             </div>
         </header>
 
-        <main class="split-layout" style="display: flex; padding: 20px; gap: 20px;">
-            <div id="visualizer-container" style="flex: 2; height: 60vh; background: #1e293b; border-radius: 8px;">
-            </div>
-            <div id="code-display"
-                style="flex: 1; background: #0f172a; padding: 20px; border-radius: 8px; color: #10b981; font-family: monospace;">
+        <main class="split-layout">
+            <div id="visualizer-container"></div>
+            <div id="code-display">
                 <pre><code id="pseudo-code">// Algorithm code will appear here</code></pre>
             </div>
         </main>
