@@ -84,6 +84,23 @@ function buildWorkspace(algoId) {
             <input type="number" id="target-input" placeholder="Target e.g. 4" style="padding: 8px; border-radius: 4px; border: none; margin-right: 10px;">
             <button id="action-btn" class="primary-btn" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Search</button>
         `;
+        // Connect the specific button we just created!
+        document.getElementById('action-btn').addEventListener('click', () => {
+            const arrayInput = document.getElementById('array-input').value;
+            
+            // Convert string "3, 1, 4" into an actual array of numbers [3, 1, 4]
+            const arr = arrayInput.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+            
+            if (arr.length === 0) {
+                alert("Please enter some numbers separated by commas.");
+                return;
+            }
+
+            // Draw the blocks!
+            drawArray(arr);
+            
+            // TODO: We will trigger the actual algorithms.js logic here next!
+        });
     } else if (data.type === "sort") {
         controlsZone.innerHTML = `
             <label style="color: white; margin-right: 10px;">Size: <input type="range" id="size-slider" min="5" max="50"></label>
