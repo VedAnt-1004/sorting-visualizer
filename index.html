@@ -80,30 +80,41 @@
         <div class="workspace-nav">
             <button id="back-to-dashboard-btn" class="secondary-btn">← Back to Dashboard</button>
         </div>
-
-        <header>
-            <h1 id="workspace-title">Sorting Visualizer</h1>
-            <div class="controls">
-                <button id="new-array-btn">New Array</button>
-                <div class="slider-container">
-                    <label>Size: <input type="range" id="size-slider" min="5" max="100" value="50"></label>
-                    <label>Speed: <input type="range" id="speed-slider" min="1" max="100" value="50"></label>
-                </div>
-                <select id="algo-select">
-                    <option value="bubble">Bubble Sort</option>
-                    <option value="merge">Merge Sort</option>
-                    <option value="quick">Quick Sort</option>
-                </select>
-                <button id="sort-btn">Sort!</button>
+    
+        <header id="controls-zone">
+            <h1 id="workspace-title">Select an Algorithm</h1>
+            <div id="dynamic-controls" class="controls">
             </div>
         </header>
-
-        <main class="split-layout">
-            <div id="visualizer-container"></div>
-            <div id="code-display">
-                <pre><code id="pseudo-code">// Algorithm code will appear here</code></pre>
+    
+        <main class="visualizer-arena"
+            style="min-height: 40vh; display: flex; align-items: center; justify-content: center; background: #0f172a; margin: 20px; border-radius: 8px;">
+            <div id="visualizer-container" style="display: flex; gap: 5px; align-items: flex-end; height: 100%;">
             </div>
         </main>
+    
+        <footer id="info-zone" class="split-layout" style="display: flex; gap: 20px; padding: 20px;">
+            <div class="theory-panel"
+                style="flex: 1; background: #1e293b; padding: 20px; border-radius: 8px; color: #e2e8f0;">
+                <h3 style="color: #3b82f6;">How it Works</h3>
+                <p id="algo-description" style="line-height: 1.6; margin-bottom: 20px;">Description goes here...</p>
+    
+                <div class="complexities" style="background: #0f172a; padding: 15px; border-radius: 6px;">
+                    <p><strong>Time (Worst):</strong> <span id="time-worst" style="color: #ef4444;">-</span></p>
+                    <p><strong>Space:</strong> <span id="space-complexity" style="color: #10b981;">-</span></p>
+                </div>
+            </div>
+    
+            <div class="code-panel" style="flex: 1; background: #1e293b; padding: 20px; border-radius: 8px;">
+                <div class="code-tabs" style="margin-bottom: 10px; display: flex; gap: 10px;">
+                    <button class="tab-btn active" data-lang="javascript">JS</button>
+                    <button class="tab-btn" data-lang="python">Python</button>
+                    <button class="tab-btn" data-lang="cpp">C++</button>
+                </div>
+                <pre
+                    style="background: #0f172a; padding: 15px; border-radius: 6px; overflow-x: auto;"><code id="code-snippet" style="color: #e2e8f0; font-family: monospace;">// Code will appear here</code></pre>
+            </div>
+        </footer>
     </section>
 
     <script src="js/data.js"></script>
