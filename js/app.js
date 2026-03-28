@@ -57,11 +57,9 @@ algoCards.forEach(card => {
 function buildWorkspace(algoId) {
     const data = algoData[algoId]; 
 
-    // 1. Update Breadcrumb
-    const bcCategory = document.getElementById('bc-category');
-    const bcTitle = document.getElementById('bc-title');
-    if (bcCategory) bcCategory.innerText = data.category;
-    if (bcTitle) bcTitle.innerText = data.title;
+    // 1. Update Navbar Title
+    const navTitle = document.getElementById('nav-title');
+    if (navTitle) navTitle.innerText = data.title;
 
     // 2. Update Textbook Text
     const desc = document.getElementById('algo-description');

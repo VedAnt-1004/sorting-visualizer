@@ -718,3 +718,72 @@ main {
     align-items: center;
     gap: 10px;
 }
+
+/* ==========================================
+   LAYER 1: MODERN NAVBAR & LOGO
+   ========================================== */
+.modern-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0f172a;
+    padding: 15px 30px;
+    margin: 20px 20px 0 20px;
+    border-radius: 12px;
+    border: 1px solid #1e293b;
+    position: relative;
+}
+
+.nav-brand {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.nav-brand:hover {
+    opacity: 0.8;
+}
+
+.text-light {
+    color: #f8fafc;
+}
+
+.text-blue {
+    color: #3b82f6;
+}
+
+.nav-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.current-algo-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #94a3b8;
+    background: #1e293b;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #334155;
+}
+
+/* ==========================================
+   LAYER 2: THE CONTROL PANEL
+   ========================================== */
+.controls-wrapper {
+    margin: 20px 20px 0 20px;
+}
+
+.controls-panel {
+    display: flex;
+    justify-content: flex-start;
+    /* Aligns inputs to the left, like a toolbar */
+    align-items: center;
+    background-color: #1e293b;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+}
