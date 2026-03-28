@@ -660,3 +660,61 @@ main {
 .code-panel code {
     font-family: monospace;
 }
+
+/* ==========================================
+   WORKSPACE CONTROLS (Inputs & Buttons)
+   ========================================== */
+.workspace-input {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #334155;
+    background-color: #1e293b;
+    color: #f8fafc;
+    margin-right: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.workspace-input:focus {
+    border-color: #3b82f6;
+    /* Highlights blue when typing */
+}
+
+.array-input {
+    width: 200px;
+}
+
+.target-input {
+    width: 100px;
+}
+
+.action-btn {
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.action-btn:hover {
+    opacity: 0.9;
+}
+
+.btn-search {
+    background-color: #3b82f6;
+}
+
+.btn-sort {
+    background-color: #10b981;
+}
+
+.slider-label {
+    color: #e2e8f0;
+    margin-right: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

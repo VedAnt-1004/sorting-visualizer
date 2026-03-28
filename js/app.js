@@ -6,7 +6,7 @@ const dashboardScreen = document.getElementById('dashboard-screen');
 const workspaceScreen = document.getElementById('workspace-screen');
 
 const getStartedBtn = document.getElementById('get-started-btn');
-const homeLink = document.getElementById('home-link'); // The new Glassmorphism Logo Button
+const homeLink = document.getElementById('home-link');
 const algoCards = document.querySelectorAll('.algo-card');
 
 /**
@@ -28,7 +28,7 @@ function navigateTo(targetScreen) {
     }
 }
 
-// Hook up the Welcome and new Home Logo Buttons
+// Hook up the Welcome and Home Logo Buttons
 if (getStartedBtn) getStartedBtn.addEventListener('click', () => navigateTo(dashboardScreen));
 if (homeLink) homeLink.addEventListener('click', () => navigateTo(dashboardScreen));
 
@@ -40,9 +40,8 @@ if (homeLink) homeLink.addEventListener('click', () => navigateTo(dashboardScree
 // Add click listeners to EVERY card on the dashboard
 algoCards.forEach(card => {
     card.addEventListener('click', () => {
-        const targetAlgo = card.getAttribute('data-target'); // e.g., "linear-search"
+        const targetAlgo = card.getAttribute('data-target');
         
-        // Check if the algorithm exists in our Vault (data.js)
         if (algoData && algoData[targetAlgo]) {
             buildWorkspace(targetAlgo);
             navigateTo(workspaceScreen);
@@ -56,15 +55,15 @@ algoCards.forEach(card => {
  * Grabs data from the Vault and injects it into the HTML Template
  */
 function buildWorkspace(algoId) {
-    const data = algoData[algoId]; // Fetch from Vault
+    const data = algoData[algoId]; 
 
-    // 1. Update the new Breadcrumb
+    // 1. Update Breadcrumb
     const bcCategory = document.getElementById('bc-category');
     const bcTitle = document.getElementById('bc-title');
     if (bcCategory) bcCategory.innerText = data.category;
     if (bcTitle) bcTitle.innerText = data.title;
 
-    // 2. Update Text in the Textbook area
+    // 2. Update Textbook Text
     const desc = document.getElementById('algo-description');
     const timeW = document.getElementById('time-worst');
     const spaceC = document.getElementById('space-complexity');
@@ -75,29 +74,27 @@ function buildWorkspace(algoId) {
     if (spaceC) spaceC.innerText = data.complexities.space;
     if (codeS) codeS.innerText = data.code.javascript;
 
-    // 3. Hide the status bar when a new workspace loads
+    // 3. Hide status bar
     const statusBar = document.getElementById('status-bar');
     if (statusBar) statusBar.className = 'status-message hidden';
 
-    // 4. Build the Controls (Inputs vs Sliders)
+    // 4. Build Controls (100% Clean HTML)
     const controlsZone = document.getElementById('dynamic-controls');
-    if (!controlsZone) return; // Safety check
-    controlsZone.innerHTML = ''; // Clear old controls
+    if (!controlsZone) return; 
+    controlsZone.innerHTML = ''; 
 
-    // If it's a Search algorithm, build Text Inputs
+    // SEARCH ALGORITHMS
     if (data.type === "search") {
         controlsZone.innerHTML = `
-            <input type="text" id="array-input" placeholder="e.g. 3, 1, 4, 1, 5" style="padding: 8px; border-radius: 4px; border: none; margin-right: 10px; width: 200px;">
-            <input type="number" id="target-input" placeholder="Target e.g. 4" style="padding: 8px; border-radius: 4px; border: none; margin-right: 10px; width: 120px;">
-            <button id="action-btn" class="primary-btn" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Search</button>
+            <input type="text" id="array-input" class="workspace-input array-input" placeholder="e.g. 3, 1, 4, 1, 5">
+            <input type="number" id="target-input" class="workspace-input target-input" placeholder="Target e.g. 4">
+            <button id="action-btn" class="action-btn btn-search">Search</button>
         `;
 
-        // Tell the new Search button what to do when clicked
         document.getElementById('action-btn').addEventListener('click', () => {
             const arrayInput = document.getElementById('array-input').value;
             const targetInput = document.getElementById('target-input').value;
             
-            // Convert string "3, 1, 4" into an actual array of numbers
             const arr = arrayInput.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
             const target = parseInt(targetInput);
             
@@ -106,22 +103,15 @@ function buildWorkspace(algoId) {
                 return;
             }
 
-            // Draw the blocks on the screen
-            if (typeof drawArray === 'function') {
-                drawArray(arr);
-            }
-            
-            // Fire the Algorithm Engine!
-            if (typeof linearSearchEngine === 'function') {
-                linearSearchEngine(arr, target);
-            }
+            if (typeof drawArray === 'function') drawArray(arr);
+            if (typeof linearSearchEngine === 'function') linearSearchEngine(arr, target);
         });
     } 
-    // If it's a Sort algorithm, build Sliders (We will use this later!)
+    // SORTING ALGORITHMS
     else if (data.type === "sort") {
         controlsZone.innerHTML = `
-            <label style="color: white; margin-right: 10px;">Size: <input type="range" id="size-slider" min="5" max="50"></label>
-            <button id="action-btn" class="primary-btn" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Sort</button>
+            <label class="slider-label">Size: <input type="range" id="size-slider" min="5" max="50"></label>
+            <button id="action-btn" class="action-btn btn-sort">Sort</button>
         `;
     }
 }
