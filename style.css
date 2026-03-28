@@ -212,7 +212,7 @@ button {
 }
 
 /* ==========================================
-   6. WORKSPACE: LAYER 2 (CONTROL DASHBOARD)
+   6. WORKSPACE: LAYER 2 (CONTROL DASHBOARD - WIREFRAME ACCURATE)
    ========================================== */
 .controls-wrapper {
     display: flex;
@@ -228,31 +228,23 @@ button {
     padding: 24px;
     border-radius: 12px;
     border: 1px solid #1e293b;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    max-width: 800px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 700px;
 }
 
 .control-row {
     display: flex;
-    align-items: flex-end;
     gap: 16px;
+    align-items: center;
+    width: 100%;
 }
 
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex-grow: 1;
-}
-
-.input-group label {
-    color: #f8fafc;
-    font-size: 0.95rem;
-    font-weight: 500;
+.center-content {
+    justify-content: center;
 }
 
 .dashboard-input {
@@ -260,26 +252,35 @@ button {
     border: 1px solid #334155;
     color: #f8fafc;
     padding: 12px 16px;
-    border-radius: 8px;
+    border-radius: 20px;
     font-size: 1rem;
     outline: none;
     transition: border-color 0.2s;
-    width: 100%;
 }
 
 .dashboard-input:focus {
     border-color: #3b82f6;
 }
 
+.wireframe-array-input {
+    flex: 2 1 auto;
+    width: 60%;
+}
+
+.wireframe-target-input {
+    flex: 1 1 auto;
+    width: 30%;
+}
+
 .dashboard-btn {
-    padding: 12px 24px;
-    border-radius: 8px;
+    padding: 12px 30px;
+    border-radius: 20px;
     font-size: 1rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     border: none;
     color: white;
-    transition: opacity 0.2s, transform 0.1s;
+    transition: opacity 0.2s, transform 0.1s, background-color 0.2s;
     height: 46px;
     display: flex;
     justify-content: center;
@@ -294,16 +295,33 @@ button {
     transform: scale(0.98);
 }
 
+/* Premium Button Colors */
 .btn-blue {
     background-color: #3b82f6;
+}
+
+.btn-blue:hover {
+    background-color: #2563eb;
 }
 
 .btn-red {
     background-color: #ef4444;
 }
 
-.flex-1 {
-    flex: 1;
+.btn-red:hover {
+    background-color: #dc2626;
+}
+
+.btn-secondary {
+    background-color: #475569;
+}
+
+.btn-secondary:hover {
+    background-color: #334155;
+}
+
+.wireframe-search-btn {
+    margin-top: 0px;
 }
 
 /* ==========================================

@@ -81,14 +81,40 @@ function buildWorkspace(algoId) {
     if (!controlsZone) return; 
     controlsZone.innerHTML = ''; 
 
-    // SEARCH ALGORITHMS
+    // SEARCH ALGORITHMS (Wireframe + Pro Buttons)
     if (data.type === "search") {
         controlsZone.innerHTML = `
-            <input type="text" id="array-input" class="workspace-input array-input" placeholder="e.g. 3, 1, 4, 1, 5">
-            <input type="number" id="target-input" class="workspace-input target-input" placeholder="Target e.g. 4">
-            <button id="action-btn" class="action-btn btn-search">Search</button>
+            <div class="control-row controls-top-row">
+                <input type="text" id="array-input" class="dashboard-input wireframe-array-input" placeholder="e.g. 3, 1, 4, 1, 5">
+                <input type="number" id="target-input" class="dashboard-input wireframe-target-input" placeholder="Target e.g. 4">
+            </div>
+            
+            <div class="control-row center-content">
+                <button id="random-btn" class="dashboard-btn btn-secondary">Random</button>
+                <button id="action-btn" class="dashboard-btn btn-blue wireframe-search-btn">Search</button>
+                <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
+            </div>
         `;
 
+        // 1. Random Array Generator Logic
+        document.getElementById('random-btn').addEventListener('click', () => {
+            const randomArr = Array.from({length: 7}, () => Math.floor(Math.random() * 99) + 1);
+            document.getElementById('array-input').value = randomArr.join(', ');
+            const randomTarget = randomArr[Math.floor(Math.random() * randomArr.length)];
+            document.getElementById('target-input').value = randomTarget;
+        });
+
+        // 2. Reset Button Logic
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            document.getElementById('array-input').value = '';
+            document.getElementById('target-input').value = '';
+            const visualizerContainer = document.getElementById('visualizer-container');
+            if (visualizerContainer) visualizerContainer.innerHTML = '';
+            const statusBar = document.getElementById('status-bar');
+            if (statusBar) statusBar.className = 'status-message hidden';
+        });
+
+        // 3. Go (Search) Button Logic
         document.getElementById('action-btn').addEventListener('click', () => {
             const arrayInput = document.getElementById('array-input').value;
             const targetInput = document.getElementById('target-input').value;
@@ -104,7 +130,7 @@ function buildWorkspace(algoId) {
             if (typeof drawArray === 'function') drawArray(arr);
             if (typeof linearSearchEngine === 'function') linearSearchEngine(arr, target);
         });
-    } 
+    }
     // SORTING ALGORITHMS
     else if (data.type === "sort") {
         controlsZone.innerHTML = `
