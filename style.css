@@ -575,3 +575,88 @@ main {
     /* Red */
     border: 1px solid #ef4444;
 }
+
+/* ==========================================
+   WORKSPACE LAYOUT & PANELS
+   ========================================== */
+.visualizer-arena {
+    min-height: 40vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #0f172a;
+    margin: 20px;
+    border-radius: 8px;
+    position: relative;
+}
+
+#visualizer-container {
+    display: flex;
+    gap: 5px;
+    align-items: flex-end;
+    height: 100px;
+    margin-top: 20px;
+}
+
+/* Textbook Area (Theory & Code) */
+.split-layout {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+.theory-panel,
+.code-panel {
+    flex: 1;
+    background-color: #1e293b;
+    padding: 20px;
+    border-radius: 8px;
+    color: #e2e8f0;
+}
+
+.theory-panel h3 {
+    color: #3b82f6;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.theory-panel p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.complexities {
+    background-color: #0f172a;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.complexities p {
+    margin: 5px 0;
+}
+
+.time-color {
+    color: #ef4444;
+}
+
+.space-color {
+    color: #10b981;
+}
+
+.code-tabs {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.code-panel pre {
+    background-color: #0f172a;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.code-panel code {
+    font-family: monospace;
+}

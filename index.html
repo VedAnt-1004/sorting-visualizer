@@ -43,7 +43,7 @@
                 <div class="ds-category">
                     <h3>Sorting</h3>
                     <div class="card-grid">
-                        <button id="open-sorting-btn" class="algo-card" data-target="bubble-sort">Bubble Sort <span
+                        <button class="algo-card" data-target="bubble-sort">Bubble Sort <span
                                 class="arrow">›</span></button>
                         <button class="algo-card" data-target="selection-sort">Selection Sort <span
                                 class="arrow">›</span></button>
@@ -77,46 +77,44 @@
     </section>
 
     <section id="workspace-screen" class="screen hidden">
-        <div class="workspace-nav">
-            <button id="back-to-dashboard-btn" class="secondary-btn">← Back to Dashboard</button>
-        </div>
     
-        <header id="controls-zone">
-            <h1 id="workspace-title">Select an Algorithm</h1>
+        <header id="workspace-header" class="glass-header">
+            <div class="breadcrumb">
+                <span id="home-link" class="brand-logo">AlgoVision</span>
+                <span class="separator">/</span>
+                <span id="bc-category" class="bc-text">Category</span>
+                <span class="separator">/</span>
+                <span id="bc-title" class="bc-text active">Algorithm</span>
+            </div>
+    
             <div id="dynamic-controls" class="controls">
             </div>
         </header>
     
-        <main class="visualizer-arena"
-            style="min-height: 40vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0f172a; margin: 20px; border-radius: 8px; position: relative;">
-        
+        <main class="visualizer-arena">
             <div id="status-bar" class="status-message hidden">Waiting for input...</div>
-        
-            <div id="visualizer-container"
-                style="display: flex; gap: 5px; align-items: flex-end; height: 100px; margin-top: 20px;">
+            <div id="visualizer-container">
             </div>
         </main>
     
-        <footer id="info-zone" class="split-layout" style="display: flex; gap: 20px; padding: 20px;">
-            <div class="theory-panel"
-                style="flex: 1; background: #1e293b; padding: 20px; border-radius: 8px; color: #e2e8f0;">
-                <h3 style="color: #3b82f6;">How it Works</h3>
-                <p id="algo-description" style="line-height: 1.6; margin-bottom: 20px;">Description goes here...</p>
+        <footer id="info-zone" class="split-layout">
+            <div class="theory-panel">
+                <h3>How it Works</h3>
+                <p id="algo-description">Description goes here...</p>
     
-                <div class="complexities" style="background: #0f172a; padding: 15px; border-radius: 6px;">
-                    <p><strong>Time (Worst):</strong> <span id="time-worst" style="color: #ef4444;">-</span></p>
-                    <p><strong>Space:</strong> <span id="space-complexity" style="color: #10b981;">-</span></p>
+                <div class="complexities">
+                    <p><strong>Time (Worst):</strong> <span id="time-worst" class="time-color">-</span></p>
+                    <p><strong>Space:</strong> <span id="space-complexity" class="space-color">-</span></p>
                 </div>
             </div>
     
-            <div class="code-panel" style="flex: 1; background: #1e293b; padding: 20px; border-radius: 8px;">
-                <div class="code-tabs" style="margin-bottom: 10px; display: flex; gap: 10px;">
+            <div class="code-panel">
+                <div class="code-tabs">
                     <button class="tab-btn active" data-lang="javascript">JS</button>
                     <button class="tab-btn" data-lang="python">Python</button>
                     <button class="tab-btn" data-lang="cpp">C++</button>
                 </div>
-                <pre
-                    style="background: #0f172a; padding: 15px; border-radius: 6px; overflow-x: auto;"><code id="code-snippet" style="color: #e2e8f0; font-family: monospace;">// Code will appear here</code></pre>
+                <pre><code id="code-snippet">// Code will appear here</code></pre>
             </div>
         </footer>
     </section>
