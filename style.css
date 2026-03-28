@@ -233,7 +233,7 @@ button {
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    max-width: 700px;
+    max-width: 1000px;
 }
 
 .control-row {
@@ -354,6 +354,23 @@ button {
     height: auto;
 }
 
+/* Centers the block and the index label together */
+#visualizer-container>div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    /* Adds a little breathing room between the box and the index */
+}
+
+/* Optional: Make the index text look a bit sleeker */
+#visualizer-container>div>span,
+#visualizer-container>div>p {
+    color: #94a3b8;
+    /* Muted gray so it doesn't distract from the blocks */
+    font-size: 0.9rem;
+    font-weight: 500;
+}
 /* The Premium Array Tiles */
 .array-block {
     background-color: #1e293b;
