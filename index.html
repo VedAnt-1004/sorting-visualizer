@@ -88,8 +88,12 @@
         </header>
     
         <main class="visualizer-arena"
-            style="min-height: 40vh; display: flex; align-items: center; justify-content: center; background: #0f172a; margin: 20px; border-radius: 8px;">
-            <div id="visualizer-container" style="display: flex; gap: 5px; align-items: flex-end; height: 100%;">
+            style="min-height: 40vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0f172a; margin: 20px; border-radius: 8px; position: relative;">
+        
+            <div id="status-bar" class="status-message hidden">Waiting for input...</div>
+        
+            <div id="visualizer-container"
+                style="display: flex; gap: 5px; align-items: flex-end; height: 100px; margin-top: 20px;">
             </div>
         </main>
     

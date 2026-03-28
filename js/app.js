@@ -69,6 +69,10 @@ function buildWorkspace(algoId) {
     const controlsZone = document.getElementById('dynamic-controls');
     controlsZone.innerHTML = ''; // Clear old controls
 
+    // 3. NEW: Hide the status bar when a new workspace loads!
+    const statusBar = document.getElementById('status-bar');
+    if (statusBar) statusBar.className = 'status-message hidden';
+
     // If it's a Search algorithm, build Text Inputs
     if (data.type === "search") {
         controlsZone.innerHTML = `
