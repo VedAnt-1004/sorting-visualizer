@@ -82,11 +82,21 @@
         <div id="home-link" class="nav-brand">
             <span class="text-light">Algo</span><span class="text-blue">Vision</span>
         </div>
-    
         <div class="nav-center">
             <span id="nav-title" class="current-algo-text">Algorithm</span>
         </div>
     </header>
+    
+    <div class="theory-wrapper">
+        <div class="theory-panel">
+            <h3>How it Works</h3>
+            <p id="algo-description">Algorithm description goes here...</p>
+            <div class="complexity-badges">
+                <div class="badge">⏱️ Time (Worst): <span id="time-worst" class="time-color">O(n)</span></div>
+                <div class="badge">💾 Space: <span id="space-complexity" class="space-color">O(1)</span></div>
+            </div>
+        </div>
+    </div>
     
     <div class="controls-wrapper">
         <div id="dynamic-controls" class="controls-panel">
@@ -99,26 +109,19 @@
         </div>
     </main>
     
-        <footer id="info-zone" class="split-layout">
-            <div class="theory-panel">
-                <h3>How it Works</h3>
-                <p id="algo-description">Description goes here...</p>
-    
-                <div class="complexities">
-                    <p><strong>Time (Worst):</strong> <span id="time-worst" class="time-color">-</span></p>
-                    <p><strong>Space:</strong> <span id="space-complexity" class="space-color">-</span></p>
-                </div>
-            </div>
-    
-            <div class="code-panel">
+    <div class="code-wrapper">
+        <div class="code-panel">
+            <div class="code-header">
                 <div class="code-tabs">
-                    <button class="tab-btn active" data-lang="javascript">JS</button>
-                    <button class="tab-btn" data-lang="python">Python</button>
-                    <button class="tab-btn" data-lang="cpp">C++</button>
+                    <button class="tab-btn active">JS</button>
+                    <button class="tab-btn">Python</button>
+                    <button class="tab-btn">C++</button>
                 </div>
-                <pre><code id="code-snippet">// Code will appear here</code></pre>
+                <button id="copy-btn" class="copy-btn">📋 Copy Code</button>
             </div>
-        </footer>
+            <pre><code id="code-snippet">function() { ... }</code></pre>
+        </div>
+    </div>
     </section>
 
     <script src="js/data.js"></script>
