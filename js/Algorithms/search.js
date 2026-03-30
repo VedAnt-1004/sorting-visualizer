@@ -1,6 +1,7 @@
 // ==========================================
 // SEARCH ALGORITHMS ENGINE (js/algorithms/search.js)
 // ==========================================
+// Note: The 'sleep' function is now globally handled by visualizer.js!
 
 async function linearSearchEngine(arr, target) {
     const blocks = document.querySelectorAll('.array-block');
