@@ -2,131 +2,146 @@
 <html lang="en">
 
 <head>
+       
     <meta charset="UTF-8">
+       
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlgoVision | DSA Visualizer</title>
+        <title>AlgoVision | DSA Visualizer</title>
+       
     <meta name="description" content="A real-time, interactive sorting algorithm visualizer.">
+       
     <meta name="keywords" content="AlgoVision, Sorting Visualizer, Algorithm Animation, Data Structures">
+       
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <section id="welcome-screen" class="screen active">
-        <div class="hero-content">
-            <h1>AlgoVision</h1>
-            <p>Master Data Structures & Algorithms through interactive visualization.</p>
-            <button id="get-started-btn" class="primary-btn">Get Started</button>
-        </div>
-    </section>
+        <section id="welcome-screen" class="screen active">
+                <div class="hero-content">
+                        <h1>AlgoVision</h1>
+                        <p>Master Data Structures & Algorithms through interactive visualization.</p>
+                        <button id="get-started-btn" class="primary-btn">Get Started</button>
+                    </div>
+            </section>
 
-    <section id="dashboard-screen" class="screen hidden">
-        <div class="dashboard-header">
-            <h2>Select a Workspace</h2>
-        </div>
+        <section id="dashboard-screen" class="screen hidden">
+                <div class="dashboard-header">
+                        <h2>Select a Workspace</h2>
+                    </div>
 
-        <div class="dashboard-container">
+                <div class="dashboard-container">
 
-            <div class="ds-section">
-                <h2><span class="ds-icon">›</span> Array</h2>
+                        <div class="ds-section">
+                                <h2><span class="ds-icon">›</span> Array</h2>
 
-                <div class="ds-category">
-                    <h3>Searching</h3>
-                    <div class="card-grid">
-                        <button class="algo-card" data-target="linear-search">Linear Search <span
-                                class="arrow">›</span></button>
-                        <button class="algo-card" data-target="binary-search">Binary Search <span
-                                class="arrow">›</span></button>
-                    </div>
-                </div>
+                                <div class="ds-category">
+                                        <h3>Searching</h3>
+                                        <div class="card-grid">
+                                                <button class="algo-card" data-target="linear-search">Linear Search
+                            <span                                 class="arrow">›</span></button>
+                                                <button class="algo-card" data-target="binary-search">Binary Search
+                            <span                                 class="arrow">›</span></button>
+                                            </div>
+                                    </div>
 
-                <div class="ds-category">
-                    <h3>Sorting</h3>
-                    <div class="card-grid">
-                        <button class="algo-card" data-target="bubble-sort">Bubble Sort <span
+                                <div class="ds-category">
+                                        <h3>Sorting</h3>
+                                        <div class="card-grid">
+                                                <button class="algo-card" data-target="bubble-sort">Bubble Sort <span  
+                                                              class="arrow">›</span></button>
+                                                <button class="algo-card" data-target="selection-sort">Selection Sort
+                            <span                                 class="arrow">›</span></button>
+                                                <button class="algo-card" data-target="insertion-sort">Insertion Sort
+                            <span                                 class="arrow">›</span></button>
+                                                <button class="algo-card" data-target="merge-sort">Merge Sort <span    
+                                                            class="arrow">›</span></button>
+                                                <button class="algo-card" data-target="quick-sort">Quick Sort <span    
+                                                            class="arrow">›</span></button>
+                                            </div>
+                                    </div>
+                            </div>
+
+                        <div class="ds-section">
+                                <h2><span class="ds-icon">›</span> Stack</h2>
+
+                                <div class="ds-category">
+                                        <h3>Operations</h3>
+                                        <div class="card-grid">
+                                                <button class="algo-card" data-target="stack-push-pop">Push & Pop <span
+                                                                class="arrow">›</span></button>
+                                                <button class="algo-card" data-target="stack-peek">Peek <span
                                 class="arrow">›</span></button>
-                        <button class="algo-card" data-target="selection-sort">Selection Sort <span
+                                                <button class="algo-card" data-target="stack-empty">Is Empty <span      
+                                                          class="arrow">›</span></button>
+                                                <button class="algo-card" data-target="stack-full">Is Full <span
                                 class="arrow">›</span></button>
-                        <button class="algo-card" data-target="insertion-sort">Insertion Sort <span
-                                class="arrow">›</span></button>
-                        <button class="algo-card" data-target="merge-sort">Merge Sort <span
-                                class="arrow">›</span></button>
-                        <button class="algo-card" data-target="quick-sort">Quick Sort <span
-                                class="arrow">›</span></button>
-                    </div>
-                </div>
+                                            </div>
+                                    </div>
+                            </div>
+
+                    </div>
+            </section>
+
+        <section id="workspace-screen" class="screen hidden">
+           
+            <header id="workspace-header" class="modern-nav">
+                    <div id="home-link" class="nav-brand">
+                            <span class="text-light">Algo</span><span class="text-blue">Vision</span>
+                        </div>
+                    <div class="nav-center">
+                            <span id="nav-title" class="current-algo-text">Algorithm</span>
+                        </div>
+                </header>
+           
+            <div class="theory-wrapper">
+                    <div class="theory-panel">
+                            <h3>How it Works</h3>
+                            <p id="algo-description">Algorithm description goes here...</p>
+                            <div class="complexity-badges">
+                                    <div class="badge">⏱️ Time (Worst): <span id="time-worst"
+                            class="time-color">O(n)</span></div>
+                                    <div class="badge">💾 Space: <span id="space-complexity"
+                            class="space-color">O(1)</span></div>
+                                </div>
+                        </div>
+                </div>
+           
+            <div class="controls-wrapper">
+                    <div id="dynamic-controls" class="controls-panel">
+                        </div>
+                </div>
+           
+            <main class="visualizer-arena">
+                    <div id="status-bar" class="status-message hidden">Waiting for input...</div>
+                    <div id="visualizer-container">
+                        </div>
+                </main>
+           
+            <div class="code-wrapper">
+                    <div class="code-panel">
+                            <div class="code-header">
+                                    <div class="code-tabs">
+                                            <button class="tab-btn active">JS</button>
+                                            <button class="tab-btn">Python</button>
+                                            <button class="tab-btn">C++</button>
+                                        </div>
+                                    <button id="copy-btn" class="copy-btn">📋 Copy Code</button>
+                                </div>
+                           
+                <pre><code id="code-snippet">function() { ... }</code></pre>
+                       
             </div>
+                </div>
+            </section>
 
-            <div class="ds-section">
-                <h2><span class="ds-icon">›</span> Stack</h2>
-
-                <div class="ds-category">
-                    <h3>Operations</h3>
-                    <div class="card-grid">
-                        <button class="algo-card" data-target="stack-push-pop">Push & Pop <span
-                                class="arrow">›</span></button>
-                        <button class="algo-card" data-target="stack-peek">Peek <span class="arrow">›</span></button>
-                        <button class="algo-card" data-target="stack-empty">Is Empty <span
-                                class="arrow">›</span></button>
-                        <button class="algo-card" data-target="stack-full">Is Full <span class="arrow">›</span></button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <section id="workspace-screen" class="screen hidden">
-    
-    <header id="workspace-header" class="modern-nav">
-        <div id="home-link" class="nav-brand">
-            <span class="text-light">Algo</span><span class="text-blue">Vision</span>
-        </div>
-        <div class="nav-center">
-            <span id="nav-title" class="current-algo-text">Algorithm</span>
-        </div>
-    </header>
-    
-    <div class="theory-wrapper">
-        <div class="theory-panel">
-            <h3>How it Works</h3>
-            <p id="algo-description">Algorithm description goes here...</p>
-            <div class="complexity-badges">
-                <div class="badge">⏱️ Time (Worst): <span id="time-worst" class="time-color">O(n)</span></div>
-                <div class="badge">💾 Space: <span id="space-complexity" class="space-color">O(1)</span></div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="controls-wrapper">
-        <div id="dynamic-controls" class="controls-panel">
-        </div>
-    </div>
-    
-    <main class="visualizer-arena">
-        <div id="status-bar" class="status-message hidden">Waiting for input...</div>
-        <div id="visualizer-container">
-        </div>
-    </main>
-    
-    <div class="code-wrapper">
-        <div class="code-panel">
-            <div class="code-header">
-                <div class="code-tabs">
-                    <button class="tab-btn active">JS</button>
-                    <button class="tab-btn">Python</button>
-                    <button class="tab-btn">C++</button>
-                </div>
-                <button id="copy-btn" class="copy-btn">📋 Copy Code</button>
-            </div>
-            <pre><code id="code-snippet">function() { ... }</code></pre>
-        </div>
-    </div>
-    </section>
-
+       
     <script src="js/data.js"></script>
+       
     <script src="js/visualizer.js"></script>
+       
     <script src="js/algorithms/search.js"></script>
+       
     <script src="js/app.js"></script>
 </body>
 
