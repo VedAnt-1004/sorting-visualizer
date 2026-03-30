@@ -42,7 +42,7 @@ algoCards.forEach(card => {
     card.addEventListener('click', () => {
         const targetAlgo = card.getAttribute('data-target');
         
-        if (algoData && algoData[targetAlgo]) {
+        if (algorithmDatabase && algorithmDatabase[targetAlgo]) {
             buildWorkspace(targetAlgo);
             navigateTo(workspaceScreen);
         } else {

@@ -2,9 +2,6 @@
 // SEARCH ALGORITHMS ENGINE (js/algorithms/search.js)
 // ==========================================
 
-// Helper function to control animation speed
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
 async function linearSearchEngine(arr, target) {
     const blocks = document.querySelectorAll('.array-block');
     const statusBar = document.getElementById('status-bar');
