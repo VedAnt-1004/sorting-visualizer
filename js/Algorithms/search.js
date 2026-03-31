@@ -1,4 +1,3 @@
-js/Algorithms/search.js
 
 // ==========================================
 // SEARCH ALGORITHMS ENGINE (js/algorithms/search.js)

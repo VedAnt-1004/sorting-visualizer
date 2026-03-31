@@ -1,4 +1,3 @@
-data.js
 
 // ==========================================
 // ALGORITHM ENCYCLOPEDIA (js/data.js)

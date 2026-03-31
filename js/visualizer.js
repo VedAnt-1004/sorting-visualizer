@@ -1,4 +1,3 @@
-visualizer.js
 
 // ==========================================
 // UNIVERSAL ANIMATION ENGINE (The Artist)
