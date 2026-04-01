@@ -13,6 +13,7 @@ const algorithmDatabase = {
 
     "linear-search": {
         title: "Linear Search",
+        category: "array",
         type: "search",
         description: "Linear search is the simplest searching algorithm. It sequentially checks each element of the list until a match is found or the whole list has been searched. It is reliable but slow for massive datasets.",
         complexities: { worst: "O(n)", space: "O(1)" },
@@ -45,6 +46,7 @@ const algorithmDatabase = {
 
     "binary-search": {
         title: "Binary Search",
+        category: "array",
         type: "search",
         description: "Binary Search is a highly efficient algorithm that works by repeatedly dividing the search space in half. It compares the target value to the middle element of the array. NOTE: The array must be strictly sorted for this to work!",
         complexities: { worst: "O(log n)", space: "O(1)" },

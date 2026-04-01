@@ -1,18 +1,16 @@
 // ==========================================
-// MAIN UI MANAGER (js/app.js)
+// MAIN UI MANAGER (js/app.js) - Option 3 Structure
 // ==========================================
 
 let currentActiveCodes = {}; // Stores code for the currently selected algorithm
 
 // --- 1. SCREEN NAVIGATION ENGINE ---
 function showScreen(screenId) {
-    // Hide all screens
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
         screen.classList.add('hidden');
     });
 
-    // Show the target screen
     const target = document.getElementById(screenId);
     if (target) {
         target.classList.remove('hidden');
@@ -20,7 +18,82 @@ function showScreen(screenId) {
     }
 }
 
-// --- 2. WORKSPACE BUILDER ---
+// --- 2. DYNAMIC DASHBOARD BUILDER (Option 3 Fix) ---
+// This function clears the dashboard and rebuilds cards from data.js
+function buildDashboard(categoryId) {
+    const dashboardContainer = document.querySelector('.dashboard-container');
+    const stageHeader = document.querySelector('.dashboard-stage .dashboard-header h2');
+    
+    // 1. Clear current content
+    dashboardContainer.innerHTML = '';
+    
+    // 2. Set dynamic header based on sidebar choice
+    if(stageHeader) {
+        stageHeader.innerText = `Workspace: ${categoryId.charAt(0).toUpperCase() + categoryId.slice(1)}`;
+    }
+
+    // 3. Find algorithms matching the category (e.g., 'array', 'stack')
+    const relevantAlgos = [];
+    for (const key in algorithmDatabase) {
+        if (algorithmDatabase[key].category === categoryId) {
+            relevantAlgos.push(algorithmDatabase[key]);
+        }
+    }
+
+    if (relevantAlgos.length === 0) {
+        dashboardContainer.innerHTML = '<div class="coming-soon-panel"><h2>Working on this! More modules arriving soon.</h2><p>Linear Search and Binary Search (Array -> Searching) are active.</p></div>';
+        return;
+    }
+
+    // 4. Group relevant algos by their sub-type (e.g., 'Searching', 'Sorting')
+    const grouped = {};
+    relevantAlgos.forEach(algo => {
+        if (!grouped[algo.type]) grouped[algo.type] = [];
+        grouped[algo.type].push(algo);
+    });
+
+    // 5. Generate the HTML Bento Structure
+    for (const type in grouped) {
+        // Create the ds-category wrapper
+        const categoryWrapper = document.createElement('div');
+        categoryWrapper.classList.add('ds-category');
+
+        // Capitalize type name (searching -> Searching)
+        const capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);
+        
+        categoryWrapper.innerHTML = `<h3>${capitalizedType} <span class="header-i-icon">ⓘ</span></h3>`;
+
+        // Create the card-grid
+        const cardGrid = document.createElement('div');
+        cardGrid.classList.add('card-grid');
+
+        // Create the individual algo-cards
+        grouped[type].forEach(algo => {
+            const cardId = algo.id || Object.keys(algorithmDatabase).find(key => algorithmDatabase[key] === algo);
+            const card = document.createElement('button');
+            card.classList.add('algo-card');
+            card.setAttribute('data-target', cardId);
+            card.innerHTML = `${algo.title} <span class="arrow">›</span>`;
+            
+            // Add click listener to the newly created card
+            card.addEventListener('click', () => {
+                const algoId = card.getAttribute('data-target');
+                if (algoId && algorithmDatabase[algoId]) {
+                    buildWorkspace(algoId);
+                    showScreen('workspace-screen');
+                    window.scrollTo(0, 0);
+                }
+            });
+
+            cardGrid.appendChild(card);
+        });
+
+        categoryWrapper.appendChild(cardGrid);
+        dashboardContainer.appendChild(categoryWrapper);
+    }
+}
+
+// --- 3. WORKSPACE BUILDER (Unchanged) ---
 function buildWorkspace(algoId) {
     const data = algorithmDatabase[algoId];
     
@@ -107,7 +180,7 @@ function buildWorkspace(algoId) {
     }
 }
 
-// --- 3. EVENT LISTENERS (ON LOAD) ---
+// --- 4. EVENT LISTENERS (ON LOAD) ---
 document.addEventListener('DOMContentLoaded', () => {
     
     // Welcome Screen -> Dashboard
@@ -115,28 +188,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (getStartedBtn) {
         getStartedBtn.addEventListener('click', () => {
             showScreen('dashboard-screen');
+            buildDashboard('array'); // Automatically load the first category
         });
     }
 
-    // Dashboard Cards -> Workspace
-    document.querySelectorAll('.algo-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const algoId = card.getAttribute('data-target');
-            if (algoId && algorithmDatabase[algoId]) {
-                buildWorkspace(algoId);
-                showScreen('workspace-screen');
-                window.scrollTo(0, 0);
-            } else {
-                alert("This algorithm is currently under development!");
+    // Sidebar Category Clicks (Option 3 Logic)
+    document.querySelectorAll('.sidebar-nav li').forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Remove active from all, add to clicked
+            document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            
+            // Build the new stage
+            const categoryId = e.currentTarget.getAttribute('data-target');
+            if (categoryId) {
+                buildDashboard(categoryId);
             }
         });
     });
 
-    // Home Logo -> Back to Dashboard
+    // Home Logo -> Back to Dashboard (Default state)
     const homeLink = document.getElementById('home-link');
     if (homeLink) {
         homeLink.addEventListener('click', () => {
             showScreen('dashboard-screen');
+            buildDashboard('array');
+            document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+            document.querySelector('.sidebar-nav li[data-target="array"]').classList.add('active');
         });
     }
 
