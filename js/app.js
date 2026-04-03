@@ -1,5 +1,5 @@
 // ==========================================
-// MAIN UI MANAGER (js/app.js) - Option 3 Structure
+// MAIN UI MANAGER
 // ==========================================
 
 let currentActiveCodes = {}; // Stores code for the currently selected algorithm
