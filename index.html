@@ -5,9 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlgoVision | DSA Visualizer</title>
-    <meta name="description" content="A real-time, interactive data structure and algorithm visualizer.">
-    <meta name="keywords"
-        content="AlgoVision, Sorting Visualizer, Algorithm Animation, Data Structures, Binary Search, Linear Search, Bento Box">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -23,35 +20,19 @@
 
     <section id="dashboard-screen" class="screen hidden">
         <div class="main-dashboard-wrapper">
-
             <aside class="dashboard-sidebar">
                 <h2>Categories</h2>
                 <ul class="sidebar-nav">
-                    <li class="active" data-target="array">
-                        <span class="ds-icon">›</span> Array
-                    </li>
-                    <li data-target="stack">
-                        <span class="ds-icon">›</span> Stack
-                    </li>
-                    <li data-target="queue" class="dimmed">
-                        <span class="ds-icon">›</span> Queue
-                    </li>
-                    <li data-target="graph" class="dimmed">
-                        <span class="ds-icon">›</span> Graph
-                    </li>
-                    <li data-target="tree" class="dimmed">
-                        <span class="ds-icon">›</span> Tree
-                    </li>
+                    <li class="active" data-target="array"><span class="ds-icon">›</span> Array</li>
+                    <li data-target="stack" class="dimmed"><span class="ds-icon">›</span> Stack</li>
+                    <li data-target="queue" class="dimmed"><span class="ds-icon">›</span> Queue</li>
                 </ul>
             </aside>
-
             <main class="dashboard-stage">
                 <header class="dashboard-header">
                     <h2>Select a Workspace</h2>
                 </header>
-
-                <div class="dashboard-container">
-                </div>
+                <div class="dashboard-container"></div>
             </main>
         </div>
     </section>
@@ -59,17 +40,18 @@
     <section id="workspace-screen" class="screen hidden">
         <header id="workspace-header" class="modern-nav">
             <div id="home-link" class="nav-brand">
-                <span class="text-light">Algo</span><span class="text-blue">Vision</span>
+                <span class="text-white">Algo</span><span class="text-blue">Vision</span>
             </div>
             <div class="nav-center">
-                <span id="nav-title" class="current-algo-text">Algorithm</span>
+                <span id="nav-title" class="current-algo-pill">ALGORITHM</span>
             </div>
+            <div class="nav-spacer"></div>
         </header>
 
         <div class="theory-wrapper">
             <div class="theory-panel">
                 <h3>How it Works</h3>
-                <p id="algo-description">Algorithm description goes here...</p>
+                <p id="algo-description">Algorithm description...</p>
                 <div class="complexity-badges">
                     <div class="badge">⏱️ Worst Case: <span id="time-worst" class="time-color">O(n)</span></div>
                     <div class="badge">💾 Space Complexity: <span id="space-complexity" class="space-color">O(1)</span>
@@ -79,14 +61,12 @@
         </div>
 
         <div class="controls-wrapper">
-            <div id="dynamic-controls" class="controls-panel">
-            </div>
+            <div id="dynamic-controls" class="controls-panel"></div>
         </div>
 
         <main class="visualizer-arena">
-            <div id="status-bar" class="status-message hidden">Waiting for input...</div>
-            <div id="visualizer-container">
-            </div>
+            <div id="status-bar" class="status-message hidden"></div>
+            <div id="visualizer-container"></div>
         </main>
 
         <div class="code-wrapper">
@@ -99,7 +79,7 @@
                     </div>
                     <button id="copy-btn" class="copy-btn">📋 Copy Code</button>
                 </div>
-                <pre><code id="code-snippet">function() { ... }</code></pre>
+                <pre><code id="code-snippet"></code></pre>
             </div>
         </div>
     </section>
