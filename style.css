@@ -11,8 +11,8 @@
 }
 
 body {
-    background-color: #f1f5f9;
-    /* Option 3: Light Slate Grey Body */
+    background-color: #f8fafc;
+    /* Professional Light Slate */
     color: #0f172a;
     /* Deep Navy Text */
     overflow-x: hidden;
@@ -22,16 +22,16 @@ body {
 button {
     font-family: inherit;
     transition: all 0.2s ease-in-out;
+    cursor: pointer;
 }
 
 /* ==========================================
-   2. SPA SCREEN MANAGEMENT (Crucial Fix)
+   2. SCREEN MANAGEMENT
    ========================================== */
 .screen {
     display: none;
     min-height: 100vh;
     width: 100%;
-    /* No padding here, padding will be managed by columns */
 }
 
 .screen.active {
@@ -39,6 +39,7 @@ button {
     animation: fadeIn 0.4s ease;
 }
 
+/* Welcome Screen - Dark Premium Vibe */
 #welcome-screen.active {
     display: flex;
     flex-direction: column;
@@ -46,7 +47,6 @@ button {
     justify-content: center;
     text-align: center;
     background-color: #0f172a;
-    /* Keep Hero Screen Dark Premium */
 }
 
 .hidden {
@@ -66,22 +66,22 @@ button {
 }
 
 /* ==========================================
-   3. WELCOME SCREEN (Dark Theme)
+   3. WELCOME SCREEN (Hero)
    ========================================== */
-#welcome-screen .hero-content h1 {
-    font-size: 4.5rem;
+#welcome-screen h1 {
+    font-size: 5rem;
     font-weight: 800;
     background: linear-gradient(to right, #3b82f6, #8b5cf6);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-#welcome-screen .hero-content p {
-    font-size: 1.25rem;
+#welcome-screen p {
+    font-size: 1.3rem;
     color: #94a3b8;
-    margin-bottom: 35px;
+    margin-bottom: 40px;
     max-width: 600px;
 }
 
@@ -89,12 +89,11 @@ button {
     background-color: #3b82f6;
     color: white;
     border: none;
-    padding: 14px 36px;
+    padding: 16px 40px;
     font-size: 1.1rem;
     border-radius: 30px;
-    cursor: pointer;
-    font-weight: 600;
-    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
 }
 
 .primary-btn:hover {
@@ -103,48 +102,49 @@ button {
 }
 
 /* ==========================================
-   4. DASHBOARD SCREEN (Two-Column Fix)
+   4. DASHBOARD (Two-Column Layout)
    ========================================== */
 .main-dashboard-wrapper {
     display: grid;
     grid-template-columns: 280px 1fr;
-    /* [Sidebar] [Stage] */
     min-height: 100vh;
 }
 
-/* LEFT COLUMN: SIDEBAR */
+/* SIDEBAR */
 .dashboard-sidebar {
     background-color: #0b1120;
-    /* Keep Sidebar Dark for Vibe */
-    padding: 40px 30px;
+    padding: 40px 25px;
     border-right: 1px solid #1e293b;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
 .dashboard-sidebar h2 {
     color: #64748b;
-    font-size: 1rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     margin-bottom: 30px;
+    padding-left: 15px;
 }
 
 .sidebar-nav {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .sidebar-nav li {
     color: #94a3b8;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    padding: 14px 20px;
+    padding: 12px 20px;
     border-radius: 12px;
-    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .sidebar-nav li:hover:not(.active):not(.dimmed) {
@@ -155,216 +155,181 @@ button {
 .sidebar-nav li.active {
     background-color: #1e293b;
     color: #3b82f6;
-    /* Blue Accent when active */
-    font-weight: 700;
     border: 1px solid #334155;
-}
-
-.sidebar-nav li.active .ds-icon {
-    color: #3b82f6;
 }
 
 .sidebar-nav li.dimmed {
     opacity: 0.3;
-    cursor: default;
+    cursor: not-allowed;
 }
 
-.sidebar-nav li .ds-icon {
-    font-weight: 800;
-    font-size: 1.4rem;
-}
-
-/* RIGHT COLUMN: MAIN CONTENT STAGE */
+/* STAGE */
 .dashboard-stage {
-    padding: 60px 40px;
-}
-
-.dashboard-header {
-    margin-bottom: 50px;
-    padding-left: 10px;
+    padding: 60px 50px;
 }
 
 .dashboard-header h2 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     font-weight: 800;
-    color: #0f172a;
-}
-
-.dashboard-container {
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    width: 100%;
+    margin-bottom: 40px;
 }
 
 .ds-category {
-    width: 100%;
+    margin-bottom: 50px;
 }
 
-/* The Option 3 fix for subheaders: Left Blue Accent Line */
 .ds-category h3 {
-    color: #0f172a;
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+    font-weight: 700;
     margin-bottom: 25px;
-    padding-left: 18px;
+    padding-left: 15px;
     border-left: 4px solid #3b82f6;
-    /* Crucial Accent Line */
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.header-i-icon {
-    color: #94a3b8;
-    font-size: 1rem;
-}
-
-/* The Card Layout Bento */
 .card-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 16px;
-    justify-content: flex-start;
+    gap: 20px;
 }
 
 .algo-card {
     background: white;
-    /* Clean white cards */
-    color: #0f172a;
     border: 1px solid #e2e8f0;
-    padding: 20px 25px;
-    border-radius: 12px;
-    cursor: pointer;
-    text-align: left;
-    font-size: 1rem;
-    font-weight: 600;
+    padding: 22px 28px;
+    border-radius: 14px;
+    width: 300px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 280px;
-    min-height: 70px;
-    box-shadow: 0 4px 6px rgba(15, 23, 42, 0.03);
-    /* Soft, subtle shadow */
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 
 .algo-card:hover {
     border-color: #3b82f6;
-    background-color: #f8fafc;
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px rgba(15, 23, 42, 0.05);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px rgba(15, 23, 42, 0.05);
 }
 
 .arrow {
-    color: #94a3b8;
-    font-size: 1.2rem;
-    font-weight: 700;
+    color: #cbd5e1;
+    font-weight: 800;
 }
 
 .algo-card:hover .arrow {
     color: #3b82f6;
 }
 
-/* Special Panels */
-.coming-soon-panel {
-    background-color: white;
-    border: 1px solid #e2e8f0;
-    padding: 60px;
-    border-radius: 16px;
-    text-align: center;
-    max-width: 600px;
-}
-
-.coming-soon-panel h2 {
-    color: #3b82f6;
-    font-weight: 800;
-    margin-bottom: 15px;
-}
-
-.coming-soon-panel p {
-    color: #64748b;
-}
-
 /* ==========================================
-   5. WORKSPACE HEADER
+   5. WORKSPACE UI
    ========================================== */
 .modern-nav {
+    background: #0f172a;
+    padding: 15px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #0b1120;
-    padding: 15px 30px;
-    max-width: 1200px;
-    margin: 30px auto 30px auto;
-    border-radius: 12px;
-    border: 1px solid #1e293b;
+    margin-bottom: 30px;
 }
 
 .nav-brand {
-    font-size: 1.5rem;
+    color: white;
     font-weight: 800;
-    cursor: pointer;
-    color: white;
-}
-
-.text-light {
-    color: white;
-}
-
-.text-blue {
-    color: #3b82f6;
+    font-size: 1.4rem;
 }
 
 .current-algo-text {
-    background: #1e293b;
-    padding: 6px 18px;
-    border-radius: 20px;
-    font-weight: 600;
     color: #3b82f6;
+    background: #1e293b;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-weight: 700;
 }
 
-/* ==========================================
-   6. CONTROL PANEL (Dynamic Injection Unchanged)
-   ========================================== */
-.controls-wrapper {
-    max-width: 1000px;
-    margin: 0 auto 25px auto;
+/* Panels */
+.theory-wrapper,
+.controls-wrapper,
+.code-wrapper {
+    max-width: 1100px;
+    margin: 0 auto 30px auto;
+    padding: 0 20px;
 }
 
-.controls-panel {
-    background: #0b1120;
-    padding: 25px;
+.theory-panel,
+.code-panel {
+    background: white;
+    padding: 35px;
     border-radius: 16px;
-    border: 1px solid #1e293b;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
 }
 
-.control-row {
+.theory-panel h3 {
+    color: #3b82f6;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+#algo-description {
+    color: #475569;
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+/* Complexity Badges */
+.complexity-badges {
     display: flex;
     gap: 15px;
-    justify-content: center;
-    width: 100%;
-    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+.badge {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+}
+
+.time-color {
+    color: #ef4444;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.space-color {
+    color: #10b981;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Control Panel */
+.controls-panel {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
 .dashboard-input {
-    background: #1e293b;
-    border: 1px solid #334155;
-    color: white;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
     padding: 12px 20px;
-    border-radius: 12px;
-    outline: none;
+    border-radius: 10px;
+    font-weight: 500;
+    width: 200px;
 }
 
 .dashboard-btn {
-    padding: 12px 25px;
-    border-radius: 12px;
+    padding: 12px 28px;
+    border-radius: 10px;
     border: none;
     font-weight: 700;
-    cursor: pointer;
     color: white;
 }
 
@@ -377,25 +342,23 @@ button {
 }
 
 .btn-secondary {
-    background: #475569;
+    background: #64748b;
 }
 
 /* ==========================================
-   7. VISUALIZER ARENA (Vibe Fix)
+   6. VISUALIZER STAGE
    ========================================== */
 .visualizer-arena {
-    background: #0b1120;
-    /* Keep visualizer dark for best contrast */
+    background: #0f172a;
+    max-width: 1100px;
     margin: 0 auto 30px auto;
-    max-width: 1200px;
-    border-radius: 16px;
-    border: 1px solid #1e293b;
-    min-height: 400px;
+    border-radius: 20px;
+    min-height: 450px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 80px 20px 40px 20px;
+    padding: 60px 20px;
     position: relative;
 }
 
@@ -404,8 +367,6 @@ button {
     justify-content: center;
     align-items: flex-end;
     gap: 15px;
-    flex-wrap: wrap;
-    width: 100%;
 }
 
 .block-wrapper {
@@ -418,15 +379,15 @@ button {
 .array-block {
     background: #1e293b;
     color: white;
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
     border-radius: 12px;
     border: 2px solid #334155;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .array-block.current {
@@ -447,83 +408,54 @@ button {
     font-size: 0.85rem;
 }
 
-.status-message {
-    position: absolute;
-    top: 25px;
-    padding: 10px 25px;
-    border-radius: 30px;
-    font-weight: 500;
-}
-
-.status-message.searching {
-    background: #1e293b;
-    color: #94a3b8;
-}
-
-.status-message.success {
-    background: rgba(16, 185, 129, 0.2);
-    color: #10b981;
-    border: 1px solid #10b981;
-}
-
-.status-message.error {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-    border: 1px solid #ef4444;
-}
-
 /* ==========================================
-   8. THEORY & CODE PANELS
+   7. CODE SNIPPET AREA
    ========================================== */
-.theory-wrapper,
-.code-wrapper {
-    max-width: 1200px;
-    margin: 0 auto 30px auto;
-}
-
-.theory-panel,
-.code-panel {
-    background: #0b1120;
-    padding: 30px;
-    border-radius: 16px;
-    border: 1px solid #1e293b;
-}
-
-.complexity-badges {
+.code-header {
     display: flex;
-    gap: 15px;
-    margin-top: 20px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.badge {
-    background: #1e293b;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 0.9rem;
+.code-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.tab-btn {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.tab-btn.active {
+    background: #3b82f6;
     color: white;
+    border-color: #3b82f6;
 }
 
-.time-color {
-    color: #ef4444;
-    font-weight: 700;
-}
-
-.space-color {
-    color: #10b981;
-    font-weight: 700;
+.copy-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
 }
 
 .code-panel pre {
     background: #020617;
-    padding: 20px;
+    /* Dark black editor */
+    padding: 25px;
     border-radius: 12px;
     overflow-x: auto;
-    border: 1px solid #1e293b;
-    margin-top: 20px;
 }
 
 code {
     font-family: 'JetBrains Mono', monospace;
-    color: #e2e8f0;
+    color: #cbd5e1;
     line-height: 1.6;
 }
