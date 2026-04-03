@@ -83,60 +83,129 @@ button {
     box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
 }
 
-/* --- SECTION 4: DASHBOARD LAYOUT (Sidebar + Stage) --- */
+/* --- SECTION 4: DASHBOARD LAYOUT (The Glow-Up) --- */
 .main-dashboard-wrapper {
     display: grid;
     grid-template-columns: 280px 1fr;
     min-height: 100vh;
+    background-color: #f1f5f9;
+    /* Subtle grey background for the whole app */
 }
 
+/* SIDEBAR: Keep it deep navy for contrast */
 .dashboard-sidebar {
-    background: #0b1120;
-    padding: 40px 20px;
+    background-color: #0b1120;
+    padding: 40px 25px;
     border-right: 1px solid #1e293b;
     color: white;
 }
 
+.dashboard-sidebar h2 {
+    color: #64748b;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    padding-left: 10px;
+}
+
 .sidebar-nav li {
-    padding: 12px;
-    border-radius: 10px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-weight: 600;
     color: #94a3b8;
     list-style: none;
-    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .sidebar-nav li.active {
     background: #1e293b;
     color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* STAGE: This is the main white area */
 .dashboard-stage {
-    padding: 50px;
+    padding: 60px 80px;
+    /* More breathing room on sides */
+    background: #f8fafc;
+    /* Slightly different from the wrapper for depth */
 }
 
+.dashboard-header h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 40px;
+    letter-spacing: -1px;
+}
+
+/* Sub-categories with the Blue Line */
 .ds-category h3 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 25px;
     padding-left: 15px;
     border-left: 4px solid #3b82f6;
-    margin-bottom: 25px;
+    /* That specific blue line */
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
+.header-i-icon {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+}
+
+/* The Cards: Make them pop! */
 .card-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 24px;
+    margin-bottom: 50px;
 }
 
 .algo-card {
     background: white;
     border: 1px solid #e2e8f0;
-    padding: 20px 25px;
-    border-radius: 12px;
-    width: 280px;
+    padding: 24px 30px;
+    border-radius: 16px;
+    width: 320px;
+    /* Slightly wider cards */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.algo-card:hover {
+    transform: translateY(-5px);
+    border-color: #3b82f6;
+    box-shadow: 0 15px 30px rgba(15, 23, 42, 0.08);
+}
+
+.algo-card span:first-child {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.05rem;
+}
+
+.arrow {
+    color: #cbd5e1;
+    font-size: 1.2rem;
+    transition: 0.2s;
+}
+
+.algo-card:hover .arrow {
+    color: #3b82f6;
+    transform: translateX(3px);
 }
 
 /* --- SECTION 5: WORKSPACE FLOATING NAVBAR --- */
