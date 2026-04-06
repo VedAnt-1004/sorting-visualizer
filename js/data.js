@@ -15,7 +15,7 @@ const algorithmDatabase = {
         title: "Linear Search",
         category: "array",
         type: "search",
-        description: "Imagine you have a list of numbers: [5, 3, 8, 1, 9] and you want to find the number 8.\n1. Start from the first number (5). Is 5 equal to 8? No.\n2. Move to the next number (3). Is 3 equal to 8? No.\n3. Move to the next number (8). Is 8 equal to 8? Yes! Stop here.\n4. The position is 2 (or 3 if counting starts from 1).\nIf the number is not in the list (e.g., searching for 10), the search ends without success.",
+        description: "Imagine you have a list of numbers: [5, 3, 8, 1, 9] and you want to find the number 8.\n\n1. Start from the first number (5). Is 5 equal to 8? No.\n\n2. Move to the next number (3). Is 3 equal to 8? No.\n\n3. Move to the next number (8). Is 8 equal to 8? Yes! Stop here.\n\n4. The position is 2 (or 3 if counting starts from 1).\n\nIf the number is not in the list (e.g., searching for 10), the search ends without success.",
         complexities: { worst: "O(n)", space: "O(1)" },
         code: {
             javascript: `function linearSearch(arr, target) {

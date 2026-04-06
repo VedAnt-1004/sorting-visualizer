@@ -3,24 +3,33 @@
 ===================================
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500&family=Outfit:wght@400;600;800&display=swap');
 
 /* --- SECTION 1: GLOBAL BASE & RESETS --- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
 }
 
 body {
     background-color: #f8fafc;
     color: #0f172a;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    /* Clean, modern body text */
     overflow-x: hidden;
     min-height: 100vh;
 }
 
+/* Headings use Outfit for a premium "Product" feel */
+h1,h2,h3,
+.nav-brand {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+}
+
 button {
+    font-family: 'Plus Jakarta Sans', sans-serif;
     cursor: pointer;
     transition: 0.2s ease-in-out;
 }
@@ -271,13 +280,25 @@ button {
 }
 
 .theory-panel h3 {
+    font-size: 1.6rem;
+    font-weight: 800;
     color: #3b82f6;
-    margin-bottom: 12px;
+    letter-spacing: -0.5px;
 }
 
 #algo-description {
-    color: #ced3dc;
-    line-height: 1.6;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    /* Increased line-height for better readability */
+    color: #cbd5e1;
+    /* Making it slightly lighter for dark panels */
+}
+
+.time-color,
+.space-color {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
 }
 
 .complexity-badges {
