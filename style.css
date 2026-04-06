@@ -262,7 +262,7 @@ button {
 .theory-panel,
 .controls-panel,
 .code-panel {
-    background: white;
+    background: #0f172a;
     padding: 30px;
     border-radius: 16px;
     border: 1px solid #e2e8f0;
@@ -276,7 +276,7 @@ button {
 }
 
 #algo-description {
-    color: #475569;
+    color: #ced3dc;
     line-height: 1.6;
 }
 
