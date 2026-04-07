@@ -356,21 +356,63 @@ button {
     background: #64748b;
 }
 
-/* --- SECTION 7: VISUALIZER STAGE & STATUS PILL --- */
+/* --- SECTION 7: VISUALIZER STAGE (Index Recovery) --- */
 .visualizer-arena {
     background: #0f172a;
     max-width: 1100px;
     margin: 0 auto 30px auto;
     border-radius: 24px;
-    min-height: 450px;
+    min-height: 480px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* This keeps blocks centered vertically */
+    /* Center the array blocks vertically */
     position: relative;
+    /* CRITICAL for the absolute pill */
     border: 1px solid #1e293b;
     overflow: hidden;
+}
+
+.status-message {
+    position: absolute !important;
+    top: 30px !important;
+    /* Fixed distance from the top edge */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    z-index: 1000 !important;
+    /* Stay above everything else */
+    border: 1px solid transparent;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    display: none;
+    /* Default hidden */
+}
+
+.status-message.success {
+    display: block !important;
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.status-message.searching {
+    display: block !important;
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.status-message.error {
+    display: block !important;
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.4);
 }
 
 #visualizer-container {
@@ -378,106 +420,61 @@ button {
     flex-direction: row !important;
     justify-content: center;
     align-items: flex-end;
-    /* Keeps blocks sitting on the same line */
-    gap: 15px;
+    /* Keeps blocks sitting on the same horizontal line */
+    gap: 18px;
     width: 100%;
-    z-index: 10;
-    /* Lower than the status pill, higher than the background */
-    position: relative;
+    padding-bottom: 40px;
+    /* Extra room for the index labels */
 }
 
 .block-wrapper {
     display: flex !important;
     flex-direction: column !important;
+    /* Forces Index UNDER Number */
     align-items: center;
-    gap: 10px;
-    min-width: 60px;
+    gap: 12px;
+    /* Breathing room between square and label */
 }
 
 .array-block {
     background: #1e293b;
     color: white;
-    width: 60px;
-    height: 60px;
+    width: 65px;
+    height: 65px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     border-radius: 12px;
     border: 2px solid #334155;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* The Status Pill Fix */
-.status-message {
-    /* 1. Position it at the top center of the DARK arena */
-    position: absolute;
-    top: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    
-
-    /* 2. Styling the Pill */
-    padding: 10px 24px;
-    border-radius: 50px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    z-index: 100;
-    /* Ensure it stays above the blocks */
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-    display: none;
-    /* Hidden by default */
-}
-
-/* Success State (Found) */
-.status-message.success {
+/* THE FIX: Style the index label so it pops */
+.block-index {
+    color: #64748b;
+    /* Slate gray */
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 1 !important;
     display: block !important;
-    background: rgba(16, 185, 129, 0.2);
-    /* Emerald Tint */
-    color: #10b981;
-    /* Bright Green */
-    border-color: rgba(16, 185, 129, 0.4);
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
-    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Searching State */
-.status-message.searching {
-    display: block !important;
-    background: rgba(59, 130, 246, 0.2);
-    /* Blue Tint */
-    color: #3b82f6;
-    /* Bright Blue */
-    border-color: rgba(59, 130, 246, 0.4);
+/* --- STATES --- */
+.array-block.found {
+    background: #10b981 !important;
+    color: white !important;
+    border-color: #10b981 !important;
+    transform: translateY(-15px) scale(1.05);
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
 }
 
-/* Error State (Not Found) */
-.status-message.error {
-    display: block !important;
-    background: rgba(239, 68, 68, 0.2);
-    /* Red Tint */
-    color: #ef4444;
-    /* Bright Red */
-    border-color: rgba(239, 68, 68, 0.4);
-}
-
-.status-message.hidden {
-    display: none !important;
-}
-
-@keyframes popIn {
-    0% {
-        opacity: 0;
-        transform: translateX(-50%) scale(0.8);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateX(-50%) scale(1);
-    }
+.array-block.current {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    transform: translateY(-10px);
 }
 
 /* --- SECTION 8: CODE EDITOR --- */
