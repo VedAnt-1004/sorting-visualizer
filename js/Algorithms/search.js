@@ -2,86 +2,70 @@
 // ==========================================
 // SEARCH ALGORITHMS ENGINE (js/algorithms/search.js)
 // ==========================================
-// Note: The 'sleep' function is now globally handled by visualizer.js!
+// Generators, same contract as sorting.js — see that file's header comment.
 
-async function linearSearchEngine(arr, target) {
-    const blocks = document.querySelectorAll('.array-block');
-    const statusBar = document.getElementById('status-bar');
+function* linearSearchSteps(inputArr, target) {
+    const arr = [...inputArr];
 
-    statusBar.className = 'status-message searching';
-    statusBar.innerText = `Searching for ${target}...`;
+    yield { array: [...arr], highlights: {}, message: `Searching for ${target}...`, statusClass: 'searching' };
 
-    for (let i = 0; i < arr.length; i++) {
-        blocks[i].classList.add('current'); 
-        await sleep(500); 
+    for (let i = 0; i < arr.length; i++) {
+        yield { array: [...arr], highlights: { current: [i] }, message: `Checking index [${i}]: is ${arr[i]} equal to ${target}?`, statusClass: 'searching' };
 
-        if (arr[i] === target) {
-            blocks[i].classList.remove('current');
-            blocks[i].classList.add('found'); 
-            statusBar.className = 'status-message success';
-            statusBar.innerText = `Element ${target} found at index [${i}]!`;
-            return;
-        }
-        blocks[i].classList.remove('current'); 
-    }
+        if (arr[i] === target) {
+            yield { array: [...arr], highlights: { found: i }, message: `Element ${target} found at index [${i}]!`, statusClass: 'success' };
+            return;
+        }
+    }
 
-    statusBar.className = 'status-message error';
-    statusBar.innerText = `Element ${target} not found in the array.`;
+    yield { array: [...arr], highlights: {}, message: `Element ${target} not found in the array.`, statusClass: 'error' };
 }
 
-async function binarySearchEngine(arr, target) {
-    const blocks = document.querySelectorAll('.array-block');
-    const statusBar = document.getElementById('status-bar');
+function* binarySearchSteps(inputArr, target) {
+    const arr = [...inputArr];
 
-    statusBar.className = 'status-message searching';
-    statusBar.innerText = `Starting Binary Search for ${target}...`;
+    yield { array: [...arr], highlights: {}, message: `Starting Binary Search for ${target}...`, statusClass: 'searching' };
 
-    let left = 0;
-    let right = arr.length - 1;
+    let left = 0;
+    let right = arr.length - 1;
 
-    while (left <= right) {
-        let mid = Math.floor((left + right) / 2);
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        const dimmed = [];
+        for (let i = 0; i < arr.length; i++) {
+            if (i < left || i > right) dimmed.push(i);
+        }
 
-        // Visual Magic: Dim the blocks outside our search window
-        for (let i = 0; i < blocks.length; i++) {
-            if (i < left || i > right) {
-                blocks[i].style.opacity = '0.2'; 
-                blocks[i].style.transform = 'scale(0.95)'; 
-            } else {
-                blocks[i].style.opacity = '1';
-            }
-        }
+        yield {
+            array: [...arr],
+            highlights: { current: [mid], dimmed },
+            message: `Checking middle element at index [${mid}]: is ${arr[mid]} equal to ${target}?`,
+            statusClass: 'searching'
+        };
 
-        statusBar.innerText = `Checking middle element at index [${mid}]...`;
-        blocks[mid].classList.add('current');
-        await sleep(800);
+        if (arr[mid] === target) {
+            yield { array: [...arr], highlights: { found: mid, dimmed }, message: `Element ${target} found at index [${mid}]!`, statusClass: 'success' };
+            return;
+        }
 
-        if (arr[mid] === target) {
-            blocks[mid].classList.remove('current');
-            blocks[mid].classList.add('found');
-            statusBar.className = 'status-message success';
-            statusBar.innerText = `Element ${target} found at index [${mid}]!`;
-            return; 
-        }
+        if (arr[mid] < target) {
+            left = mid + 1;
+            yield {
+                array: [...arr],
+                highlights: { dimmed: dimmed.concat(mid) },
+                message: `${arr[mid]} is too small. Discarding left half.`,
+                statusClass: 'searching'
+            };
+        } else {
+            right = mid - 1;
+            yield {
+                array: [...arr],
+                highlights: { dimmed: dimmed.concat(mid) },
+                message: `${arr[mid]} is too big. Discarding right half.`,
+                statusClass: 'searching'
+            };
+        }
+    }
 
-        if (arr[mid] < target) {
-            statusBar.innerText = `${arr[mid]} is too small. Discarding left half.`;
-            left = mid + 1;
-        } else {
-            statusBar.innerText = `${arr[mid]} is too big. Discarding right half.`;
-            right = mid - 1;
-        }
-
-        blocks[mid].classList.remove('current');
-        await sleep(600);
-    }
-
-    statusBar.className = 'status-message error';
-    statusBar.innerText = `Element ${target} not found.`;
-    
-    // Reset opacities just in case
-    blocks.forEach(b => {
-        b.style.opacity = '1';
-        b.style.transform = 'scale(1)';
-    });
+    yield { array: [...arr], highlights: {}, message: `Element ${target} not found.`, statusClass: 'error' };
 }
