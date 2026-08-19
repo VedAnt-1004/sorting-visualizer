@@ -3,6 +3,7 @@
 // ==========================================
 
 let currentActiveCodes = {}; // Stores code for the currently selected algorithm
+let activePlayer = null; // The StepPlayer currently driving the visualizer, if any
 
 // --- 1. SCREEN NAVIGATION ENGINE ---
 function showScreen(screenId) {
@@ -123,14 +124,32 @@ function buildWorkspace(algoId) {
         if(tabs.length > 0) tabs[0].classList.add('active'); 
     }
 
+    // Stop and clear whatever was playing in the previous workspace
+    if (activePlayer) {
+        activePlayer.pause();
+        activePlayer = null;
+    }
+
     // Build the Control Panel
     const controlsZone = document.getElementById('dynamic-controls');
-    
+
+    const playbackControlsHTML = `
+            <div class="control-row center-content playback-row">
+                <button id="prev-btn" class="dashboard-btn btn-secondary" disabled>◀ Prev</button>
+                <button id="play-btn" class="dashboard-btn btn-blue" disabled>▶ Play</button>
+                <button id="next-btn" class="dashboard-btn btn-secondary" disabled>Next ▶</button>
+            </div>`;
+
     if (data.type === "search") {
         controlsZone.innerHTML = `
             <div class="control-row controls-top-row">
                 <input type="text" id="array-input" class="dashboard-input wireframe-array-input" placeholder="e.g. 3, 1, 4, 1, 5">
                 <input type="number" id="target-input" class="dashboard-input wireframe-target-input" placeholder="Target">
+            </div>
+
+            <div class="control-row center-content speed-row">
+                <label class="speed-label" for="speed-slider">Speed</label>
+                <input type="range" id="speed-slider" min="100" max="1000" step="50" value="500">
             </div>
             
             <div class="control-row center-content">
@@ -138,9 +157,9 @@ function buildWorkspace(algoId) {
                 <button id="action-btn" class="dashboard-btn btn-blue wireframe-search-btn">Search</button>
                 <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
             </div>
+            ${playbackControlsHTML}
         `;
 
-        // Inner Listeners for Search Controls
         document.getElementById('random-btn').addEventListener('click', () => {
             let randomArr = Array.from({length: 7}, () => Math.floor(Math.random() * 99) + 1);
             if (algoId === 'binary-search') randomArr.sort((a, b) => a - b);
@@ -153,15 +172,21 @@ function buildWorkspace(algoId) {
             document.getElementById('target-input').value = '';
             document.getElementById('visualizer-container').innerHTML = '';
             document.getElementById('status-bar').className = 'status-message hidden';
+            if (activePlayer) { activePlayer.pause(); activePlayer = null; }
+            updatePlaybackButtons();
+        });
+
+        document.getElementById('speed-slider').addEventListener('input', (e) => {
+            setSpeed(1100 - parseInt(e.target.value));
         });
 
         document.getElementById('action-btn').addEventListener('click', () => {
             const arrayInput = document.getElementById('array-input').value;
             const targetInput = document.getElementById('target-input').value;
-            
+
             let arr = arrayInput.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
             const target = parseInt(targetInput);
-            
+
             if (arr.length === 0 || isNaN(target)) {
                 alert("Please enter valid numbers.");
                 return;
@@ -169,15 +194,126 @@ function buildWorkspace(algoId) {
 
             if (algoId === 'binary-search') {
                 arr.sort((a, b) => a - b);
-                document.getElementById('array-input').value = arr.join(', '); 
+                document.getElementById('array-input').value = arr.join(', ');
             }
 
-            if (typeof drawArray === 'function') drawArray(arr);
-            
-            if (algoId === 'linear-search') linearSearchEngine(arr, target);
-            else if (algoId === 'binary-search') binarySearchEngine(arr, target);
+            const generators = { 'linear-search': linearSearchSteps, 'binary-search': binarySearchSteps };
+            startPlayer(generators[algoId], arr, target);
         });
+
+        setupPlaybackButtons();
     }
+
+    else if (data.type === "sorting") {
+        controlsZone.innerHTML = `
+            <div class="control-row controls-top-row">
+                <input type="text" id="array-input" class="dashboard-input wireframe-array-input" placeholder="e.g. 5, 3, 8, 1, 9">
+            </div>
+
+            <div class="control-row center-content speed-row">
+                <label class="speed-label" for="speed-slider">Speed</label>
+                <input type="range" id="speed-slider" min="100" max="1000" step="50" value="500">
+            </div>
+
+            <div class="control-row center-content">
+                <button id="random-btn" class="dashboard-btn btn-secondary">Random</button>
+                <button id="action-btn" class="dashboard-btn btn-blue">Sort</button>
+                <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
+            </div>
+            ${playbackControlsHTML}
+        `;
+
+        const generators = {
+            'bubble-sort': bubbleSortSteps,
+            'selection-sort': selectionSortSteps,
+            'insertion-sort': insertionSortSteps
+        };
+
+        document.getElementById('random-btn').addEventListener('click', () => {
+            let randomArr = Array.from({length: 8}, () => Math.floor(Math.random() * 99) + 1);
+            document.getElementById('array-input').value = randomArr.join(', ');
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            document.getElementById('array-input').value = '';
+            document.getElementById('visualizer-container').innerHTML = '';
+            document.getElementById('status-bar').className = 'status-message hidden';
+            if (activePlayer) { activePlayer.pause(); activePlayer = null; }
+            updatePlaybackButtons();
+        });
+
+        document.getElementById('speed-slider').addEventListener('input', (e) => {
+            setSpeed(1100 - parseInt(e.target.value));
+        });
+
+        document.getElementById('action-btn').addEventListener('click', () => {
+            const arrayInput = document.getElementById('array-input').value;
+            let arr = arrayInput.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+
+            if (arr.length === 0) {
+                alert("Please enter valid numbers.");
+                return;
+            }
+
+            startPlayer(generators[algoId], arr);
+        });
+
+        setupPlaybackButtons();
+    }
+}
+
+// --- 3b. SHARED PLAYBACK HELPERS (used by both search and sorting workspaces) ---
+
+// Creates a fresh StepPlayer from a generator + its args, shows the first step immediately.
+function startPlayer(generatorFn, ...args) {
+    if (!generatorFn) return;
+    if (activePlayer) activePlayer.pause();
+
+    activePlayer = new StepPlayer(generatorFn, ...args);
+    activePlayer.next(); // render the initial "Starting..." step right away
+    updatePlaybackButtons();
+}
+
+// Enables/disables Prev/Next/Play based on the player's current position.
+function updatePlaybackButtons() {
+    const prevBtn = document.getElementById('prev-btn');
+    const playBtn = document.getElementById('play-btn');
+    const nextBtn = document.getElementById('next-btn');
+    if (!prevBtn || !playBtn || !nextBtn) return;
+
+    const hasPlayer = !!activePlayer;
+    prevBtn.disabled = !hasPlayer || activePlayer.isAtStart();
+    nextBtn.disabled = !hasPlayer || activePlayer.isAtEnd();
+    playBtn.disabled = !hasPlayer || activePlayer.isAtEnd();
+    playBtn.innerText = hasPlayer && activePlayer.playing ? '⏸ Pause' : '▶ Play';
+}
+
+// Wires the Prev/Play/Next buttons once per workspace build (buttons are recreated each time).
+function setupPlaybackButtons() {
+    document.getElementById('prev-btn').addEventListener('click', () => {
+        if (!activePlayer) return;
+        activePlayer.pause();
+        activePlayer.prev();
+        updatePlaybackButtons();
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+        if (!activePlayer) return;
+        activePlayer.pause();
+        activePlayer.next();
+        updatePlaybackButtons();
+    });
+
+    document.getElementById('play-btn').addEventListener('click', () => {
+        if (!activePlayer) return;
+        if (activePlayer.playing) {
+            activePlayer.pause();
+            updatePlaybackButtons();
+        } else {
+            activePlayer.play(() => updatePlaybackButtons());
+            updatePlaybackButtons();
+        }
+    });
 }
 
 // --- 4. EVENT LISTENERS (ON LOAD) ---
