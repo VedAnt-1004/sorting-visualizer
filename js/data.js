@@ -16,7 +16,8 @@ const algorithmDatabase = {
         category: "array",
         type: "search",
         description: "Imagine you have a list of numbers: [5, 3, 8, 1, 9] and you want to find the number 8.\n\n1. Start from the first number (5). Is 5 equal to 8? No.\n\n2. Move to the next number (3). Is 3 equal to 8? No.\n\n3. Move to the next number (8). Is 8 equal to 8? Yes! Stop here.\n\n4. The position is 2 (or 3 if counting starts from 1).\n\nIf the number is not in the list (e.g., searching for 10), the search ends without success.",
-        complexities: { worst: "O(n)", space: "O(1)" },
+        lineMap: { javascript: { start: 2, checking: 3, found: 4, 'not-found': 7 } },
+        complexities: { worst: "O(n)", space: "O(1)" },
         code: {
             javascript: `function linearSearch(arr, target) {
     for (let i = 0; i < arr.length; i++) {
@@ -49,7 +50,8 @@ const algorithmDatabase = {
         category: "array",
         type: "search",
         description: "Binary Search is a highly efficient algorithm that works by repeatedly dividing the search space in half. It compares the target value to the middle element of the array. NOTE: The array must be strictly sorted for this to work!",
-        complexities: { worst: "O(log n)", space: "O(1)" },
+        lineMap: { javascript: { start: 2, checking: 6, found: 8, 'discard-left': 9, 'discard-right': 10, 'not-found': 12 } },
+        complexities: { worst: "O(log n)", space: "O(1)" },
         code: {
             javascript: `function binarySearch(arr, target) {
     let left = 0;
@@ -104,6 +106,7 @@ const algorithmDatabase = {
         category: "array",
         type: "sorting",
         description: "Bubble Sort repeatedly steps through the array, compares each pair of adjacent elements, and swaps them if they're in the wrong order.\n\n1. Compare the first two elements. If the left one is bigger, swap them.\n\n2. Move to the next pair and repeat.\n\n3. After one full pass, the largest element has 'bubbled up' to the end.\n\n4. Repeat the whole pass, ignoring the already-sorted tail, until no swaps are needed.\n\nIt's simple to understand but inefficient on large lists.",
+        lineMap: { javascript: { start: 2, compare: 5, swap: 6, done: 10 } },
         complexities: { worst: "O(n²)", space: "O(1)" },
         code: {
             javascript: `function bubbleSort(arr) {
@@ -141,6 +144,7 @@ const algorithmDatabase = {
         category: "array",
         type: "sorting",
         description: "Selection Sort divides the array into a sorted part and an unsorted part.\n\n1. Find the smallest element in the unsorted part.\n\n2. Swap it with the first element of the unsorted part.\n\n3. Move the boundary between sorted and unsorted forward by one.\n\n4. Repeat until the whole array is sorted.\n\nIt always does the same number of comparisons regardless of input order.",
+        lineMap: { javascript: { start: 2, 'assume-min': 4, compare: 6, 'new-min': 7, swap: 11, done: 14 } },
         complexities: { worst: "O(n²)", space: "O(1)" },
         code: {
             javascript: `function selectionSort(arr) {
@@ -186,6 +190,7 @@ const algorithmDatabase = {
         category: "array",
         type: "sorting",
         description: "Insertion Sort builds the sorted array one element at a time, like sorting playing cards in your hand.\n\n1. Start with the second element as the 'key'.\n\n2. Compare it to elements before it, shifting larger ones to the right.\n\n3. Insert the key into its correct position in the sorted portion.\n\n4. Move to the next element and repeat.\n\nIt's efficient for small or nearly-sorted arrays.",
+        lineMap: { javascript: { start: 2, 'pick-key': 3, 'compare-shift': 5, shift: 6, insert: 9, done: 11 } },
         complexities: { worst: "O(n²)", space: "O(1)" },
         code: {
             javascript: `function insertionSort(arr) {
