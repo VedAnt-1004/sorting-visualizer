@@ -118,6 +118,7 @@ class StepPlayer {
         this.done = false;
         this.playing = false;
         this._timer = null;
+        this.onStep = null; // optional callback(step) fired whenever a step is rendered
     }
 
     _pullNext() {
@@ -138,7 +139,10 @@ class StepPlayer {
 
     next() {
         const step = this._pullNext();
-        if (step) renderStep(step);
+        if (step) {
+            renderStep(step);
+            if (this.onStep) this.onStep(step);
+        }
         return step;
     }
 
@@ -147,6 +151,7 @@ class StepPlayer {
         this.pointer--;
         const step = this.cache[this.pointer];
         renderStep(step);
+        if (this.onStep) this.onStep(step);
         return step;
     }
 
