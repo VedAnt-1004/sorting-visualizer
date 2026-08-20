@@ -4,6 +4,59 @@
 
 let currentActiveCodes = {}; // Stores code for the currently selected algorithm
 let activePlayer = null; // The StepPlayer currently driving the visualizer, if any
+let currentAlgoId = null; // Which algorithm the workspace is currently showing
+let lastRenderedStep = null; // The most recent step object, used to re-sync code highlight on tab switch
+
+// --- CODE PANEL: line-by-line rendering + active-line sync ---
+function renderCodeLines(codeString) {
+    const codeS = document.getElementById('code-snippet');
+    if (!codeS || typeof codeString !== 'string') return;
+
+    const escape = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    codeS.innerHTML = codeString.split('\n').map((line, idx) => {
+        const content = line.length > 0 ? escape(line) : '&nbsp;';
+        return `<div class="code-line" data-line="${idx + 1}">${content}</div>`;
+    }).join('');
+}
+
+function highlightCodeLine(lineNumber) {
+    document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+    const target = document.querySelector(`.code-line[data-line="${lineNumber}"]`);
+    if (target) {
+        target.classList.add('active-line');
+        target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+}
+
+function clearCodeHighlight() {
+    document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
+}
+
+// Called whenever the player moves (Next/Prev/Play tick) AND whenever the code tab changes,
+// so the highlighted line always matches the step currently on screen.
+function refreshCodeHighlight() {
+    const activeTab = document.querySelector('.tab-btn.active');
+    const isJsTabActive = activeTab && activeTab.innerText === 'JS';
+
+    if (!lastRenderedStep || !isJsTabActive) {
+        clearCodeHighlight();
+        return;
+    }
+
+    const data = algorithmDatabase[currentAlgoId];
+    const line = data && data.lineMap && data.lineMap.javascript && lastRenderedStep.phase
+        ? data.lineMap.javascript[lastRenderedStep.phase]
+        : null;
+
+    if (line) highlightCodeLine(line);
+    else clearCodeHighlight();
+}
+
+function onPlayerStep(step) {
+    lastRenderedStep = step;
+    refreshCodeHighlight();
+}
 
 // --- 1. SCREEN NAVIGATION ENGINE ---
 function showScreen(screenId) {
@@ -103,12 +156,14 @@ function buildWorkspace(algoId) {
         return;
     }
 
+    currentAlgoId = algoId;
+    lastRenderedStep = null; // fresh workspace, no step to highlight yet
+
     // Update UI Labels
     const navTitle = document.getElementById('nav-title');
     const desc = document.getElementById('algo-description');
     const timeW = document.getElementById('time-worst');
     const spaceC = document.getElementById('space-complexity');
-    const codeS = document.getElementById('code-snippet');
     
     if (navTitle) navTitle.innerText = data.title;
     if (desc) desc.innerText = data.description;
@@ -117,7 +172,7 @@ function buildWorkspace(algoId) {
     
     if (data.code) {
         currentActiveCodes = data.code; 
-        if (codeS) codeS.innerText = currentActiveCodes.javascript; // Default to JS
+        renderCodeLines(currentActiveCodes.javascript); // Default to JS
         
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(t => t.classList.remove('active'));
@@ -173,6 +228,8 @@ function buildWorkspace(algoId) {
             document.getElementById('visualizer-container').innerHTML = '';
             document.getElementById('status-bar').className = 'status-message hidden';
             if (activePlayer) { activePlayer.pause(); activePlayer = null; }
+            lastRenderedStep = null;
+            clearCodeHighlight();
             updatePlaybackButtons();
         });
 
@@ -239,6 +296,8 @@ function buildWorkspace(algoId) {
             document.getElementById('visualizer-container').innerHTML = '';
             document.getElementById('status-bar').className = 'status-message hidden';
             if (activePlayer) { activePlayer.pause(); activePlayer = null; }
+            lastRenderedStep = null;
+            clearCodeHighlight();
             updatePlaybackButtons();
         });
 
@@ -270,6 +329,7 @@ function startPlayer(generatorFn, ...args) {
     if (activePlayer) activePlayer.pause();
 
     activePlayer = new StepPlayer(generatorFn, ...args);
+    activePlayer.onStep = onPlayerStep;
     activePlayer.next(); // render the initial "Starting..." step right away
     updatePlaybackButtons();
 }
@@ -356,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Code Panel Tabs
     const codeTabs = document.querySelectorAll('.tab-btn');
-    const codeSnippet = document.getElementById('code-snippet');
 
     codeTabs.forEach(tab => {
         tab.addEventListener('click', (e) => {
@@ -369,8 +428,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (selectedLang === 'C++') dataKey = 'cpp'; 
 
             if (currentActiveCodes && currentActiveCodes[dataKey]) {
-                codeSnippet.innerText = currentActiveCodes[dataKey];
+                renderCodeLines(currentActiveCodes[dataKey]);
             }
+
+            // Line-by-line sync only exists for JS right now; re-check and
+            // either show or clear the highlight for the newly active tab.
+            refreshCodeHighlight();
         });
     });
 
@@ -378,6 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
     if (copyBtn) {
         copyBtn.addEventListener('click', () => {
+            const codeSnippet = document.getElementById('code-snippet');
             const textToCopy = codeSnippet.innerText;
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalText = copyBtn.innerHTML;
