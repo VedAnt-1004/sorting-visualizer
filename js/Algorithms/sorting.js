@@ -1,3 +1,4 @@
+
 // ==========================================
 // SORTING ALGORITHMS ENGINE (js/algorithms/sorting.js)
 // ==========================================
@@ -13,15 +14,16 @@ function* bubbleSortSteps(inputArr) {
     const n = arr.length;
     const sortedIdx = [];
 
-    yield { array: [...arr], highlights: {}, message: 'Starting Bubble Sort...', statusClass: 'searching' };
+    yield { array: [...arr], highlights: {}, message: 'Starting Bubble Sort...', statusClass: 'searching', phase: 'start' };
 
-    for (let i = 0; i < n - 1 ; i++) {
+    for (let i = 0; i < n - 1; i++) {
         for (let j = 0; j < n - i - 1; j++) {
             yield {
                 array: [...arr],
                 highlights: { comparing: [j, j + 1], sorted: [...sortedIdx] },
                 message: `Comparing ${arr[j]} and ${arr[j + 1]}...`,
-                statusClass: 'searching'
+                statusClass: 'searching',
+                phase: 'compare'
             };
 
             if (arr[j] > arr[j + 1]) {
@@ -30,7 +32,8 @@ function* bubbleSortSteps(inputArr) {
                     array: [...arr],
                     highlights: { comparing: [j, j + 1], sorted: [...sortedIdx] },
                     message: `Swapped ${arr[j + 1]} and ${arr[j]}`,
-                    statusClass: 'searching'
+                    statusClass: 'searching',
+                    phase: 'swap'
                 };
             }
         }
@@ -38,7 +41,7 @@ function* bubbleSortSteps(inputArr) {
     }
     sortedIdx.push(0);
 
-    yield { array: [...arr], highlights: { sorted: [...sortedIdx] }, message: 'Array sorted!', statusClass: 'success' };
+    yield { array: [...arr], highlights: { sorted: [...sortedIdx] }, message: 'Array sorted!', statusClass: 'success', phase: 'done' };
 }
 
 function* selectionSortSteps(inputArr) {
@@ -46,18 +49,19 @@ function* selectionSortSteps(inputArr) {
     const n = arr.length;
     const sortedIdx = [];
 
-    yield { array: [...arr], highlights: {}, message: 'Starting Selection Sort...', statusClass: 'searching' };
+    yield { array: [...arr], highlights: {}, message: 'Starting Selection Sort...', statusClass: 'searching', phase: 'start' };
 
     for (let i = 0; i < n - 1; i++) {
         let minIdx = i;
-        yield { array: [...arr], highlights: { current: [minIdx], sorted: [...sortedIdx] }, message: `Assuming ${arr[i]} is the minimum...`, statusClass: 'searching' };
+        yield { array: [...arr], highlights: { current: [minIdx], sorted: [...sortedIdx] }, message: `Assuming ${arr[i]} is the minimum...`, statusClass: 'searching', phase: 'assume-min' };
 
         for (let j = i + 1; j < n; j++) {
             yield {
                 array: [...arr],
                 highlights: { current: [minIdx], comparing: [j], sorted: [...sortedIdx] },
                 message: `Comparing ${arr[j]} with current minimum ${arr[minIdx]}...`,
-                statusClass: 'searching'
+                statusClass: 'searching',
+                phase: 'compare'
             };
 
             if (arr[j] < arr[minIdx]) {
@@ -66,7 +70,8 @@ function* selectionSortSteps(inputArr) {
                     array: [...arr],
                     highlights: { current: [minIdx], sorted: [...sortedIdx] },
                     message: `New minimum found: ${arr[minIdx]}`,
-                    statusClass: 'searching'
+                    statusClass: 'searching',
+                    phase: 'new-min'
                 };
             }
         }
@@ -77,7 +82,8 @@ function* selectionSortSteps(inputArr) {
                 array: [...arr],
                 highlights: { current: [i], sorted: [...sortedIdx] },
                 message: `Swapped ${arr[i]} into position ${i}`,
-                statusClass: 'searching'
+                statusClass: 'searching',
+                phase: 'swap'
             };
         }
 
@@ -85,14 +91,14 @@ function* selectionSortSteps(inputArr) {
     }
     sortedIdx.push(n - 1);
 
-    yield { array: [...arr], highlights: { sorted: [...sortedIdx] }, message: 'Array sorted!', statusClass: 'success' };
+    yield { array: [...arr], highlights: { sorted: [...sortedIdx] }, message: 'Array sorted!', statusClass: 'success', phase: 'done' };
 }
 
 function* insertionSortSteps(inputArr) {
     const arr = [...inputArr];
     const n = arr.length;
 
-    yield { array: [...arr], highlights: { sorted: [0] }, message: 'Starting Insertion Sort...', statusClass: 'searching' };
+    yield { array: [...arr], highlights: { sorted: [0] }, message: 'Starting Insertion Sort...', statusClass: 'searching', phase: 'start' };
 
     for (let i = 1; i < n; i++) {
         let key = arr[i];
@@ -103,7 +109,8 @@ function* insertionSortSteps(inputArr) {
             array: [...arr],
             highlights: { current: [i], sorted: sortedSoFar() },
             message: `Picking up ${key} to insert into the sorted portion...`,
-            statusClass: 'searching'
+            statusClass: 'searching',
+            phase: 'pick-key'
         };
 
         while (j >= 0 && arr[j] > key) {
@@ -111,7 +118,8 @@ function* insertionSortSteps(inputArr) {
                 array: [...arr],
                 highlights: { comparing: [j], current: [i], sorted: sortedSoFar() },
                 message: `${arr[j]} > ${key}, shifting it right...`,
-                statusClass: 'searching'
+                statusClass: 'searching',
+                phase: 'compare-shift'
             };
 
             arr[j + 1] = arr[j];
@@ -121,7 +129,8 @@ function* insertionSortSteps(inputArr) {
                 array: [...arr],
                 highlights: { sorted: sortedSoFar() },
                 message: `Shifted. Continuing to compare...`,
-                statusClass: 'searching'
+                statusClass: 'searching',
+                phase: 'shift'
             };
         }
 
@@ -131,9 +140,10 @@ function* insertionSortSteps(inputArr) {
             array: [...arr],
             highlights: { sorted: Array.from({ length: i + 1 }, (_, k) => k) },
             message: `Inserted ${key} at position ${j + 1}`,
-            statusClass: 'searching'
+            statusClass: 'searching',
+            phase: 'insert'
         };
     }
 
-    yield { array: [...arr], highlights: { sorted: Array.from({ length: n }, (_, k) => k) }, message: 'Array sorted!', statusClass: 'success' };
+    yield { array: [...arr], highlights: { sorted: Array.from({ length: n }, (_, k) => k) }, message: 'Array sorted!', statusClass: 'success', phase: 'done' };
 }
