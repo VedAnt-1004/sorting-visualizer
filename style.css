@@ -555,3 +555,19 @@ code {
     opacity: 0.35;
     cursor: not-allowed;
 }
+
+
+/* Code panel: per-line rendering + active-line sync with the visualizer */
+.code-line {
+    display: block;
+    padding: 1px 8px;
+    border-radius: 4px;
+    white-space: pre;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.code-line.active-line {
+    background: rgba(59, 130, 246, 0.18);
+    border-left: 3px solid #3b82f6;
+}
