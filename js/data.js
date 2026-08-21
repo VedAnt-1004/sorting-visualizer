@@ -233,4 +233,162 @@ const algorithmDatabase = {
     // "merge-sort": { ... },
     // "quick-sort": { ... },
 
+    /* ==========================================
+       3. STACK
+       ========================================== */
+
+    "stack-operations": {
+        title: "Stack (LIFO)",
+        category: "stack",
+        type: "stack",
+        description: "A Stack follows Last-In, First-Out (LIFO) order — think of a stack of plates. You can only add or remove from the top.\n\nPush: place a new element on top.\n\nPop: remove and return the top element.\n\nPeek: look at the top element without removing it.\n\nStacks power undo/redo history, browser back buttons, and function call management (the call stack).",
+        complexities: { worst: "O(1)", space: "O(n)" },
+        code: {
+            javascript: `class Stack {
+    constructor() {
+        this.items = [];
+    }
+
+    push(value) {
+        this.items.push(value);
+    }
+
+    pop() {
+        if (this.isEmpty()) return null;
+        return this.items.pop();
+    }
+
+    peek() {
+        if (this.isEmpty()) return null;
+        return this.items[this.items.length - 1];
+    }
+
+    isEmpty() {
+        return this.items.length === 0;
+    }
+}`,
+            python: `class Stack:
+    def __init__(self):
+        self.items = []
+
+    def push(self, value):
+        self.items.append(value)
+
+    def pop(self):
+        if self.is_empty():
+            return None
+        return self.items.pop()
+
+    def peek(self):
+        if self.is_empty():
+            return None
+        return self.items[-1]
+
+    def is_empty(self):
+        return len(self.items) == 0`,
+            cpp: `class Stack {
+    vector<int> items;
+public:
+    void push(int value) {
+        items.push_back(value);
+    }
+
+    int pop() {
+        if (isEmpty()) return -1;
+        int top = items.back();
+        items.pop_back();
+        return top;
+    }
+
+    int peek() {
+        if (isEmpty()) return -1;
+        return items.back();
+    }
+
+    bool isEmpty() {
+        return items.empty();
+    }
+};`
+        }
+    },
+
+    /* ==========================================
+       4. QUEUE
+       ========================================== */
+
+    "queue-operations": {
+        title: "Queue (FIFO)",
+        category: "queue",
+        type: "queue",
+        description: "A Queue follows First-In, First-Out (FIFO) order — like a checkout line. Elements join at the rear and leave from the front.\n\nEnqueue: add a new element at the rear.\n\nDequeue: remove and return the front element.\n\nPeek: look at the front element without removing it.\n\nQueues power task scheduling, print queues, and breadth-first search traversal.",
+        complexities: { worst: "O(1)", space: "O(n)" },
+        code: {
+            javascript: `class Queue {
+    constructor() {
+        this.items = [];
+    }
+
+    enqueue(value) {
+        this.items.push(value);
+    }
+
+    dequeue() {
+        if (this.isEmpty()) return null;
+        return this.items.shift();
+    }
+
+    peek() {
+        if (this.isEmpty()) return null;
+        return this.items[0];
+    }
+
+    isEmpty() {
+        return this.items.length === 0;
+    }
+}`,
+            python: `class Queue:
+    def __init__(self):
+        self.items = []
+
+    def enqueue(self, value):
+        self.items.append(value)
+
+    def dequeue(self):
+        if self.is_empty():
+            return None
+        return self.items.pop(0)
+
+    def peek(self):
+        if self.is_empty():
+            return None
+        return self.items[0]
+
+    def is_empty(self):
+        return len(self.items) == 0`,
+            cpp: `class Queue {
+    deque<int> items;
+public:
+    void enqueue(int value) {
+        items.push_back(value);
+    }
+
+    int dequeue() {
+        if (isEmpty()) return -1;
+        int front = items.front();
+        items.pop_front();
+        return front;
+    }
+
+    int peek() {
+        if (isEmpty()) return -1;
+        return items.front();
+    }
+
+    bool isEmpty() {
+        return items.empty();
+    }
+};`
+        }
+    },
+
 };
