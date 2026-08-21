@@ -5,97 +5,97 @@
 
 const algorithmDatabase = {
 
-    /* ==========================================
-       1. SEARCHING ALGORITHMS
-       ========================================== */
+    /* ==========================================
+       1. SEARCHING ALGORITHMS
+       ========================================== */
 
-    // --- 1.1 Sequential Searches --- //
+    // --- 1.1 Sequential Searches --- //
 
-    "linear-search": {
-        title: "Linear Search",
+    "linear-search": {
+        title: "Linear Search",
         category: "array",
-        type: "search",
+        type: "search",
         description: "Imagine you have a list of numbers: [5, 3, 8, 1, 9] and you want to find the number 8.\n\n1. Start from the first number (5). Is 5 equal to 8? No.\n\n2. Move to the next number (3). Is 3 equal to 8? No.\n\n3. Move to the next number (8). Is 8 equal to 8? Yes! Stop here.\n\n4. The position is 2 (or 3 if counting starts from 1).\n\nIf the number is not in the list (e.g., searching for 10), the search ends without success.",
-        lineMap: { javascript: { start: 2, checking: 3, found: 4, 'not-found': 7 } },
+        lineMap: { javascript: { start: 2, checking: 3, found: 4, 'not-found': 7 } },
         complexities: { worst: "O(n)", space: "O(1)" },
-        code: {
-            javascript: `function linearSearch(arr, target) {
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] === target) {
-            return i; // Target found
-        }
-    }
-    return -1; // Target not found
+        code: {
+            javascript: `function linearSearch(arr, target) {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === target) {
+            return i; // Target found
+        }
+    }
+    return -1; // Target not found
 }`,
-            python: `def linear_search(arr, target):
-    for i in range(len(arr)):
-        if arr[i] == target:
-            return i # Target found
-    return -1 # Target not found`,
-            cpp: `int linearSearch(int arr[], int size, int target) {
-    for (int i = 0; i < size; i++) {
-        if (arr[i] == target) {
-            return i; // Target found
-        }
-    }
-    return -1; // Target not found
+            python: `def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i # Target found
+    return -1 # Target not found`,
+            cpp: `int linearSearch(int arr[], int size, int target) {
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == target) {
+            return i; // Target found
+        }
+    }
+    return -1; // Target not found
 }`
-        }
-    },
+        }
+    },
 
-    // --- 1.2 Divide & Conquer Searches --- //
+    // --- 1.2 Divide & Conquer Searches --- //
 
-    "binary-search": {
-        title: "Binary Search",
+    "binary-search": {
+        title: "Binary Search",
         category: "array",
-        type: "search",
-        description: "Binary Search is a highly efficient algorithm that works by repeatedly dividing the search space in half. It compares the target value to the middle element of the array. NOTE: The array must be strictly sorted for this to work!",
-        lineMap: { javascript: { start: 2, checking: 6, found: 8, 'discard-left': 9, 'discard-right': 10, 'not-found': 12 } },
+        type: "search",
+        description: "Binary Search is a highly efficient algorithm that works by repeatedly dividing the search space in half. It compares the target value to the middle element of the array. NOTE: The array must be strictly sorted for this to work!",
+        lineMap: { javascript: { start: 2, checking: 6, found: 8, 'discard-left': 9, 'discard-right': 10, 'not-found': 12 } },
         complexities: { worst: "O(log n)", space: "O(1)" },
-        code: {
-            javascript: `function binarySearch(arr, target) {
-    let left = 0;
-    let right = arr.length - 1;
-    
-    while (left <= right) {
-        let mid = Math.floor((left + right) / 2);
-        
-        if (arr[mid] === target) return mid;
-        if (arr[mid] < target) left = mid + 1;
-        else right = mid - 1;
-    }
-    return -1;
+        code: {
+            javascript: `function binarySearch(arr, target) {
+    let left = 0;
+    let right = arr.length - 1;
+    
+    while (left <= right) {
+        let mid = Math.floor((left + right) / 2);
+        
+        if (arr[mid] === target) return mid;
+        if (arr[mid] < target) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
 }`,
-            python: `def binary_search(arr, target):
-    left, right = 0, len(arr) - 1
-    
-    while left <= right:
-        mid = (left + right) // 2
-        if arr[mid] == target:
-            return mid
-        elif arr[mid] < target:
-            left = mid + 1
-        else:
-            right = mid - 1
-            
-    return -1`,
-            cpp: `int binarySearch(int arr[], int size, int target) {
-    int left = 0;
-    int right = size - 1;
-    
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        
-        if (arr[mid] == target) return mid;
-        if (arr[mid] < target) left = mid + 1;
-        else right = mid - 1;
-    }
-    return -1;
+            python: `def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+            
+    return -1`,
+            cpp: `int binarySearch(int arr[], int size, int target) {
+    int left = 0;
+    int right = size - 1;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) return mid;
+        if (arr[mid] < target) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
 }`
-        }
-    },
+        }
+    },
 
-    /* ==========================================
+    /* ==========================================
        2. SORTING ALGORITHMS
        ========================================== */
 
@@ -230,8 +230,176 @@ const algorithmDatabase = {
 
     // --- 2.2 O(n log n) Fast Sorts --- //
 
-    // "merge-sort": { ... },
-    // "quick-sort": { ... },
+    "merge-sort": {
+        title: "Merge Sort",
+        category: "array",
+        type: "sorting",
+        lineMap: { javascript: { start: 2, split: 4, 'merge-compare': 16, 'merge-overwrite': 17, done: 8 } },
+        description: "Merge Sort splits the array in half recursively until each piece has one element, then merges those pieces back together in sorted order.\n\n1. Split the array at the midpoint into two halves.\n\n2. Recursively sort each half the same way.\n\n3. Merge the two sorted halves: repeatedly compare their front elements and take the smaller one.\n\n4. Once merged, the range is fully sorted.\n\nUnlike Bubble/Selection/Insertion Sort, its performance doesn't degrade on already-sorted or reverse-sorted input.",
+        complexities: { worst: "O(n log n)", space: "O(n)" },
+        code: {
+            javascript: `function mergeSort(arr) {
+    if (arr.length <= 1) return arr;
+
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+
+    return merge(left, right);
+}
+
+function merge(left, right) {
+    let result = [];
+    let i = 0, j = 0;
+
+    while (i < left.length && j < right.length) {
+        if (left[i] <= right[j]) {
+            result.push(left[i]);
+            i++;
+        } else {
+            result.push(right[j]);
+            j++;
+        }
+    }
+
+    return result.concat(left.slice(i)).concat(right.slice(j));
+}`,
+            python: `def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+
+    return merge(left, right)
+
+
+def merge(left, right):
+    result = []
+    i = j = 0
+
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+
+    return result + left[i:] + right[j:]`,
+            cpp: `vector<int> merge(vector<int>& left, vector<int>& right) {
+    vector<int> result;
+    int i = 0, j = 0;
+
+    while (i < left.size() && j < right.size()) {
+        if (left[i] <= right[j]) {
+            result.push_back(left[i]);
+            i++;
+        } else {
+            result.push_back(right[j]);
+            j++;
+        }
+    }
+
+    while (i < left.size()) result.push_back(left[i++]);
+    while (j < right.size()) result.push_back(right[j++]);
+    return result;
+}
+
+vector<int> mergeSort(vector<int> arr) {
+    if (arr.size() <= 1) return arr;
+
+    int mid = arr.size() / 2;
+    vector<int> left(arr.begin(), arr.begin() + mid);
+    vector<int> right(arr.begin() + mid, arr.end());
+
+    left = mergeSort(left);
+    right = mergeSort(right);
+
+    return merge(left, right);
+}`
+        }
+    },
+
+    "quick-sort": {
+        title: "Quick Sort",
+        category: "array",
+        type: "sorting",
+        lineMap: { javascript: { start: 2, pivot: 11, compare: 15, swap: 17, 'partition-done': 21, done: 7 } },
+        description: "Quick Sort picks a pivot element and partitions the array so smaller elements end up on its left and larger ones on its right, then recursively sorts each side.\n\n1. Choose a pivot (here, the last element of the range).\n\n2. Walk through the range, moving anything smaller than the pivot to the left side.\n\n3. Swap the pivot into the boundary between smaller and larger — it's now in its final sorted position.\n\n4. Recursively repeat on the left and right partitions.\n\nVery fast in practice (often faster than Merge Sort due to better cache behavior), but worst-case O(n²) on already-sorted input with this pivot strategy.",
+        complexities: { worst: "O(n²)", space: "O(log n)" },
+        code: {
+            javascript: `function quickSort(arr, low = 0, high = arr.length - 1) {
+    if (low < high) {
+        const pivotIndex = partition(arr, low, high);
+        quickSort(arr, low, pivotIndex - 1);
+        quickSort(arr, pivotIndex + 1, high);
+    }
+    return arr;
+}
+
+function partition(arr, low, high) {
+    const pivot = arr[high];
+    let i = low - 1;
+
+    for (let j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    return i + 1;
+}`,
+            python: `def quick_sort(arr, low=0, high=None):
+    if high is None:
+        high = len(arr) - 1
+
+    if low < high:
+        pivot_index = partition(arr, low, high)
+        quick_sort(arr, low, pivot_index - 1)
+        quick_sort(arr, pivot_index + 1, high)
+
+    return arr
+
+
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+
+    for j in range(low, high):
+        if arr[j] < pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1`,
+            cpp: `int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pivotIndex = partition(arr, low, high);
+        quickSort(arr, low, pivotIndex - 1);
+        quickSort(arr, pivotIndex + 1, high);
+    }
+}`
+        }
+    },
 
     /* ==========================================
        3. STACK
@@ -386,6 +554,134 @@ public:
 
     bool isEmpty() {
         return items.empty();
+    }
+};`
+        }
+    },
+
+    /* ==========================================
+       5. TREE
+       ========================================== */
+
+    "bst-operations": {
+        title: "Binary Search Tree",
+        category: "tree",
+        type: "tree",
+        description: "A Binary Search Tree (BST) keeps every node ordered: for any node, everything in its left subtree is smaller, everything in its right subtree is larger.\n\nInsert: compare against the current node, go left if smaller, right if larger, and repeat until an empty spot is found.\n\nSearch: same left/right comparison — you either find the value or fall off the tree.\n\nThis ordering means search, insert, and delete all take O(log n) time on average — but a poorly built tree (e.g. inserting already-sorted data) can degrade to a straight line, making it O(n).",
+        complexities: { worst: "O(n)", space: "O(n)" },
+        code: {
+            javascript: `class Node {
+    constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+class BST {
+    constructor() {
+        this.root = null;
+    }
+
+    insert(value) {
+        const newNode = new Node(value);
+        if (!this.root) {
+            this.root = newNode;
+            return;
+        }
+        let current = this.root;
+        while (true) {
+            if (value === current.value) return;
+            if (value < current.value) {
+                if (!current.left) { current.left = newNode; return; }
+                current = current.left;
+            } else {
+                if (!current.right) { current.right = newNode; return; }
+                current = current.right;
+            }
+        }
+    }
+
+    search(value) {
+        let current = this.root;
+        while (current) {
+            if (value === current.value) return current;
+            current = value < current.value ? current.left : current.right;
+        }
+        return null;
+    }
+}`,
+            python: `class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, value):
+        new_node = Node(value)
+        if not self.root:
+            self.root = new_node
+            return
+        current = self.root
+        while True:
+            if value == current.value:
+                return
+            if value < current.value:
+                if not current.left:
+                    current.left = new_node
+                    return
+                current = current.left
+            else:
+                if not current.right:
+                    current.right = new_node
+                    return
+                current = current.right
+
+    def search(self, value):
+        current = self.root
+        while current:
+            if value == current.value:
+                return current
+            current = current.left if value < current.value else current.right
+        return None`,
+            cpp: `struct Node {
+    int value;
+    Node* left;
+    Node* right;
+    Node(int v) : value(v), left(nullptr), right(nullptr) {}
+};
+
+class BST {
+    Node* root = nullptr;
+public:
+    void insert(int value) {
+        Node* newNode = new Node(value);
+        if (!root) { root = newNode; return; }
+        Node* current = root;
+        while (true) {
+            if (value == current->value) return;
+            if (value < current->value) {
+                if (!current->left) { current->left = newNode; return; }
+                current = current->left;
+            } else {
+                if (!current->right) { current->right = newNode; return; }
+                current = current->right;
+            }
+        }
+    }
+
+    Node* search(int value) {
+        Node* current = root;
+        while (current) {
+            if (value == current->value) return current;
+            current = (value < current->value) ? current->left : current->right;
+        }
+        return nullptr;
     }
 };`
         }
