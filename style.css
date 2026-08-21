@@ -774,3 +774,124 @@ code {
         font-size: 0.8rem;
     }
 }
+
+
+/* ==========================================
+   SECTION 10: STACK & QUEUE (live data structures)
+   ========================================== */
+
+/* --- Stack: vertical layout, newest element visually on top --- */
+#visualizer-container.stack-mode {
+    flex-direction: column-reverse !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 24px 0;
+    overflow-y: auto;
+    max-height: 420px;
+}
+
+.stack-block-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.stack-side-label {
+    color: #3b82f6;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* --- Queue: horizontal layout, front on the left --- */
+#visualizer-container.queue-mode {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding-bottom: 0;
+}
+
+.queue-block-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.queue-label-front,
+.queue-label-rear,
+.queue-label-spacer {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    height: 1em;
+}
+
+.queue-label-front {
+    color: #10b981;
+}
+
+.queue-label-rear {
+    color: #f59e0b;
+}
+
+.queue-label-front.queue-label-rear {
+    color: #3b82f6;
+}
+
+.queue-label-spacer {
+    color: transparent;
+}
+
+/* --- Shared: empty-state message + pop/dequeue exit animation --- */
+.empty-structure-msg {
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    text-align: center;
+    padding: 20px;
+}
+
+.array-block.popping,
+.array-block.dequeuing {
+    opacity: 0;
+    transform: scale(0.7) translateY(-10px);
+}
+
+/* --- Mobile: cap stack scroll height a bit tighter, tighten queue gaps --- */
+@media (max-width: 900px) {
+    #visualizer-container.stack-mode {
+        max-height: 320px;
+        gap: 10px;
+    }
+
+    #visualizer-container.queue-mode {
+        gap: 10px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .stack-side-label {
+        font-size: 0.75rem;
+    }
+
+    .queue-label-front,
+    .queue-label-rear,
+    .queue-label-spacer {
+        font-size: 0.68rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .empty-structure-msg {
+        font-size: 0.85rem;
+        padding: 14px;
+    }
+}
