@@ -185,6 +185,17 @@ function buildWorkspace(algoId) {
         activePlayer = null;
     }
 
+    // Reset the shared visualizer surface — without this, switching from a
+    // Stack/Queue workspace into Search/Sort (or vice versa) would leave a
+    // stale stack-mode/queue-mode class or leftover blocks on screen.
+    const visualizerContainerEl = document.getElementById('visualizer-container');
+    if (visualizerContainerEl) {
+        visualizerContainerEl.innerHTML = '';
+        visualizerContainerEl.classList.remove('stack-mode', 'queue-mode');
+    }
+    const statusBarEl = document.getElementById('status-bar');
+    if (statusBarEl) statusBarEl.className = 'status-message hidden';
+
     // Build the Control Panel
     const controlsZone = document.getElementById('dynamic-controls');
 
@@ -318,6 +329,112 @@ function buildWorkspace(algoId) {
         });
 
         setupPlaybackButtons();
+    }
+
+    else if (data.type === "stack") {
+        // Live/persistent structure — no step player, no playback row.
+        stackState = [];
+
+        controlsZone.innerHTML = `
+            <div class="control-row controls-top-row">
+                <input type="number" id="value-input" class="dashboard-input" placeholder="Value to push">
+            </div>
+
+            <div class="control-row center-content">
+                <button id="push-btn" class="dashboard-btn btn-blue">Push</button>
+                <button id="pop-btn" class="dashboard-btn btn-red">Pop</button>
+                <button id="peek-btn" class="dashboard-btn btn-secondary">Peek</button>
+                <button id="clear-btn" class="dashboard-btn btn-secondary">Clear</button>
+            </div>
+        `;
+
+        renderStack(); // show the empty state immediately
+
+        const valueInput = document.getElementById('value-input');
+        const readValue = () => {
+            const value = parseInt(valueInput.value);
+            if (isNaN(value)) {
+                alert('Enter a valid number to push.');
+                return null;
+            }
+            return value;
+        };
+
+        document.getElementById('push-btn').addEventListener('click', () => {
+            const value = readValue();
+            if (value === null) return;
+            pushToStack(value);
+            valueInput.value = '';
+        });
+
+        document.getElementById('pop-btn').addEventListener('click', () => {
+            popFromStack();
+        });
+
+        document.getElementById('peek-btn').addEventListener('click', () => {
+            peekStack();
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            clearStack();
+        });
+
+        // Enter key pushes, same as clicking Push
+        valueInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('push-btn').click();
+        });
+    }
+
+    else if (data.type === "queue") {
+        queueState = [];
+
+        controlsZone.innerHTML = `
+            <div class="control-row controls-top-row">
+                <input type="number" id="value-input" class="dashboard-input" placeholder="Value to enqueue">
+            </div>
+
+            <div class="control-row center-content">
+                <button id="enqueue-btn" class="dashboard-btn btn-blue">Enqueue</button>
+                <button id="dequeue-btn" class="dashboard-btn btn-red">Dequeue</button>
+                <button id="peek-btn" class="dashboard-btn btn-secondary">Peek</button>
+                <button id="clear-btn" class="dashboard-btn btn-secondary">Clear</button>
+            </div>
+        `;
+
+        renderQueue();
+
+        const valueInput = document.getElementById('value-input');
+        const readValue = () => {
+            const value = parseInt(valueInput.value);
+            if (isNaN(value)) {
+                alert('Enter a valid number to enqueue.');
+                return null;
+            }
+            return value;
+        };
+
+        document.getElementById('enqueue-btn').addEventListener('click', () => {
+            const value = readValue();
+            if (value === null) return;
+            enqueue(value);
+            valueInput.value = '';
+        });
+
+        document.getElementById('dequeue-btn').addEventListener('click', () => {
+            dequeue();
+        });
+
+        document.getElementById('peek-btn').addEventListener('click', () => {
+            peekQueue();
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            clearQueue();
+        });
+
+        valueInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('enqueue-btn').click();
+        });
     }
 }
 
