@@ -191,7 +191,7 @@ function buildWorkspace(algoId) {
     const visualizerContainerEl = document.getElementById('visualizer-container');
     if (visualizerContainerEl) {
         visualizerContainerEl.innerHTML = '';
-        visualizerContainerEl.classList.remove('stack-mode', 'queue-mode');
+        visualizerContainerEl.classList.remove('stack-mode', 'queue-mode', 'tree-mode');
     }
     const statusBarEl = document.getElementById('status-bar');
     if (statusBarEl) statusBarEl.className = 'status-message hidden';
@@ -294,7 +294,9 @@ function buildWorkspace(algoId) {
         const generators = {
             'bubble-sort': bubbleSortSteps,
             'selection-sort': selectionSortSteps,
-            'insertion-sort': insertionSortSteps
+            'insertion-sort': insertionSortSteps,
+            'merge-sort': mergeSortSteps,
+            'quick-sort': quickSortSteps
         };
 
         document.getElementById('random-btn').addEventListener('click', () => {
@@ -434,6 +436,67 @@ function buildWorkspace(algoId) {
 
         valueInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') document.getElementById('enqueue-btn').click();
+        });
+    }
+
+    else if (data.type === "tree") {
+        treeRoot = null;
+
+        controlsZone.innerHTML = `
+            <div class="control-row controls-top-row">
+                <input type="number" id="value-input" class="dashboard-input" placeholder="Value">
+            </div>
+
+            <div class="control-row center-content">
+                <button id="insert-btn" class="dashboard-btn btn-blue">Insert</button>
+                <button id="search-btn" class="dashboard-btn btn-secondary">Search</button>
+                <button id="random-btn" class="dashboard-btn btn-secondary">Random Tree</button>
+                <button id="clear-btn" class="dashboard-btn btn-red">Clear</button>
+            </div>
+        `;
+
+        renderTree(); // show the empty state immediately
+
+        const valueInput = document.getElementById('value-input');
+        const readValue = () => {
+            const value = parseInt(valueInput.value);
+            if (isNaN(value)) {
+                alert('Enter a valid number.');
+                return null;
+            }
+            return value;
+        };
+
+        document.getElementById('insert-btn').addEventListener('click', async () => {
+            const value = readValue();
+            if (value === null) return;
+            await insertNode(value);
+            valueInput.value = '';
+        });
+
+        document.getElementById('search-btn').addEventListener('click', () => {
+            const value = readValue();
+            if (value === null) return;
+            searchTree(value);
+        });
+
+        document.getElementById('random-btn').addEventListener('click', async () => {
+            clearTree();
+            const values = new Set();
+            while (values.size < 7) {
+                values.add(Math.floor(Math.random() * 90) + 10);
+            }
+            for (const v of values) {
+                await insertNode(v);
+            }
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            clearTree();
+        });
+
+        valueInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('insert-btn').click();
         });
     }
 }
