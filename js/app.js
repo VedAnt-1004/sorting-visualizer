@@ -323,14 +323,17 @@ function buildWorkspace(algoId) {
 
 // --- 3b. SHARED PLAYBACK HELPERS (used by both search and sorting workspaces) ---
 
-// Creates a fresh StepPlayer from a generator + its args, shows the first step immediately.
+// Creates a fresh StepPlayer from a generator + its args, then auto-plays it —
+// matches the original "click Search/Sort and watch it run" behavior. The
+// Prev/Play/Next controls let the user pause and step through at any point
+// during or after that run; they're not required just to see it happen.
 function startPlayer(generatorFn, ...args) {
     if (!generatorFn) return;
     if (activePlayer) activePlayer.pause();
 
     activePlayer = new StepPlayer(generatorFn, ...args);
     activePlayer.onStep = onPlayerStep;
-    activePlayer.next(); // render the initial "Starting..." step right away
+    activePlayer.play(() => updatePlaybackButtons());
     updatePlaybackButtons();
 }
 
