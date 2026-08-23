@@ -65,6 +65,8 @@ algovision/
         ├── tree.js            # Live SVG BST engine with traversals & deletion
         └── graph.js           # Live SVG Graph engine with BFS/DFS
 
+---
+
 ## 🛠️ Local Setup & Quickstart
 
 No build steps or package managers required.
@@ -78,6 +80,8 @@ cd algovision
 
 # 3. Serve using any static server (or open index.html directly)
 npx serve .
+
+---
 
 ## 🤝 Contributing
 
@@ -94,3 +98,5 @@ Contributions are welcome! To add a new algorithm or data structure:
    * **Database & Snippets:** Register metadata, multi-language snippets, and line maps in `js/data.js`
 4. **Test locally:** Open `index.html` in a web browser to verify step execution, visualizer layout, and responsive mobile behavior.
 5. **Commit and open a Pull Request.**
+
+---
