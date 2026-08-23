@@ -191,7 +191,7 @@ function buildWorkspace(algoId) {
     const visualizerContainerEl = document.getElementById('visualizer-container');
     if (visualizerContainerEl) {
         visualizerContainerEl.innerHTML = '';
-        visualizerContainerEl.classList.remove('stack-mode', 'queue-mode', 'tree-mode');
+        visualizerContainerEl.classList.remove('stack-mode', 'queue-mode', 'tree-mode', 'graph-mode');
     }
     const statusBarEl = document.getElementById('status-bar');
     if (statusBarEl) statusBarEl.className = 'status-message hidden';
@@ -497,6 +497,60 @@ function buildWorkspace(algoId) {
 
         valueInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') document.getElementById('insert-btn').click();
+        });
+    }
+
+    else if (data.type === "graph") {
+        clearGraph();
+
+        controlsZone.innerHTML = `
+            <div class="control-row controls-top-row">
+                <input type="text" id="node-u-input" class="dashboard-input" placeholder="Node U (e.g. A)">
+                <input type="text" id="node-v-input" class="dashboard-input" placeholder="Node V (e.g. B)">
+            </div>
+
+            <div class="control-row center-content">
+                <button id="add-node-btn" class="dashboard-btn btn-blue">Add Node</button>
+                <button id="add-edge-btn" class="dashboard-btn btn-blue">Add Edge</button>
+                <button id="bfs-btn" class="dashboard-btn btn-secondary">BFS</button>
+                <button id="dfs-btn" class="dashboard-btn btn-secondary">DFS</button>
+                <button id="random-btn" class="dashboard-btn btn-secondary">Random Graph</button>
+                <button id="clear-btn" class="dashboard-btn btn-red">Clear</button>
+            </div>
+        `;
+
+        renderGraph();
+
+        document.getElementById('add-node-btn').addEventListener('click', () => {
+            const uVal = document.getElementById('node-u-input').value;
+            if (addNode(uVal)) document.getElementById('node-u-input').value = '';
+        });
+
+        document.getElementById('add-edge-btn').addEventListener('click', () => {
+            const uVal = document.getElementById('node-u-input').value;
+            const vVal = document.getElementById('node-v-input').value;
+            if (addEdge(uVal, vVal)) {
+                document.getElementById('node-u-input').value = '';
+                document.getElementById('node-v-input').value = '';
+            }
+        });
+
+        document.getElementById('bfs-btn').addEventListener('click', () => {
+            const startVal = document.getElementById('node-u-input').value || 'A';
+            bfsTraversal(startVal);
+        });
+
+        document.getElementById('dfs-btn').addEventListener('click', () => {
+            const startVal = document.getElementById('node-u-input').value || 'A';
+            dfsTraversal(startVal);
+        });
+
+        document.getElementById('random-btn').addEventListener('click', () => {
+            generateRandomGraph();
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            clearGraph();
         });
     }
 }
