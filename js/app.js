@@ -34,19 +34,21 @@ function clearCodeHighlight() {
 }
 
 // Called whenever the player moves (Next/Prev/Play tick) AND whenever the code tab changes,
-// so the highlighted line always matches the step currently on screen.
+// so the highlighted line always matches the step currently on screen — for
+// whichever language tab (JS/Python/C++) happens to be active.
 function refreshCodeHighlight() {
     const activeTab = document.querySelector('.tab-btn.active');
-    const isJsTabActive = activeTab && activeTab.innerText === 'JS';
+    const langKeyByLabel = { 'JS': 'javascript', 'Python': 'python', 'C++': 'cpp' };
+    const activeLangKey = activeTab ? langKeyByLabel[activeTab.innerText] : null;
 
-    if (!lastRenderedStep || !isJsTabActive) {
+    if (!lastRenderedStep || !activeLangKey) {
         clearCodeHighlight();
         return;
     }
 
     const data = algorithmDatabase[currentAlgoId];
-    const line = data && data.lineMap && data.lineMap.javascript && lastRenderedStep.phase
-        ? data.lineMap.javascript[lastRenderedStep.phase]
+    const line = data && data.lineMap && data.lineMap[activeLangKey] && lastRenderedStep.phase
+        ? data.lineMap[activeLangKey][lastRenderedStep.phase]
         : null;
 
     if (line) highlightCodeLine(line);
@@ -450,8 +452,15 @@ function buildWorkspace(algoId) {
             <div class="control-row center-content">
                 <button id="insert-btn" class="dashboard-btn btn-blue">Insert</button>
                 <button id="search-btn" class="dashboard-btn btn-secondary">Search</button>
+                <button id="delete-btn" class="dashboard-btn btn-red">Delete</button>
                 <button id="random-btn" class="dashboard-btn btn-secondary">Random Tree</button>
                 <button id="clear-btn" class="dashboard-btn btn-red">Clear</button>
+            </div>
+
+            <div class="control-row center-content traversal-row">
+                <button id="inorder-btn" class="dashboard-btn btn-secondary">In-Order</button>
+                <button id="preorder-btn" class="dashboard-btn btn-secondary">Pre-Order</button>
+                <button id="postorder-btn" class="dashboard-btn btn-secondary">Post-Order</button>
             </div>
         `;
 
@@ -480,6 +489,13 @@ function buildWorkspace(algoId) {
             searchTree(value);
         });
 
+        document.getElementById('delete-btn').addEventListener('click', () => {
+            const value = readValue();
+            if (value === null) return;
+            deleteNode(value);
+            valueInput.value = '';
+        });
+
         document.getElementById('random-btn').addEventListener('click', async () => {
             clearTree();
             const values = new Set();
@@ -495,54 +511,98 @@ function buildWorkspace(algoId) {
             clearTree();
         });
 
+        document.getElementById('inorder-btn').addEventListener('click', () => {
+            runTraversal('inorder');
+        });
+
+        document.getElementById('preorder-btn').addEventListener('click', () => {
+            runTraversal('preorder');
+        });
+
+        document.getElementById('postorder-btn').addEventListener('click', () => {
+            runTraversal('postorder');
+        });
+
         valueInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') document.getElementById('insert-btn').click();
         });
     }
 
     else if (data.type === "graph") {
-        clearGraph();
+        graphNodes = {};
+        graphEdges = [];
 
         controlsZone.innerHTML = `
             <div class="control-row controls-top-row">
-                <input type="text" id="node-u-input" class="dashboard-input" placeholder="Node U (e.g. A)">
-                <input type="text" id="node-v-input" class="dashboard-input" placeholder="Node V (e.g. B)">
+                <input type="text" id="node-input" class="dashboard-input" placeholder="Node (e.g. A)" maxlength="3">
+                <button id="add-node-btn" class="dashboard-btn btn-blue">Add Node</button>
+            </div>
+
+            <div class="control-row controls-top-row">
+                <input type="text" id="edge-from-input" class="dashboard-input" placeholder="From" maxlength="3">
+                <input type="text" id="edge-to-input" class="dashboard-input" placeholder="To" maxlength="3">
+                <button id="add-edge-btn" class="dashboard-btn btn-blue">Add Edge</button>
+            </div>
+
+            <div class="control-row controls-top-row">
+                <input type="text" id="start-node-input" class="dashboard-input" placeholder="Start node" maxlength="3">
+                <button id="bfs-btn" class="dashboard-btn btn-secondary">BFS</button>
+                <button id="dfs-btn" class="dashboard-btn btn-secondary">DFS</button>
             </div>
 
             <div class="control-row center-content">
-                <button id="add-node-btn" class="dashboard-btn btn-blue">Add Node</button>
-                <button id="add-edge-btn" class="dashboard-btn btn-blue">Add Edge</button>
-                <button id="bfs-btn" class="dashboard-btn btn-secondary">BFS</button>
-                <button id="dfs-btn" class="dashboard-btn btn-secondary">DFS</button>
                 <button id="random-btn" class="dashboard-btn btn-secondary">Random Graph</button>
                 <button id="clear-btn" class="dashboard-btn btn-red">Clear</button>
             </div>
         `;
 
-        renderGraph();
+        renderGraph(); // show the empty state immediately
 
         document.getElementById('add-node-btn').addEventListener('click', () => {
-            const uVal = document.getElementById('node-u-input').value;
-            if (addNode(uVal)) document.getElementById('node-u-input').value = '';
+            const input = document.getElementById('node-input');
+            const id = input.value.trim();
+            const statusBar = document.getElementById('status-bar');
+            if (!id) { alert('Enter a node label.'); return; }
+
+            if (addNode(id)) {
+                statusBar.className = 'status-message success';
+                statusBar.innerText = `Added node ${id}`;
+            } else {
+                statusBar.className = 'status-message error';
+                statusBar.innerText = `Node ${id} already exists`;
+            }
+            input.value = '';
         });
 
         document.getElementById('add-edge-btn').addEventListener('click', () => {
-            const uVal = document.getElementById('node-u-input').value;
-            const vVal = document.getElementById('node-v-input').value;
-            if (addEdge(uVal, vVal)) {
-                document.getElementById('node-u-input').value = '';
-                document.getElementById('node-v-input').value = '';
+            const fromInput = document.getElementById('edge-from-input');
+            const toInput = document.getElementById('edge-to-input');
+            const u = fromInput.value.trim();
+            const v = toInput.value.trim();
+            const statusBar = document.getElementById('status-bar');
+            if (!u || !v) { alert('Enter both node labels.'); return; }
+
+            if (addEdge(u, v)) {
+                statusBar.className = 'status-message success';
+                statusBar.innerText = `Added edge ${u} — ${v}`;
+            } else {
+                statusBar.className = 'status-message error';
+                statusBar.innerText = `Couldn't add that edge (missing node, duplicate, or self-loop)`;
             }
+            fromInput.value = '';
+            toInput.value = '';
         });
 
         document.getElementById('bfs-btn').addEventListener('click', () => {
-            const startVal = document.getElementById('node-u-input').value || 'A';
-            bfsTraversal(startVal);
+            const start = document.getElementById('start-node-input').value.trim();
+            if (!start) { alert('Enter a start node.'); return; }
+            bfsTraversal(start);
         });
 
         document.getElementById('dfs-btn').addEventListener('click', () => {
-            const startVal = document.getElementById('node-u-input').value || 'A';
-            dfsTraversal(startVal);
+            const start = document.getElementById('start-node-input').value.trim();
+            if (!start) { alert('Enter a start node.'); return; }
+            dfsTraversal(start);
         });
 
         document.getElementById('random-btn').addEventListener('click', () => {
@@ -668,8 +728,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderCodeLines(currentActiveCodes[dataKey]);
             }
 
-            // Line-by-line sync only exists for JS right now; re-check and
-            // either show or clear the highlight for the newly active tab.
+            // Code-line sync covers JS, Python, and C++ — re-check and either
+            // show or clear the highlight for the newly active tab.
             refreshCodeHighlight();
         });
     });
