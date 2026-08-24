@@ -956,3 +956,136 @@ code {
         padding: 14px 6px;
     }
 }
+
+
+/* ==========================================
+   SECTION 12: GRAPH (SVG-based node/edge structure, circular layout)
+   ========================================== */
+
+#visualizer-container.graph-mode {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 10px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 480px;
+}
+
+.graph-svg {
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    /* Scales via viewBox, same as tree-svg — no separate mobile sizing needed. */
+}
+
+.graph-edge {
+    stroke: #334155;
+    stroke-width: 2;
+}
+
+.graph-node circle {
+    fill: #1e293b;
+    stroke: #8b5cf6;
+    stroke-width: 2;
+    transition: fill 0.3s ease, stroke 0.3s ease;
+}
+
+.graph-node text {
+    fill: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.graph-node.comparing circle {
+    fill: #f59e0b;
+    stroke: #f59e0b;
+}
+
+.graph-node.found circle {
+    fill: #10b981;
+    stroke: #10b981;
+}
+
+@media (max-width: 900px) {
+    #visualizer-container.graph-mode {
+        max-height: 360px;
+        padding: 14px 6px;
+    }
+}
+
+
+/* ==========================================
+   SECTION 13: VISUALIZER LEGEND
+   ========================================== */
+/* Explains the color language used across every workspace (search, sort,
+   stack/queue, tree, graph) so a first-time visitor doesn't have to guess
+   what amber vs. green vs. dimmed means. */
+
+.visualizer-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 20px;
+    max-width: 1100px;
+    margin: 0 auto 16px auto;
+    padding: 0 16px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.legend-dot-current {
+    background: #3b82f6;
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
+}
+
+.legend-dot-comparing {
+    background: #f59e0b;
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
+}
+
+.legend-dot-found {
+    background: #10b981;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+.legend-dot-dimmed {
+    background: #475569;
+    opacity: 0.6;
+}
+
+@media (max-width: 480px) {
+    .visualizer-legend {
+        gap: 6px 14px;
+        padding: 0 12px;
+    }
+
+    .legend-item {
+        font-size: 0.7rem;
+        gap: 5px;
+    }
+
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+    }
+}
