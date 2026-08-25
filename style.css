@@ -146,7 +146,7 @@
 body {
     background-color: #f8fafc;
     color: #0f172a;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-ui);
     /* Clean, modern body text */
     overflow-x: hidden;
     min-height: 100vh;
@@ -157,12 +157,12 @@ h1,
 h2,
 h3,
 .nav-brand {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-display);
     letter-spacing: -0.02em;
 }
 
 button {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-ui);
     cursor: pointer;
     transition: 0.2s ease-in-out;
 }
@@ -241,12 +241,20 @@ button {
     /* Subtle grey background for the whole app */
 }
 
-/* SIDEBAR: Keep it deep navy for contrast */
+/* SIDEBAR: Keep it deep navy for contrast
+   Phase 2: migrated to the --sidebar-navy token and given explicit L2
+   elevation (§3) — the border-right divider color is intentionally left
+   as-is since it's a directional divider, not a card border/shadow, and
+   isn't covered by the elevation token set. */
 .dashboard-sidebar {
-    background-color: #0b1120;
+    background-color: var(--sidebar-navy);
     padding: 40px 25px;
     border-right: 1px solid #1e293b;
     color: white;
+    font-family: var(--font-ui);
+    box-shadow: var(--elevation-l2-shadow);
+    position: relative;
+    z-index: var(--elevation-l2-z);
 }
 
 .dashboard-sidebar h2 {
@@ -274,6 +282,38 @@ button {
     background: #1e293b;
     color: #3b82f6;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Sidebar category dot badges (Phase 2 / spec §1.2) ---
+   Color-coded per data-structure category, using the chrome-only
+   pastel tokens. Purely decorative identifiers alongside the existing
+   text label — no WCAG text-contrast implication. */
+.sidebar-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.sidebar-dot-array {
+    background: var(--cat-array);
+}
+
+.sidebar-dot-stack {
+    background: var(--cat-stack);
+}
+
+.sidebar-dot-queue {
+    background: var(--cat-queue);
+}
+
+.sidebar-dot-tree {
+    background: var(--cat-tree);
+}
+
+.sidebar-dot-graph {
+    background: var(--cat-graph);
 }
 
 /* STAGE: This is the main white area */
@@ -357,18 +397,25 @@ button {
     transform: translateX(3px);
 }
 
-/* --- SECTION 5: WORKSPACE FLOATING NAVBAR --- */
+/* --- SECTION 5: WORKSPACE FLOATING NAVBAR ---
+   Phase 2: this is a genuinely "floating" surface (sits on top of the
+   canvas, not flush like the sidebar), so it takes L3 elevation per §3
+   — including the translucent glass-edge border, which replaces the
+   previous opaque #1e293b border now that it's treated as a floating
+   dock rather than a flush panel. */
 .modern-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #0b1120;
+    background: var(--sidebar-navy);
     padding: 12px 30px;
     max-width: 1100px;
     margin: 20px auto;
-    border-radius: 50px;
+    border-radius: var(--radius-full);
     position: relative;
-    border: 1px solid #1e293b;
+    border: var(--elevation-l3-border);
+    box-shadow: var(--elevation-l3-shadow);
+    z-index: var(--elevation-l3-z);
 }
 
 .nav-brand {
@@ -395,7 +442,7 @@ button {
     color: #3b82f6;
     background: rgba(59, 130, 246, 0.1);
     padding: 8px 24px;
-    border-radius: 20px;
+    border-radius: var(--radius-full);
     font-weight: 700;
     font-size: 0.85rem;
     border: 1px solid rgba(59, 130, 246, 0.2);
