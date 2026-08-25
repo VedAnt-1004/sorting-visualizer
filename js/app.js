@@ -74,6 +74,26 @@ function showScreen(screenId) {
     }
 }
 
+// --- Big-O plain-English lookup (spec §5.2 — interactive complexity hover legend) ---
+const BIG_O_EXPLANATIONS = {
+    'O(1)': 'Constant time — same speed no matter how much data there is.',
+    'O(log n)': 'Grows very slowly — cuts the problem in half each step.',
+    'O(n)': 'Grows proportionally with the amount of data.',
+    'O(n log n)': 'Grows fast but stays manageable at scale.',
+    'O(n²)': 'Grows quickly — can get slow on large inputs.',
+    'O(V + E)': 'Scales with the number of nodes and connections in the graph.'
+};
+
+function getComplexityExplanation(bigO) {
+    return BIG_O_EXPLANATIONS[bigO] || 'Describes how runtime grows as input size increases.';
+}
+
+// A card is "Algorithm mode" (StepPlayer-driven run) if its type is search/sorting;
+// everything else (stack/queue/tree/graph) is "Structure mode" (live, no timeline).
+function getCardMode(algoType) {
+    return (algoType === 'search' || algoType === 'sorting') ? 'algorithm' : 'structure';
+}
+
 // --- 2. DYNAMIC DASHBOARD BUILDER (Option 3 Fix) ---
 // This function clears the dashboard and rebuilds cards from data.js
 function buildDashboard(categoryId) {
@@ -108,11 +128,51 @@ function buildDashboard(categoryId) {
         grouped[algo.type].push(algo);
     });
 
+    // 4b. Filter tabs (spec: top category filter pills) — only worth rendering when
+    // this category actually has more than one sub-type to switch between (e.g.
+    // Array has Searching + Sorting; Stack/Queue/Tree/Graph each have just one,
+    // where a filter row would be pure clutter with nothing to filter).
+    const groupTypes = Object.keys(grouped);
+    if (groupTypes.length > 1) {
+        const filterRow = document.createElement('div');
+        filterRow.classList.add('filter-tabs');
+
+        const allPill = document.createElement('button');
+        allPill.type = 'button';
+        allPill.classList.add('filter-pill', 'active');
+        allPill.textContent = 'All';
+        allPill.dataset.filter = 'all';
+        filterRow.appendChild(allPill);
+
+        groupTypes.forEach(type => {
+            const pill = document.createElement('button');
+            pill.type = 'button';
+            pill.classList.add('filter-pill');
+            pill.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            pill.dataset.filter = type;
+            filterRow.appendChild(pill);
+        });
+
+        filterRow.addEventListener('click', (e) => {
+            const pill = e.target.closest('.filter-pill');
+            if (!pill) return;
+            filterRow.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            const filter = pill.dataset.filter;
+            dashboardContainer.querySelectorAll('.ds-category').forEach(section => {
+                section.style.display = (filter === 'all' || section.dataset.type === filter) ? '' : 'none';
+            });
+        });
+
+        dashboardContainer.appendChild(filterRow);
+    }
+
     // 5. Generate the HTML Bento Structure
     for (const type in grouped) {
         // Create the ds-category wrapper
         const categoryWrapper = document.createElement('div');
         categoryWrapper.classList.add('ds-category');
+        categoryWrapper.dataset.type = type; // used by the filter tabs above
 
         // Capitalize type name (searching -> Searching)
         const capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);
@@ -126,20 +186,64 @@ function buildDashboard(categoryId) {
         // Create the individual algo-cards
         grouped[type].forEach(algo => {
             const cardId = algo.id || Object.keys(algorithmDatabase).find(key => algorithmDatabase[key] === algo);
-            const card = document.createElement('button');
-            card.classList.add('algo-card');
-            card.setAttribute('data-target', cardId);
-            card.innerHTML = `${algo.title} <span class="arrow">›</span>`;
-            
-            // Add click listener to the newly created card
-            card.addEventListener('click', () => {
-                const algoId = card.getAttribute('data-target');
-                if (algoId && algorithmDatabase[algoId]) {
-                    buildWorkspace(algoId);
+            const mode = getCardMode(algo.type);
+            const modeLabel = mode === 'algorithm' ? '▶ Algorithm' : '⚡ Structure';
+            const worstComplexity = algo.complexities ? algo.complexities.worst : '';
+            const explanation = getComplexityExplanation(worstComplexity);
+
+            // Card is a div[role=button], NOT a real <button> — the complexity tag
+            // inside it is itself a separate focusable/hoverable element, and a
+            // focusable descendant nested inside a real <button> is invalid HTML
+            // and breaks screen-reader semantics. div[role=button] + explicit
+            // click/keydown handling keeps full keyboard operability without that
+            // nesting violation.
+            const card = document.createElement('div');
+            card.classList.add('algo-card', `algo-card-${categoryId}`);
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('aria-label', `Open ${algo.title} workspace`);
+
+            card.innerHTML = `
+                <div class="algo-card-top">
+                    <span class="algo-card-title">${algo.title}</span>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="algo-card-tags">
+                    <span class="mode-badge">${modeLabel}</span>
+                    ${worstComplexity ? `
+                    <span class="complexity-tag" tabindex="0" aria-label="${worstComplexity} time complexity: ${explanation}">
+                        ${worstComplexity}
+                        <span class="complexity-tooltip" role="tooltip">${explanation}</span>
+                    </span>` : ''}
+                </div>
+            `;
+
+            // Add click + keyboard activation to open the workspace
+            const openWorkspace = () => {
+                if (cardId && algorithmDatabase[cardId]) {
+                    buildWorkspace(cardId);
                     showScreen('workspace-screen');
                     window.scrollTo(0, 0);
                 }
+            };
+            card.addEventListener('click', openWorkspace);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openWorkspace();
+                }
             });
+
+            // Stop the complexity tag's own focus/click from also triggering
+            // card navigation — tapping/clicking it should just reveal the
+            // tooltip, not immediately jump into the workspace.
+            const complexityTag = card.querySelector('.complexity-tag');
+            if (complexityTag) {
+                complexityTag.addEventListener('click', (e) => e.stopPropagation());
+                complexityTag.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+                });
+            }
 
             cardGrid.appendChild(card);
         });
@@ -675,6 +779,15 @@ function setupPlaybackButtons() {
 
 // --- 4. EVENT LISTENERS (ON LOAD) ---
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Complexity tag tooltip: Escape dismisses it (spec §5.2). Hover/mouseleave
+    // and blur are already handled by CSS :hover/:focus, this covers the one
+    // case CSS can't: an explicit Escape keypress while a tag is focused.
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.activeElement && document.activeElement.classList.contains('complexity-tag')) {
+            document.activeElement.blur();
+        }
+    });
     
     // Welcome Screen -> Dashboard
     const getStartedBtn = document.getElementById('get-started-btn');
