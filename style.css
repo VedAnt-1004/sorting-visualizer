@@ -127,6 +127,12 @@
         --motion-slow: 0ms;
     }
 
+    /* Phase 3: complexity tooltip appears instantly, no fade delay */
+    .complexity-tooltip {
+        transition: none;
+        transition-delay: 0s;
+    }
+
     /* Placeholder hooks for later phases — intentionally empty until the
        corresponding component ships:
        .ghost-trail { transition: none; opacity: 0; }
@@ -359,28 +365,68 @@ button {
     margin-bottom: 50px;
 }
 
+/* --- Bento card (Phase 3 / spec §1.2, §3, §5.2) ---
+   Category-pastel background comes from a modifier class the card also
+   carries (.algo-card-array etc, applied by JS to match the active
+   sidebar category) — the base rule below supplies a neutral fallback
+   in case that modifier is ever missing. Card is now a column layout
+   (title row, then a tags row) rather than a single space-between row,
+   to make room for the mode badge + complexity tag. */
 .algo-card {
-    background: white;
-    border: 1px solid #e2e8f0;
+    background: var(--canvas-alt);
+    border: var(--elevation-l2-border);
     padding: 24px 30px;
-    border-radius: 16px;
+    border-radius: var(--radius-md);
     width: 320px;
     /* Slightly wider cards */
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 14px;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--elevation-l2-shadow);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.algo-card.algo-card-array {
+    background: var(--cat-array);
+}
+
+.algo-card.algo-card-stack {
+    background: var(--cat-stack);
+}
+
+.algo-card.algo-card-queue {
+    background: var(--cat-queue);
+}
+
+.algo-card.algo-card-tree {
+    background: var(--cat-tree);
+}
+
+.algo-card.algo-card-graph {
+    background: var(--cat-graph);
 }
 
 .algo-card:hover {
     transform: translateY(-5px);
     border-color: #3b82f6;
-    box-shadow: 0 15px 30px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--elevation-l3-shadow);
 }
 
-.algo-card span:first-child {
+/* Card is a div[role="button"] now (see app.js comment for why), so the
+   native button focus ring is gone — restore an explicit one. */
+.algo-card:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 3px;
+}
+
+.algo-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.algo-card-title {
     font-weight: 700;
     color: #1e293b;
     font-size: 1.05rem;
@@ -395,6 +441,116 @@ button {
 .algo-card:hover .arrow {
     color: #3b82f6;
     transform: translateX(3px);
+}
+
+/* --- Tags row: Mode Indicator + Complexity tag (spec §2.3, §5.2) --- */
+.algo-card-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Neutral/chrome styling on purpose — differentiated by icon + text
+   ("▶ Algorithm" vs "⚡ Structure"), not by hue, so it never collides
+   with the category or state color systems. */
+.mode-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: rgba(15, 23, 42, 0.06);
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.complexity-tag {
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: rgba(15, 23, 42, 0.08);
+    color: #0f172a;
+    cursor: help;
+}
+
+.complexity-tag:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.complexity-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--sidebar-navy);
+    color: white;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: var(--elevation-l3-shadow);
+    width: max-content;
+    max-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--motion-fast) ease, visibility 0s linear var(--motion-fast);
+    transition-delay: 200ms;
+    /* spec §5.2 — delayed fade-in avoids flicker on fast mouse passes */
+    z-index: var(--elevation-l4-z);
+    pointer-events: none;
+}
+
+.complexity-tag:hover .complexity-tooltip,
+.complexity-tag:focus .complexity-tooltip,
+.complexity-tag:focus-visible .complexity-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- Category filter pill tabs (spec: top category filter tabs) ---
+   Only rendered by JS when a category has more than one sub-type to
+   switch between (e.g. Array: Searching/Sorting). */
+.filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.filter-pill {
+    background: white;
+    border: var(--elevation-l2-border);
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 8px 20px;
+    border-radius: var(--radius-full);
+    box-shadow: var(--elevation-l2-shadow);
+    transition: all 0.2s ease;
+}
+
+.filter-pill:hover {
+    color: #1e293b;
+    border-color: #3b82f6;
+}
+
+.filter-pill:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.filter-pill.active {
+    background: var(--sidebar-navy);
+    color: white;
+    border-color: var(--sidebar-navy);
 }
 
 /* --- SECTION 5: WORKSPACE FLOATING NAVBAR ---
@@ -812,6 +968,21 @@ code {
         gap: 16px;
     }
 
+    /* Filter pill tabs: same horizontal-scroll-strip pattern as the sidebar
+       nav above, since a wrapped multi-row pill list eats vertical space
+       that's already tight on mobile. */
+    .filter-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+        margin-bottom: 20px;
+    }
+
+    .filter-pill {
+        white-space: nowrap;
+    }
+
     /* Workspace navbar: let the pill wrap onto its own row instead of overlapping */
     .modern-nav {
         flex-wrap: wrap;
@@ -895,6 +1066,23 @@ code {
 
     .ds-category h3 {
         font-size: 1rem;
+    }
+
+    /* Bento card tags: same shrink treatment as the rest of phone typography */
+    .mode-badge,
+    .complexity-tag {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+    }
+
+    .complexity-tooltip {
+        max-width: 160px;
+        font-size: 0.7rem;
+    }
+
+    .filter-pill {
+        font-size: 0.78rem;
+        padding: 6px 14px;
     }
 
     .theory-panel h3 {
