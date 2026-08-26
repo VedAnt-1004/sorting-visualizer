@@ -58,6 +58,8 @@ function refreshCodeHighlight() {
 function onPlayerStep(step) {
     lastRenderedStep = step;
     refreshCodeHighlight();
+    updateTelemetry();
+    syncScrubber();
 }
 
 // --- 1. SCREEN NAVIGATION ENGINE ---
@@ -302,6 +304,27 @@ function buildWorkspace(algoId) {
     const statusBarEl = document.getElementById('status-bar');
     if (statusBarEl) statusBarEl.className = 'status-message hidden';
 
+    // Telemetry HUD only applies to Algorithm-mode (StepPlayer-driven) runs —
+    // Structure-mode (stack/queue/tree/graph) has no step sequence to track
+    // comparisons/swaps against, so it's hidden there (Phase 5 gives
+    // Structure mode its own dock instead).
+    const isAlgorithmMode = (data.type === 'search' || data.type === 'sorting');
+    const telemetryHud = document.getElementById('telemetry-hud');
+    if (telemetryHud) telemetryHud.classList.toggle('hidden', !isAlgorithmMode);
+    updateTelemetry(); // no activePlayer yet at this point, so this resets to defaults
+    syncScrubber();
+
+    // Close the theory drawer if it was left open from a previous workspace
+    const theoryDrawerEl = document.getElementById('theory-drawer');
+    const theoryScrimEl = document.getElementById('theory-scrim');
+    const theoryToggleBtnEl = document.getElementById('theory-toggle-btn');
+    if (theoryDrawerEl) {
+        theoryDrawerEl.classList.add('hidden');
+        theoryDrawerEl.setAttribute('aria-hidden', 'true');
+    }
+    if (theoryScrimEl) theoryScrimEl.classList.add('hidden');
+    if (theoryToggleBtnEl) theoryToggleBtnEl.setAttribute('aria-expanded', 'false');
+
     // Build the Control Panel
     const controlsZone = document.getElementById('dynamic-controls');
 
@@ -310,6 +333,10 @@ function buildWorkspace(algoId) {
                 <button id="prev-btn" class="dashboard-btn btn-secondary" disabled>◀ Prev</button>
                 <button id="play-btn" class="dashboard-btn btn-blue" disabled>▶ Play</button>
                 <button id="next-btn" class="dashboard-btn btn-secondary" disabled>Next ▶</button>
+            </div>
+            <div class="control-row center-content scrubber-row">
+                <label class="speed-label" for="step-scrubber">Timeline</label>
+                <input type="range" id="step-scrubber" min="0" max="0" value="0" step="1" disabled>
             </div>`;
 
     if (data.type === "search") {
@@ -735,18 +762,81 @@ function startPlayer(generatorFn, ...args) {
     updatePlaybackButtons();
 }
 
+// --- Telemetry HUD (spec: Comparisons / Swaps / Current Index) ---
+// Derived from the player's step cache rather than a separate running
+// counter, so Prev/scrubbing backward shows historically-accurate counts
+// for wherever the player currently is — not just "highest reached so far".
+function updateTelemetry() {
+    const comparisonsEl = document.getElementById('telemetry-comparisons');
+    const swapsEl = document.getElementById('telemetry-swaps');
+    const indicesEl = document.getElementById('telemetry-indices');
+    if (!comparisonsEl || !swapsEl || !indicesEl) return;
+
+    if (!activePlayer) {
+        comparisonsEl.innerText = '0';
+        swapsEl.innerText = '0';
+        indicesEl.innerText = '—';
+        return;
+    }
+
+    const stepsSoFar = activePlayer.cache.slice(0, activePlayer.pointer + 1);
+    const comparisonPhases = ['compare', 'checking', 'compare-shift'];
+    const comparisons = stepsSoFar.filter(s => comparisonPhases.includes(s.phase)).length;
+    const swaps = stepsSoFar.filter(s => s.phase === 'swap').length;
+
+    const last = stepsSoFar[stepsSoFar.length - 1];
+    let indicesText = '—';
+    if (last && last.highlights) {
+        const idxs = [...(last.highlights.current || []), ...(last.highlights.comparing || [])];
+        if (idxs.length) {
+            indicesText = idxs.join(', ');
+        } else if (last.highlights.found !== undefined && last.highlights.found !== null) {
+            indicesText = String(last.highlights.found);
+        }
+    }
+
+    comparisonsEl.innerText = String(comparisons);
+    swapsEl.innerText = String(swaps);
+    indicesEl.innerText = indicesText;
+}
+
+// --- Timeline scrubber sync ---
+// Grows its max as the run progresses (the generator is lazy, so the total
+// step count isn't known until the run finishes) and reflects the player's
+// current pointer position.
+function syncScrubber() {
+    const scrubber = document.getElementById('step-scrubber');
+    if (!scrubber) return;
+    if (!activePlayer) {
+        scrubber.disabled = true;
+        scrubber.max = 0;
+        scrubber.value = 0;
+        return;
+    }
+    scrubber.disabled = false;
+    scrubber.max = Math.max(activePlayer.cache.length - 1, 0);
+    scrubber.value = activePlayer.pointer;
+}
+
 // Enables/disables Prev/Next/Play based on the player's current position.
 function updatePlaybackButtons() {
     const prevBtn = document.getElementById('prev-btn');
     const playBtn = document.getElementById('play-btn');
     const nextBtn = document.getElementById('next-btn');
-    if (!prevBtn || !playBtn || !nextBtn) return;
 
-    const hasPlayer = !!activePlayer;
-    prevBtn.disabled = !hasPlayer || activePlayer.isAtStart();
-    nextBtn.disabled = !hasPlayer || activePlayer.isAtEnd();
-    playBtn.disabled = !hasPlayer || activePlayer.isAtEnd();
-    playBtn.innerText = hasPlayer && activePlayer.playing ? '⏸ Pause' : '▶ Play';
+    if (prevBtn && playBtn && nextBtn) {
+        const hasPlayer = !!activePlayer;
+        prevBtn.disabled = !hasPlayer || activePlayer.isAtStart();
+        nextBtn.disabled = !hasPlayer || activePlayer.isAtEnd();
+        playBtn.disabled = !hasPlayer || activePlayer.isAtEnd();
+        playBtn.innerText = hasPlayer && activePlayer.playing ? '⏸ Pause' : '▶ Play';
+    }
+
+    // Folded in here too (not just onPlayerStep) so every call site that
+    // already calls updatePlaybackButtons — Reset, manual Prev/Next, etc —
+    // gets telemetry/scrubber sync for free without touching those call sites.
+    updateTelemetry();
+    syncScrubber();
 }
 
 // Wires the Prev/Play/Next buttons once per workspace build (buttons are recreated each time).
@@ -775,6 +865,18 @@ function setupPlaybackButtons() {
             updatePlaybackButtons();
         }
     });
+
+    // Timeline scrubber (spec §2.1) — dragging seeks the player directly to
+    // that step index and pauses any active autoplay.
+    const scrubber = document.getElementById('step-scrubber');
+    if (scrubber) {
+        scrubber.addEventListener('input', () => {
+            if (!activePlayer) return;
+            activePlayer.pause();
+            activePlayer.seekTo(parseInt(scrubber.value, 10));
+            updatePlaybackButtons();
+        });
+    }
 }
 
 // --- 4. EVENT LISTENERS (ON LOAD) ---
@@ -786,6 +888,43 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && document.activeElement && document.activeElement.classList.contains('complexity-tag')) {
             document.activeElement.blur();
+        }
+    });
+
+    // Interim Theory Drawer toggle (index.html has the "why interim" note;
+    // full slide-in treatment + mobile full-screen sheet lands in Phase 7).
+    const theoryToggleBtn = document.getElementById('theory-toggle-btn');
+    const theoryDrawer = document.getElementById('theory-drawer');
+    const theoryScrim = document.getElementById('theory-scrim');
+    const theoryCloseBtn = document.getElementById('theory-close-btn');
+
+    function openTheoryDrawer() {
+        if (!theoryDrawer || !theoryScrim || !theoryToggleBtn) return;
+        theoryDrawer.classList.remove('hidden');
+        theoryScrim.classList.remove('hidden');
+        theoryDrawer.setAttribute('aria-hidden', 'false');
+        theoryToggleBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeTheoryDrawer() {
+        if (!theoryDrawer || !theoryScrim || !theoryToggleBtn) return;
+        theoryDrawer.classList.add('hidden');
+        theoryScrim.classList.add('hidden');
+        theoryDrawer.setAttribute('aria-hidden', 'true');
+        theoryToggleBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    if (theoryToggleBtn) {
+        theoryToggleBtn.addEventListener('click', () => {
+            const isOpen = theoryDrawer && !theoryDrawer.classList.contains('hidden');
+            if (isOpen) closeTheoryDrawer(); else openTheoryDrawer();
+        });
+    }
+    if (theoryCloseBtn) theoryCloseBtn.addEventListener('click', closeTheoryDrawer);
+    if (theoryScrim) theoryScrim.addEventListener('click', closeTheoryDrawer);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && theoryDrawer && !theoryDrawer.classList.contains('hidden')) {
+            closeTheoryDrawer();
         }
     });
     
