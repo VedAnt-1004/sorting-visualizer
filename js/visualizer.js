@@ -22,6 +22,7 @@ function getSpeed() {
  */
 function drawArray(arr) {
     visualizerContainer.innerHTML = ''; // Clear the board
+    previousActiveIndices = []; // fresh run — no ghost trail carries over (spec §5.1)
 
     arr.forEach((value, index) => {
         // 1. Create the outer wrapper
@@ -79,10 +80,13 @@ function renderStep(step) {
         });
     }
 
+    // Ghost trail (spec §5.1) reads the PREVIOUS step's active indices before
+    // we clear them below, so it must run first.
+    applyGhostTrail(blocks, highlights);
+
     // Clear all transient states before applying this step's highlights
     blocks.forEach(b => {
-        b.classList.remove('comparing', 'current', 'sorted', 'found');
-        b.style.opacity = '1';
+        b.classList.remove('comparing', 'current', 'sorted', 'found', 'dimmed');
         b.style.transform = '';
     });
 
@@ -90,7 +94,7 @@ function renderStep(step) {
     (highlights.comparing || []).forEach(i => blocks[i] && blocks[i].classList.add('comparing'));
     (highlights.current || []).forEach(i => blocks[i] && blocks[i].classList.add('current'));
     (highlights.dimmed || []).forEach(i => {
-        if (blocks[i]) blocks[i].style.opacity = '0.25';
+        if (blocks[i]) blocks[i].classList.add('dimmed');
     });
     if (highlights.found !== undefined && highlights.found !== null) {
         blocks[highlights.found] && blocks[highlights.found].classList.add('found');
@@ -101,6 +105,41 @@ function renderStep(step) {
         statusBar.className = `status-message ${statusClass}`;
         statusBar.innerText = message;
     }
+}
+
+// ==========================================
+// STEP-SCRUB GHOST TRAIL (spec §5.1)
+// ==========================================
+// Tracks which indices were amber ("comparing") or blue ("current") on the
+// PREVIOUS render. On the next render, any of those indices that are no
+// longer active get a fading ring "ghost" so a swap/comparison doesn't feel
+// like an instant cut. Only the immediately-prior step ghosts — not a full
+// history — to avoid clutter over a long run. Reset in drawArray() whenever
+// a fresh run/redraw happens, so trails never bleed across runs.
+let previousActiveIndices = [];
+
+function applyGhostTrail(blocks, newHighlights) {
+    const stillActive = new Set([...(newHighlights.comparing || []), ...(newHighlights.current || [])]);
+
+    previousActiveIndices.forEach(({ index, color }) => {
+        if (stillActive.has(index)) return; // still highlighted this step, no ghost needed
+        const block = blocks[index];
+        if (!block) return;
+
+        block.classList.remove('ghost-trail-amber', 'ghost-trail-blue', 'ghost-trail-fade');
+        block.classList.add('ghost-trail', `ghost-trail-${color}`);
+        // Next frame: trigger the fade-out transition
+        requestAnimationFrame(() => block.classList.add('ghost-trail-fade'));
+        // After the transition completes, clean the classes up entirely
+        setTimeout(() => {
+            block.classList.remove('ghost-trail', 'ghost-trail-amber', 'ghost-trail-blue', 'ghost-trail-fade');
+        }, 450);
+    });
+
+    previousActiveIndices = [
+        ...(newHighlights.comparing || []).map(index => ({ index, color: 'amber' })),
+        ...(newHighlights.current || []).map(index => ({ index, color: 'blue' }))
+    ];
 }
 
 // ==========================================
@@ -173,6 +212,31 @@ class StepPlayer {
     pause() {
         this.playing = false;
         clearTimeout(this._timer);
+    }
+
+    // Jumps directly to an arbitrary step index (used by the timeline
+    // scrubber). Walks forward via _pullNext (cached or freshly generated,
+    // same as next()) or backward by moving the pointer within the cache —
+    // but renders only once, at the final position, instead of once per
+    // intermediate step like repeated next()/prev() calls would.
+    seekTo(targetIndex) {
+        this.pause();
+        if (targetIndex < 0) targetIndex = 0;
+
+        while (this.pointer < targetIndex) {
+            const pulled = this._pullNext();
+            if (!pulled) break; // generator exhausted before reaching target
+        }
+        while (this.pointer > targetIndex) {
+            this.pointer--;
+        }
+
+        const step = this.cache[this.pointer];
+        if (step) {
+            renderStep(step);
+            if (this.onStep) this.onStep(step);
+        }
+        return step;
     }
 
     isAtStart() {
