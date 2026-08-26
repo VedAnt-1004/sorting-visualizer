@@ -48,23 +48,27 @@
             <div class="nav-center">
                 <span id="nav-title" class="current-algo-pill">ALGORITHM</span>
             </div>
-            <div class="nav-spacer"></div>
+            <div class="nav-spacer">
+                <button id="theory-toggle-btn" class="theory-toggle-btn" aria-expanded="false"
+                    aria-controls="theory-drawer">ℹ️ How it Works</button>
+            </div>
         </header>
 
-        <div class="theory-wrapper">
-            <div class="theory-panel">
-                <h3>How it Works</h3>
-                <p id="algo-description">Algorithm description...</p>
-                <div class="complexity-badges">
-                    <div class="badge">⏱️ Worst Case: <span id="time-worst" class="time-color">O(n)</span></div>
-                    <div class="badge">💾 Space Complexity: <span id="space-complexity" class="space-color">O(1)</span>
-                    </div>
+        <!-- Interim theory panel: toggled overlay for now (button + panel + scrim).
+             Becomes the fully spec'd slide-in Theory Drawer with mobile full-screen
+             sheet in Phase 7 — this version exists now so the zero-scroll split-pane
+             below doesn't have to share vertical space with a permanently-open panel. -->
+        <div id="theory-scrim" class="theory-scrim hidden"></div>
+        <div id="theory-drawer" class="theory-drawer hidden" role="dialog" aria-label="How it works"
+            aria-hidden="true">
+            <button id="theory-close-btn" class="theory-close-btn" aria-label="Close">✕</button>
+            <h3>How it Works</h3>
+            <p id="algo-description">Algorithm description...</p>
+            <div class="complexity-badges">
+                <div class="badge">⏱️ Worst Case: <span id="time-worst" class="time-color">O(n)</span></div>
+                <div class="badge">💾 Space Complexity: <span id="space-complexity" class="space-color">O(1)</span>
                 </div>
             </div>
-        </div>
-
-        <div class="controls-wrapper">
-            <div id="dynamic-controls" class="controls-panel"></div>
         </div>
 
         <div class="visualizer-legend" id="visualizer-legend">
@@ -74,23 +78,52 @@
             <span class="legend-item"><span class="legend-dot legend-dot-dimmed"></span>Discarded / Out of range</span>
         </div>
 
-        <main class="visualizer-arena">
-            <div id="status-bar" class="status-message hidden"></div>
-            <div id="visualizer-container"></div>
+        <!-- Split-pane per spec §4.1: left stage (arena + telemetry) / right stage
+             (code inspector). Zero-scroll (100vh, overflow hidden) applies at
+             ≥1024px via CSS only — no layout JS needed. -->
+        <main class="workspace-split-pane">
+            <section class="workspace-left-stage">
+                <div class="visualizer-arena">
+                    <div id="status-bar" class="status-message hidden"></div>
+                    <div id="visualizer-container"></div>
+                </div>
+
+                <div class="telemetry-hud" id="telemetry-hud">
+                    <div class="telemetry-stat">
+                        <span class="telemetry-label">Comparisons</span>
+                        <span class="telemetry-value" id="telemetry-comparisons">0</span>
+                    </div>
+                    <div class="telemetry-stat">
+                        <span class="telemetry-label">Swaps</span>
+                        <span class="telemetry-value" id="telemetry-swaps">0</span>
+                    </div>
+                    <div class="telemetry-stat">
+                        <span class="telemetry-label">Current Index</span>
+                        <span class="telemetry-value" id="telemetry-indices">—</span>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="workspace-right-stage">
+                <div class="code-panel">
+                    <div class="code-header">
+                        <div class="code-tabs">
+                            <button class="tab-btn active">JS</button>
+                            <button class="tab-btn">Python</button>
+                            <button class="tab-btn">C++</button>
+                        </div>
+                        <button id="copy-btn" class="copy-btn">📋 Copy Code</button>
+                    </div>
+                    <pre><code id="code-snippet"></code></pre>
+                </div>
+            </aside>
         </main>
 
-        <div class="code-wrapper">
-            <div class="code-panel">
-                <div class="code-header">
-                    <div class="code-tabs">
-                        <button class="tab-btn active">JS</button>
-                        <button class="tab-btn">Python</button>
-                        <button class="tab-btn">C++</button>
-                    </div>
-                    <button id="copy-btn" class="copy-btn">📋 Copy Code</button>
-                </div>
-                <pre><code id="code-snippet"></code></pre>
-            </div>
+        <!-- Floating Bottom Control Dock (spec §2). Content is rebuilt per
+             algorithm by app.js — this wrapper just supplies the floating
+             dock chrome. -->
+        <div class="controls-wrapper">
+            <div id="dynamic-controls" class="controls-panel"></div>
         </div>
     </section>
 
