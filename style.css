@@ -133,12 +133,29 @@
         transition-delay: 0s;
     }
 
-    /* Placeholder hooks for later phases — intentionally empty until the
+    /* Phase 4: amber pulse becomes a static highlight (still colored,
+       still ringed — just no scale animation) */
+    .array-block.comparing {
+        animation: none;
+    }
+
+    /* Phase 4: ghost trail shows/hides instantly instead of fading */
+    .array-block.ghost-trail {
+        transition: none;
+    }
+
+    /* Phase 4: found/sorted/current skip the translateY elevation-pop
+       motion but keep every other visual cue (color, outline, checkmark) */
+    .array-block.found,
+    .array-block.sorted,
+    .array-block.current,
+    .array-block.comparing {
+        transform: none !important;
+    }
+
+    /* Placeholder hook for later phases — intentionally empty until the
        corresponding component ships:
-       .ghost-trail { transition: none; opacity: 0; }
-       .state-amber.pulsing { animation: none; }
-       .array-block.found { transform: none; }
-       .theory-drawer { transition: none; }
+       .theory-drawer-slide { transition: none; }
     */
 }
 
@@ -610,19 +627,123 @@ button {
     flex: 1;
 }
 
-/* --- SECTION 6: THEORY & CONTROL PANELS --- */
-.theory-panel,
-.controls-panel,
-.code-panel {
-    background: #0f172a;
-    padding: 30px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    max-width: 1100px;
-    margin: 0 auto 30px auto;
+/* --- SECTION 6: WORKSPACE SPLIT-PANE SHELL (Phase 4 / spec §4.1) ---
+   Zero-scroll only applies at desktop widths (≥1024px) — see the media
+   query near the bottom of this section. Below that, the screen keeps
+   normal document flow/scroll (full mobile stacking + tab-switcher
+   refinement is a later pass; for now this is a safe non-broken fallback
+   that already satisfies "not zero-scroll on mobile"). */
+.workspace-split-pane {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    max-width: 1300px;
+    width: calc(100% - 40px);
+    margin: 0 auto;
+    min-height: 0;
 }
 
-.theory-panel h3 {
+.workspace-left-stage {
+    flex: 1 1 60%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.workspace-right-stage {
+    flex: 1 1 40%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+    #workspace-screen.active {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        padding-bottom: 96px;
+        /* clears the floating dock so it never overlaps the last row of content */
+    }
+
+    .workspace-split-pane {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    .workspace-left-stage {
+        min-height: 0;
+    }
+
+    .workspace-right-stage {
+        min-height: 0;
+        overflow: hidden;
+        /* the code panel inside scrolls internally — see .code-panel pre */
+    }
+}
+
+/* --- Interim Theory panel (spec §4.1's drawer, simplified for now — see
+   the HTML comment above #theory-drawer for why; full slide-in + mobile
+   sheet treatment is Phase 7). Toggled via #theory-toggle-btn. --- */
+.theory-toggle-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 8px 18px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.theory-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.theory-scrim {
+    position: fixed;
+    inset: 0;
+    background: var(--elevation-l4-scrim);
+    z-index: var(--elevation-l4-z);
+}
+
+.theory-drawer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #0f172a;
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    max-width: 560px;
+    width: calc(100% - 40px);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    box-shadow: var(--elevation-l4-shadow);
+    z-index: calc(var(--elevation-l4-z) + 1);
+}
+
+.theory-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.theory-close-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.theory-drawer h3 {
     font-size: 1.6rem;
     font-weight: 800;
     color: #3b82f6;
@@ -639,7 +760,7 @@ button {
 
 .time-color,
 .space-color {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-weight: 700;
     font-size: 0.95rem;
 }
@@ -658,11 +779,48 @@ button {
     font-size: 0.9rem;
 }
 
+/* --- Floating Bottom Control Dock (spec §2, §3 L3) ---
+   Desktop: genuinely floating/fixed, bottom-centered, glassmorphic.
+   Below 1024px: stays in normal document flow (not fixed) — avoids
+   overlap bugs on short mobile viewports; full icon-only mobile
+   compression is a later responsive pass. */
+.controls-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+}
+
 .controls-panel {
+    background: rgba(11, 17, 32, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 24px 30px;
+    border-radius: var(--radius-lg);
+    border: var(--elevation-l3-border);
+    box-shadow: var(--elevation-l3-shadow);
+    max-width: 1100px;
+    width: calc(100% - 40px);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
+}
+
+@media (min-width: 1024px) {
+    .controls-wrapper {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        z-index: var(--elevation-l3-z);
+        margin: 0;
+        pointer-events: none;
+        /* only the dock itself should capture clicks, not the full-width row */
+    }
+
+    .controls-panel {
+        pointer-events: auto;
+    }
 }
 
 .control-row {
@@ -699,13 +857,31 @@ button {
     background: #64748b;
 }
 
-/* --- SECTION 7: VISUALIZER STAGE (Index Recovery) --- */
+/* Timeline scrubber (spec §2.1) */
+.scrubber-row {
+    width: 100%;
+    max-width: 360px;
+    align-items: center;
+    gap: 12px;
+}
+
+.scrubber-row #step-scrubber {
+    flex: 1;
+    width: auto;
+}
+
+.scrubber-row #step-scrubber:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* --- SECTION 7: VISUALIZER STAGE --- */
 .visualizer-arena {
     background: #0f172a;
-    max-width: 1100px;
-    margin: 0 auto 30px auto;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 360px;
     border-radius: 24px;
-    min-height: 480px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -715,6 +891,42 @@ button {
     /* CRITICAL for the absolute pill */
     border: 1px solid #1e293b;
     overflow: hidden;
+}
+
+/* --- Live Telemetry HUD (spec: Comparisons / Swaps / Current Index) ---
+   Algorithm-mode only — hidden by app.js for Structure-mode workspaces. */
+.telemetry-hud {
+    display: flex;
+    gap: 12px;
+    background: #0f172a;
+    border-radius: var(--radius-md);
+    border: var(--elevation-l2-border);
+    box-shadow: var(--elevation-l2-shadow);
+    padding: 14px 20px;
+    flex: 0 0 auto;
+}
+
+.telemetry-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.telemetry-label {
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.telemetry-value {
+    font-family: var(--font-mono);
+    color: #3b82f6;
+    font-size: 1.15rem;
+    font-weight: 700;
 }
 
 .status-message {
@@ -791,6 +1003,7 @@ button {
     font-size: 1.3rem;
     border-radius: 12px;
     border: 2px solid #334155;
+    position: relative;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -798,39 +1011,105 @@ button {
 .block-index {
     color: #64748b;
     /* Slate gray */
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 0.85rem;
     font-weight: 500;
     opacity: 1 !important;
     display: block !important;
 }
 
-/* --- STATES --- */
+/* --- STATES (Phase 4 / spec §1.3) ---
+   Colors now come from the state tokens, and each state carries a
+   non-color differentiator so it doesn't rely on hue alone: found/sorted
+   gets a checkmark badge, comparing pulses + a dashed ring, current gets
+   a static solid ring, dimmed desaturates as well as fading. */
 .array-block.found {
-    background: #10b981 !important;
+    background: var(--state-emerald) !important;
     color: white !important;
-    border-color: #10b981 !important;
+    border-color: var(--state-emerald) !important;
     transform: translateY(-15px) scale(1.05);
     box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
 }
 
+.array-block.found::after,
+.array-block.sorted::after {
+    content: '✓';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--state-emerald);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px #0f172a;
+}
+
 .array-block.current {
-    background: #3b82f6 !important;
-    border-color: #3b82f6 !important;
+    background: var(--state-blue) !important;
+    border-color: var(--state-blue) !important;
     transform: translateY(-10px);
+    outline: 2px solid var(--state-blue);
+    outline-offset: 3px;
+    box-shadow: 0 0 16px rgba(59, 130, 246, 0.35);
 }
 
 /* Sorting-specific states */
 .array-block.comparing {
-    background: #f59e0b !important;
-    border-color: #f59e0b !important;
+    background: var(--state-amber) !important;
+    border-color: var(--state-amber) !important;
     transform: translateY(-10px);
     box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+    outline: 2px dashed var(--state-amber);
+    outline-offset: 3px;
+    animation: pulse-amber var(--motion-slow) ease-in-out infinite;
+}
+
+@keyframes pulse-amber {
+
+    0%,
+    100% {
+        transform: translateY(-10px) scale(1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.08);
+    }
 }
 
 .array-block.sorted {
-    background: #10b981 !important;
-    border-color: #10b981 !important;
+    background: var(--state-emerald) !important;
+    border-color: var(--state-emerald) !important;
+}
+
+.array-block.dimmed {
+    opacity: var(--state-dim-opacity);
+    filter: grayscale(var(--state-dim-grayscale));
+}
+
+/* --- Step-scrub ghost trail (spec §5.1) ---
+   Implemented as a fading ring (rather than a literal cloned overlay) on
+   the block that just lost its comparing/current highlight — cheap, no
+   extra DOM, same "doesn't feel like an instant cut" effect. */
+.array-block.ghost-trail {
+    transition: box-shadow var(--motion-base) ease-out;
+}
+
+.array-block.ghost-trail-amber {
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+}
+
+.array-block.ghost-trail-blue {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.array-block.ghost-trail.ghost-trail-fade {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
 }
 
 /* Speed slider */
@@ -852,11 +1131,24 @@ input[type="range"] {
 }
 
 /* --- SECTION 8: CODE EDITOR --- */
+.code-panel {
+    background: #0f172a;
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    border: var(--elevation-l2-border);
+    box-shadow: var(--elevation-l2-shadow);
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
 .code-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex: 0 0 auto;
 }
 
 .tab-btn {
@@ -878,10 +1170,14 @@ input[type="range"] {
     padding: 25px;
     border-radius: 12px;
     overflow-x: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    margin: 0;
 }
 
 code {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     color: #cbd5e1;
     line-height: 1.6;
 }
@@ -1001,14 +1297,24 @@ code {
         margin-top: 10px;
     }
 
+    /* Split-pane: stack left/right stages instead of squeezing them
+       side-by-side — the true 60/40 split is a desktop-only promise. */
+    .workspace-split-pane {
+        flex-direction: column;
+    }
+
+    .workspace-right-stage {
+        max-height: 420px;
+    }
+
     /* Panels: fixed 1100px max-width overflows a phone viewport — go fluid with side margins */
-    .theory-panel,
+    .theory-drawer {
+        padding: 20px;
+    }
+
     .controls-panel,
     .code-panel,
     .visualizer-arena {
-        margin-left: 16px;
-        margin-right: 16px;
-        max-width: calc(100% - 32px);
         padding: 20px;
     }
 
@@ -1085,7 +1391,7 @@ code {
         padding: 6px 14px;
     }
 
-    .theory-panel h3 {
+    .theory-drawer h3 {
         font-size: 1.3rem;
     }
 
@@ -1109,6 +1415,24 @@ code {
 
     input[type="range"] {
         width: 140px;
+    }
+
+    .theory-toggle-btn {
+        font-size: 0.72rem;
+        padding: 6px 14px;
+    }
+
+    .telemetry-hud {
+        padding: 10px 14px;
+        gap: 6px;
+    }
+
+    .telemetry-value {
+        font-size: 0.95rem;
+    }
+
+    .telemetry-label {
+        font-size: 0.62rem;
     }
 
     .dashboard-btn {
