@@ -122,6 +122,11 @@
         <!-- Floating Bottom Control Dock (spec §2). Content is rebuilt per
              algorithm by app.js — this wrapper just supplies the floating
              dock chrome. -->
+        <!-- Structure Mode session history (spec §2.2) — hidden/empty for
+             Algorithm-mode workspaces, populated by app.js as stack/queue/
+             tree actions happen. -->
+        <div id="session-history" class="session-history hidden"></div>
+
         <div class="controls-wrapper">
             <div id="dynamic-controls" class="controls-panel"></div>
         </div>
