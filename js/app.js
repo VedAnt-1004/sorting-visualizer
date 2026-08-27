@@ -313,6 +313,7 @@ function buildWorkspace(algoId) {
     if (telemetryHud) telemetryHud.classList.toggle('hidden', !isAlgorithmMode);
     updateTelemetry(); // no activePlayer yet at this point, so this resets to defaults
     syncScrubber();
+    resetSessionHistory();
 
     // Close the theory drawer if it was left open from a previous workspace
     const theoryDrawerEl = document.getElementById('theory-drawer');
@@ -499,19 +500,24 @@ function buildWorkspace(algoId) {
             const value = readValue();
             if (value === null) return;
             pushToStack(value);
+            logSessionAction(`Pushed ${value}`);
             valueInput.value = '';
         });
 
         document.getElementById('pop-btn').addEventListener('click', () => {
+            const poppedValue = stackState[stackState.length - 1];
             popFromStack();
+            if (poppedValue !== undefined) logSessionAction(`Popped ${poppedValue}`);
         });
 
         document.getElementById('peek-btn').addEventListener('click', () => {
             peekStack();
+            if (stackState.length > 0) logSessionAction(`Peeked ${stackState[stackState.length - 1]}`);
         });
 
-        document.getElementById('clear-btn').addEventListener('click', () => {
+        wireClearConfirm(document.getElementById('clear-btn'), () => {
             clearStack();
+            logSessionAction('Cleared stack');
         });
 
         // Enter key pushes, same as clicking Push
@@ -552,19 +558,24 @@ function buildWorkspace(algoId) {
             const value = readValue();
             if (value === null) return;
             enqueue(value);
+            logSessionAction(`Enqueued ${value}`);
             valueInput.value = '';
         });
 
         document.getElementById('dequeue-btn').addEventListener('click', () => {
+            const dequeuedValue = queueState[0];
             dequeue();
+            if (dequeuedValue !== undefined) logSessionAction(`Dequeued ${dequeuedValue}`);
         });
 
         document.getElementById('peek-btn').addEventListener('click', () => {
             peekQueue();
+            if (queueState.length > 0) logSessionAction(`Peeked ${queueState[0]}`);
         });
 
-        document.getElementById('clear-btn').addEventListener('click', () => {
+        wireClearConfirm(document.getElementById('clear-btn'), () => {
             clearQueue();
+            logSessionAction('Cleared queue');
         });
 
         valueInput.addEventListener('keydown', (e) => {
@@ -611,6 +622,7 @@ function buildWorkspace(algoId) {
             const value = readValue();
             if (value === null) return;
             await insertNode(value);
+            logSessionAction(`Inserted ${value}`);
             valueInput.value = '';
         });
 
@@ -618,12 +630,14 @@ function buildWorkspace(algoId) {
             const value = readValue();
             if (value === null) return;
             searchTree(value);
+            logSessionAction(`Searched ${value}`);
         });
 
         document.getElementById('delete-btn').addEventListener('click', () => {
             const value = readValue();
             if (value === null) return;
             deleteNode(value);
+            logSessionAction(`Deleted ${value}`);
             valueInput.value = '';
         });
 
@@ -636,22 +650,27 @@ function buildWorkspace(algoId) {
             for (const v of values) {
                 await insertNode(v);
             }
+            logSessionAction('Generated random tree');
         });
 
-        document.getElementById('clear-btn').addEventListener('click', () => {
+        wireClearConfirm(document.getElementById('clear-btn'), () => {
             clearTree();
+            logSessionAction('Cleared tree');
         });
 
         document.getElementById('inorder-btn').addEventListener('click', () => {
             runTraversal('inorder');
+            logSessionAction('In-Order traversal');
         });
 
         document.getElementById('preorder-btn').addEventListener('click', () => {
             runTraversal('preorder');
+            logSessionAction('Pre-Order traversal');
         });
 
         document.getElementById('postorder-btn').addEventListener('click', () => {
             runTraversal('postorder');
+            logSessionAction('Post-Order traversal');
         });
 
         valueInput.addEventListener('keydown', (e) => {
@@ -740,7 +759,7 @@ function buildWorkspace(algoId) {
             generateRandomGraph();
         });
 
-        document.getElementById('clear-btn').addEventListener('click', () => {
+        wireClearConfirm(document.getElementById('clear-btn'), () => {
             clearGraph();
         });
     }
@@ -877,6 +896,77 @@ function setupPlaybackButtons() {
             updatePlaybackButtons();
         });
     }
+}
+
+// --- 3c. STRUCTURE MODE DOCK HELPERS (Stack/Queue/Tree — spec §2.2) ---
+
+// Clear is destructive, so the first click swaps the button to "Confirm?"
+// instead of clearing immediately; a second click (within 3s) actually
+// clears. No modal — just an inline label swap — so this can't break the
+// zero-scroll layout. Clicking elsewhere doesn't cancel it (no outside-click
+// listener), but it auto-reverts after the timeout either way.
+function wireClearConfirm(button, onConfirm) {
+    if (!button) return;
+    const originalLabel = button.innerText;
+    let confirming = false;
+    let revertTimer = null;
+
+    button.addEventListener('click', () => {
+        if (!confirming) {
+            confirming = true;
+            button.innerText = 'Confirm?';
+            button.classList.add('confirm-pending');
+            revertTimer = setTimeout(() => {
+                confirming = false;
+                button.innerText = originalLabel;
+                button.classList.remove('confirm-pending');
+            }, 3000);
+        } else {
+            clearTimeout(revertTimer);
+            confirming = false;
+            button.innerText = originalLabel;
+            button.classList.remove('confirm-pending');
+            onConfirm();
+        }
+    });
+}
+
+// Session history strip: a running log of actions taken during this
+// Structure-mode session (Push 4 → Pop 4 → ...). Purely in-memory, reset
+// every time a new workspace loads — spec leaves persistence undecided,
+// and there's no backend to persist to anyway.
+let sessionHistory = [];
+
+function renderSessionHistory() {
+    const strip = document.getElementById('session-history');
+    if (!strip) return;
+
+    if (sessionHistory.length === 0) {
+        strip.innerHTML = '';
+        strip.classList.add('hidden');
+        return;
+    }
+
+    strip.classList.remove('hidden');
+    strip.innerHTML = sessionHistory
+        .map((action, i) => {
+            const isLatest = i === sessionHistory.length - 1;
+            return `<span class="session-chip${isLatest ? ' session-chip-latest' : ''}">${action}</span>`;
+        })
+        .join('<span class="session-arrow">\u2192</span>');
+
+    strip.scrollLeft = strip.scrollWidth; // keep the newest entry in view
+}
+
+function logSessionAction(text) {
+    sessionHistory.push(text);
+    if (sessionHistory.length > 12) sessionHistory.shift(); // cap so the strip doesn't grow unbounded
+    renderSessionHistory();
+}
+
+function resetSessionHistory() {
+    sessionHistory = [];
+    renderSessionHistory();
 }
 
 // --- 4. EVENT LISTENERS (ON LOAD) ---
