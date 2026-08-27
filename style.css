@@ -857,6 +857,13 @@ button {
     background: #64748b;
 }
 
+/* Clear inline-confirm (spec §2.2) — first click swaps the button into
+   this state instead of clearing immediately; same button, no modal, so
+   the zero-scroll layout never has to accommodate a popup. */
+.dashboard-btn.confirm-pending {
+    background: #b91c1c;
+}
+
 /* Timeline scrubber (spec §2.1) */
 .scrubber-row {
     width: 100%;
@@ -873,6 +880,44 @@ button {
 .scrubber-row #step-scrubber:disabled {
     opacity: 0.35;
     cursor: not-allowed;
+}
+
+/* --- Session history strip (spec §2.2, optional) ---
+   Structure-mode only; hidden/empty for Algorithm-mode workspaces. Sits
+   just above the control dock in source order. */
+.session-history {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 1100px;
+    width: calc(100% - 40px);
+    margin: 0 auto 12px auto;
+    padding: 2px 4px;
+}
+
+.session-chip {
+    flex: 0 0 auto;
+    background: rgba(15, 23, 42, 0.06);
+    color: #334155;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+}
+
+.session-chip-latest {
+    background: var(--sidebar-navy);
+    color: white;
+}
+
+.session-arrow {
+    flex: 0 0 auto;
+    color: #94a3b8;
+    font-size: 0.8rem;
 }
 
 /* --- SECTION 7: VISUALIZER STAGE --- */
@@ -1488,8 +1533,8 @@ code {
 }
 
 .stack-side-label {
-    color: #3b82f6;
-    font-family: 'JetBrains Mono', monospace;
+    color: var(--state-blue);
+    font-family: var(--font-mono);
     font-weight: 700;
     font-size: 0.85rem;
     white-space: nowrap;
@@ -1514,7 +1559,7 @@ code {
 .queue-label-front,
 .queue-label-rear,
 .queue-label-spacer {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-weight: 700;
     font-size: 0.78rem;
     white-space: nowrap;
@@ -1522,15 +1567,15 @@ code {
 }
 
 .queue-label-front {
-    color: #10b981;
+    color: var(--state-emerald);
 }
 
 .queue-label-rear {
-    color: #f59e0b;
+    color: var(--state-amber);
 }
 
 .queue-label-front.queue-label-rear {
-    color: #3b82f6;
+    color: var(--state-blue);
 }
 
 .queue-label-spacer {
@@ -1540,7 +1585,7 @@ code {
 /* --- Shared: empty-state message + pop/dequeue exit animation --- */
 .empty-structure-msg {
     color: #64748b;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-mono);
     font-size: 1rem;
     text-align: center;
     padding: 20px;
@@ -1624,20 +1669,20 @@ code {
 
 .tree-node text {
     fill: white;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-ui);
     font-weight: 700;
     font-size: 15px;
     pointer-events: none;
 }
 
 .tree-node.comparing circle {
-    fill: #f59e0b;
-    stroke: #f59e0b;
+    fill: var(--state-amber);
+    stroke: var(--state-amber);
 }
 
 .tree-node.found circle {
-    fill: #10b981;
-    stroke: #10b981;
+    fill: var(--state-emerald);
+    stroke: var(--state-emerald);
 }
 
 @media (max-width: 900px) {
@@ -1683,20 +1728,20 @@ code {
 
 .graph-node text {
     fill: white;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: var(--font-ui);
     font-weight: 700;
     font-size: 15px;
     pointer-events: none;
 }
 
 .graph-node.comparing circle {
-    fill: #f59e0b;
-    stroke: #f59e0b;
+    fill: var(--state-amber);
+    stroke: var(--state-amber);
 }
 
 .graph-node.found circle {
-    fill: #10b981;
-    stroke: #10b981;
+    fill: var(--state-emerald);
+    stroke: var(--state-emerald);
 }
 
 @media (max-width: 900px) {
