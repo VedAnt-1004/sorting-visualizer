@@ -1027,6 +1027,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Hero quick-jump badges -> Dashboard, pre-filtered to that category
+    document.querySelectorAll('.quick-jump-badge').forEach(badge => {
+        badge.addEventListener('click', (e) => {
+            const categoryId = e.currentTarget.getAttribute('data-target');
+            if (!categoryId) return;
+            showScreen('dashboard-screen');
+            buildDashboard(categoryId);
+            // Keep the sidebar's active state consistent with where we just landed
+            document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+            const matchingSidebarItem = document.querySelector(`.sidebar-nav li[data-target="${categoryId}"]`);
+            if (matchingSidebarItem) matchingSidebarItem.classList.add('active');
+        });
+    });
+
     // Sidebar Category Clicks (Option 3 Logic)
     document.querySelectorAll('.sidebar-nav li').forEach(item => {
         item.addEventListener('click', (e) => {
