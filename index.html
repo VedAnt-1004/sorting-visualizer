@@ -109,19 +109,18 @@
             <div class="nav-center">
                 <span id="nav-title" class="current-algo-pill">ALGORITHM</span>
             </div>
-            <div class="nav-spacer">
-                <button id="theory-toggle-btn" class="theory-toggle-btn" aria-expanded="false"
-                    aria-controls="theory-drawer">ℹ️ How it Works</button>
-            </div>
+            <div class="nav-spacer"></div>
         </header>
 
-        <!-- Interim theory panel: toggled overlay for now (button + panel + scrim).
-             Becomes the fully spec'd slide-in Theory Drawer with mobile full-screen
-             sheet in Phase 7 — this version exists now so the zero-scroll split-pane
-             below doesn't have to share vertical space with a permanently-open panel. -->
-        <div id="theory-scrim" class="theory-scrim hidden"></div>
-        <div id="theory-drawer" class="theory-drawer hidden" role="dialog" aria-label="How it works"
-            aria-hidden="true">
+        <!-- Persistent edge peek-tab (spec §4.1) — always visible on the
+             workspace's right boundary, not tucked into the nav, so the
+             drawer's existence is discoverable without a click-to-discover
+             step. Hidden automatically while the drawer is open (see app.js). -->
+        <button id="theory-peek-tab" class="theory-peek-tab" aria-expanded="false" aria-controls="theory-drawer">ℹ️
+            How it Works</button>
+
+        <div id="theory-scrim" class="theory-scrim"></div>
+        <div id="theory-drawer" class="theory-drawer" role="dialog" aria-label="How it works" aria-hidden="true">
             <button id="theory-close-btn" class="theory-close-btn" aria-label="Close">✕</button>
             <h3>How it Works</h3>
             <p id="algo-description">Algorithm description...</p>
