@@ -28,6 +28,19 @@
     /* Floating dark sidebar shell */
     --sidebar-navy-elevated: #111827;
     /* Sidebar hover/active row */
+    --panel-dark: #0f172a;
+    /* Content-panel dark surface (theory drawer, code panel, telemetry
+       HUD, visualizer arena) — deliberately a slightly different shade
+       from --sidebar-navy so chrome and content surfaces stay visually
+       distinct. Also doubles as the shared dark "ink" text color. */
+    --surface-dark-alt: #1e293b;
+    /* Secondary dark shade — dark-context dividers/borders (sidebar
+       border, array-block default fill, tree/graph node fill) and,
+       coincidentally the same value, a dark neutral text/hover color
+       on light surfaces (algo-card-title, filter-pill:hover). */
+    --muted-slate: #cbd5e1;
+    /* Muted neutral — light text on dark panels, and light icon/border
+       accents on light surfaces. */
 
     /* --- §1.2 Category Palette — CHROME & BADGES ONLY ---
        Never apply these to a visualizer node/element state. */
@@ -160,10 +173,14 @@
         animation: none;
     }
 
-    /* Placeholder hook for later phases — intentionally empty until the
-       corresponding component ships:
-       .theory-drawer-slide { transition: none; }
-    */
+    /* Phase 7: drawer opens/closes instantly instead of sliding, scrim
+       appears/disappears instantly instead of fading */
+    .theory-drawer,
+    .theory-drawer.open,
+    .theory-scrim,
+    .theory-scrim.open {
+        transition: none;
+    }
 }
 
 /* --- SECTION 1: GLOBAL BASE & RESETS --- */
@@ -175,7 +192,7 @@
 
 body {
     background-color: #f8fafc;
-    color: #0f172a;
+    color: var(--panel-dark);
     font-family: var(--font-ui);
     /* Clean, modern body text */
     overflow-x: hidden;
@@ -253,7 +270,7 @@ button {
     font-family: var(--font-display);
     font-weight: 800;
     font-size: 1.3rem;
-    color: #0f172a;
+    color: var(--panel-dark);
     letter-spacing: -0.02em;
 }
 
@@ -320,7 +337,7 @@ button {
     font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.05;
-    color: #0f172a;
+    color: var(--panel-dark);
     margin-bottom: 24px;
 }
 
@@ -451,7 +468,7 @@ button {
 .dashboard-sidebar {
     background-color: var(--sidebar-navy);
     padding: 40px 25px;
-    border-right: 1px solid #1e293b;
+    border-right: 1px solid var(--surface-dark-alt);
     color: white;
     font-family: var(--font-ui);
     box-shadow: var(--elevation-l2-shadow);
@@ -481,7 +498,7 @@ button {
 }
 
 .sidebar-nav li.active {
-    background: #1e293b;
+    background: var(--surface-dark-alt);
     color: #3b82f6;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -529,7 +546,7 @@ button {
 .dashboard-header h2 {
     font-size: 2.2rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--panel-dark);
     margin-bottom: 40px;
     letter-spacing: -1px;
 }
@@ -549,7 +566,7 @@ button {
 }
 
 .header-i-icon {
-    color: #cbd5e1;
+    color: var(--muted-slate);
     font-size: 0.9rem;
 }
 
@@ -624,12 +641,12 @@ button {
 
 .algo-card-title {
     font-weight: 700;
-    color: #1e293b;
+    color: var(--surface-dark-alt);
     font-size: 1.05rem;
 }
 
 .arrow {
-    color: #cbd5e1;
+    color: var(--muted-slate);
     font-size: 1.2rem;
     transition: 0.2s;
 }
@@ -670,7 +687,7 @@ button {
     padding: 4px 10px;
     border-radius: var(--radius-full);
     background: rgba(15, 23, 42, 0.08);
-    color: #0f172a;
+    color: var(--panel-dark);
     cursor: help;
 }
 
@@ -734,7 +751,7 @@ button {
 }
 
 .filter-pill:hover {
-    color: #1e293b;
+    color: var(--surface-dark-alt);
     border-color: #3b82f6;
 }
 
@@ -753,7 +770,7 @@ button {
    Phase 2: this is a genuinely "floating" surface (sits on top of the
    canvas, not flush like the sidebar), so it takes L3 elevation per §3
    — including the translucent glass-edge border, which replaces the
-   previous opaque #1e293b border now that it's treated as a floating
+   previous opaque var(--surface-dark-alt) border now that it's treated as a floating
    dock rather than a flush panel. */
 .modern-nav {
     display: flex;
@@ -863,22 +880,39 @@ button {
     }
 }
 
-/* --- Interim Theory panel (spec §4.1's drawer, simplified for now — see
-   the HTML comment above #theory-drawer for why; full slide-in + mobile
-   sheet treatment is Phase 7). Toggled via #theory-toggle-btn. --- */
-.theory-toggle-btn {
-    background: rgba(255, 255, 255, 0.08);
+/* --- Theory Drawer (spec §4.1) — true slide-in on desktop, full-screen
+   bottom sheet on mobile. Triggered by the persistent edge peek-tab
+   rather than a nav-embedded button, so its existence is discoverable
+   without a click-to-discover step. --- */
+.theory-peek-tab {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    background: var(--panel-dark);
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 8px 18px;
-    border-radius: var(--radius-full);
+    border: none;
+    padding: 14px 10px;
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    box-shadow: var(--elevation-l2-shadow);
     font-weight: 600;
-    font-size: 0.82rem;
-    white-space: nowrap;
+    font-size: 0.78rem;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: var(--elevation-l2-z);
+    transition: transform 0.2s ease;
 }
 
-.theory-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.14);
+.theory-peek-tab:hover {
+    transform: translateY(-50%) translateX(-4px);
+}
+
+.theory-peek-tab:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
 }
 
 .theory-scrim {
@@ -886,22 +920,44 @@ button {
     inset: 0;
     background: var(--elevation-l4-scrim);
     z-index: var(--elevation-l4-z);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity var(--motion-base) ease, visibility 0s linear var(--motion-base);
 }
 
+.theory-scrim.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity var(--motion-base) ease, visibility 0s linear 0s;
+}
+
+/* Desktop: fixed to the right edge, full viewport height, slides in from
+   off-screen. visibility (not display) is used so the transform
+   transition can play, while still pulling the closed drawer out of the
+   tab order for accessibility. */
 .theory-drawer {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #0f172a;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 440px;
+    max-width: 100%;
+    background: var(--panel-dark);
     padding: 30px;
-    border-radius: var(--radius-lg);
-    max-width: 560px;
-    width: calc(100% - 40px);
-    max-height: calc(100vh - 80px);
     overflow-y: auto;
     box-shadow: var(--elevation-l4-shadow);
-    z-index: calc(var(--elevation-l4-z) + 1);
+    z-index: var(--elevation-l4-z);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform var(--motion-base) ease, visibility 0s linear var(--motion-base);
+}
+
+.theory-drawer.open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform var(--motion-base) ease, visibility 0s linear 0s;
 }
 
 .theory-close-btn {
@@ -929,11 +985,31 @@ button {
     letter-spacing: -0.5px;
 }
 
+/* Mobile (<768px): full-screen bottom sheet instead of a right-side rail —
+   a 440px-wide rail would eat the entire phone viewport anyway. */
+@media (max-width: 767px) {
+    .theory-drawer {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 85vh;
+        max-height: 85vh;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        transform: translateY(100%);
+    }
+
+    .theory-drawer.open {
+        transform: translateY(0);
+    }
+}
+
 #algo-description {
     font-size: 1.05rem;
     line-height: 1.8;
     /* Increased line-height for better readability */
-    color: #cbd5e1;
+    color: var(--muted-slate);
     /* Making it slightly lighter for dark panels */
 }
 
@@ -1010,7 +1086,7 @@ button {
 
 .dashboard-input {
     background: #f8fafc;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--muted-slate);
     padding: 10px 18px;
     border-radius: 8px;
     outline: none;
@@ -1101,7 +1177,7 @@ button {
 
 /* --- SECTION 7: VISUALIZER STAGE --- */
 .visualizer-arena {
-    background: #0f172a;
+    background: var(--panel-dark);
     width: 100%;
     flex: 1 1 auto;
     min-height: 360px;
@@ -1113,7 +1189,7 @@ button {
     /* Center the array blocks vertically */
     position: relative;
     /* CRITICAL for the absolute pill */
-    border: 1px solid #1e293b;
+    border: 1px solid var(--surface-dark-alt);
     overflow: hidden;
 }
 
@@ -1122,7 +1198,7 @@ button {
 .telemetry-hud {
     display: flex;
     gap: 12px;
-    background: #0f172a;
+    background: var(--panel-dark);
     border-radius: var(--radius-md);
     border: var(--elevation-l2-border);
     box-shadow: var(--elevation-l2-shadow);
@@ -1216,7 +1292,7 @@ button {
 }
 
 .array-block {
-    background: #1e293b;
+    background: var(--surface-dark-alt);
     color: white;
     width: 65px;
     height: 65px;
@@ -1271,7 +1347,7 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 0 2px #0f172a;
+    box-shadow: 0 0 0 2px var(--panel-dark);
 }
 
 .array-block.current {
@@ -1356,7 +1432,7 @@ input[type="range"] {
 
 /* --- SECTION 8: CODE EDITOR --- */
 .code-panel {
-    background: #0f172a;
+    background: var(--panel-dark);
     padding: 30px;
     border-radius: var(--radius-lg);
     border: var(--elevation-l2-border);
@@ -1377,7 +1453,7 @@ input[type="range"] {
 
 .tab-btn {
     background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    border: var(--elevation-l2-border);
     padding: 6px 16px;
     border-radius: 8px;
     font-weight: 600;
@@ -1402,7 +1478,7 @@ input[type="range"] {
 
 code {
     font-family: var(--font-mono);
-    color: #cbd5e1;
+    color: var(--muted-slate);
     line-height: 1.6;
 }
 
@@ -1476,7 +1552,7 @@ code {
     .dashboard-sidebar {
         padding: 20px;
         border-right: none;
-        border-bottom: 1px solid #1e293b;
+        border-bottom: 1px solid var(--surface-dark-alt);
     }
 
     .dashboard-sidebar h2 {
@@ -1672,9 +1748,9 @@ code {
         width: 140px;
     }
 
-    .theory-toggle-btn {
-        font-size: 0.72rem;
-        padding: 6px 14px;
+    .theory-peek-tab {
+        font-size: 0.68rem;
+        padding: 10px 7px;
     }
 
     .telemetry-hud {
@@ -1871,7 +1947,7 @@ code {
 }
 
 .tree-node circle {
-    fill: #1e293b;
+    fill: var(--surface-dark-alt);
     stroke: #3b82f6;
     stroke-width: 2;
     transition: fill 0.3s ease, stroke 0.3s ease;
@@ -1930,7 +2006,7 @@ code {
 }
 
 .graph-node circle {
-    fill: #1e293b;
+    fill: var(--surface-dark-alt);
     stroke: #8b5cf6;
     stroke-width: 2;
     transition: fill 0.3s ease, stroke 0.3s ease;
