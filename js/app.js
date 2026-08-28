@@ -318,13 +318,16 @@ function buildWorkspace(algoId) {
     // Close the theory drawer if it was left open from a previous workspace
     const theoryDrawerEl = document.getElementById('theory-drawer');
     const theoryScrimEl = document.getElementById('theory-scrim');
-    const theoryToggleBtnEl = document.getElementById('theory-toggle-btn');
+    const theoryPeekTabEl = document.getElementById('theory-peek-tab');
     if (theoryDrawerEl) {
-        theoryDrawerEl.classList.add('hidden');
+        theoryDrawerEl.classList.remove('open');
         theoryDrawerEl.setAttribute('aria-hidden', 'true');
     }
-    if (theoryScrimEl) theoryScrimEl.classList.add('hidden');
-    if (theoryToggleBtnEl) theoryToggleBtnEl.setAttribute('aria-expanded', 'false');
+    if (theoryScrimEl) theoryScrimEl.classList.remove('open');
+    if (theoryPeekTabEl) {
+        theoryPeekTabEl.classList.remove('hidden');
+        theoryPeekTabEl.setAttribute('aria-expanded', 'false');
+    }
 
     // Build the Control Panel
     const controlsZone = document.getElementById('dynamic-controls');
@@ -981,39 +984,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Interim Theory Drawer toggle (index.html has the "why interim" note;
-    // full slide-in treatment + mobile full-screen sheet lands in Phase 7).
-    const theoryToggleBtn = document.getElementById('theory-toggle-btn');
+    // Theory Drawer (spec §4.1) — persistent edge peek-tab opens a real
+    // slide-in drawer (right rail on desktop, bottom sheet on mobile via
+    // CSS breakpoint). Bound here: peek-tab, close button, scrim click,
+    // and Escape. buildWorkspace() also force-closes this on every
+    // workspace switch (see the reset block near the top of that function).
+    const theoryPeekTab = document.getElementById('theory-peek-tab');
     const theoryDrawer = document.getElementById('theory-drawer');
     const theoryScrim = document.getElementById('theory-scrim');
     const theoryCloseBtn = document.getElementById('theory-close-btn');
 
     function openTheoryDrawer() {
-        if (!theoryDrawer || !theoryScrim || !theoryToggleBtn) return;
-        theoryDrawer.classList.remove('hidden');
-        theoryScrim.classList.remove('hidden');
+        if (!theoryDrawer || !theoryScrim || !theoryPeekTab) return;
+        theoryDrawer.classList.add('open');
+        theoryScrim.classList.add('open');
         theoryDrawer.setAttribute('aria-hidden', 'false');
-        theoryToggleBtn.setAttribute('aria-expanded', 'true');
+        theoryPeekTab.setAttribute('aria-expanded', 'true');
+        theoryPeekTab.classList.add('hidden'); // avoid a redundant trigger while already open
     }
 
     function closeTheoryDrawer() {
-        if (!theoryDrawer || !theoryScrim || !theoryToggleBtn) return;
-        theoryDrawer.classList.add('hidden');
-        theoryScrim.classList.add('hidden');
+        if (!theoryDrawer || !theoryScrim || !theoryPeekTab) return;
+        theoryDrawer.classList.remove('open');
+        theoryScrim.classList.remove('open');
         theoryDrawer.setAttribute('aria-hidden', 'true');
-        theoryToggleBtn.setAttribute('aria-expanded', 'false');
+        theoryPeekTab.setAttribute('aria-expanded', 'false');
+        theoryPeekTab.classList.remove('hidden');
     }
 
-    if (theoryToggleBtn) {
-        theoryToggleBtn.addEventListener('click', () => {
-            const isOpen = theoryDrawer && !theoryDrawer.classList.contains('hidden');
+    if (theoryPeekTab) {
+        theoryPeekTab.addEventListener('click', () => {
+            const isOpen = theoryDrawer && theoryDrawer.classList.contains('open');
             if (isOpen) closeTheoryDrawer(); else openTheoryDrawer();
         });
     }
     if (theoryCloseBtn) theoryCloseBtn.addEventListener('click', closeTheoryDrawer);
     if (theoryScrim) theoryScrim.addEventListener('click', closeTheoryDrawer);
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && theoryDrawer && !theoryDrawer.classList.contains('hidden')) {
+        if (e.key === 'Escape' && theoryDrawer && theoryDrawer.classList.contains('open')) {
             closeTheoryDrawer();
         }
     });
