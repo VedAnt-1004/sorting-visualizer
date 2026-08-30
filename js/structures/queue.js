@@ -75,12 +75,14 @@ async function dequeue() {
         return null;
     }
 
+    const myGeneration = workspaceGeneration;
     const container = document.getElementById('visualizer-container');
     const frontWrapper = container.firstElementChild;
     const frontBlock = frontWrapper ? frontWrapper.querySelector('.array-block') : null;
     if (frontBlock) frontBlock.classList.add('dequeuing');
 
     await sleep(300); // matches the .array-block CSS transition duration
+    if (myGeneration !== workspaceGeneration) return null; // navigated away mid-animation
 
     const dequeued = queueState.shift();
     renderQueue();
