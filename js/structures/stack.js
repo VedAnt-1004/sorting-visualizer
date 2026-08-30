@@ -66,12 +66,14 @@ async function popFromStack() {
         return null;
     }
 
+    const myGeneration = workspaceGeneration;
     const container = document.getElementById('visualizer-container');
     const topWrapper = container.lastElementChild;
     const topBlock = topWrapper ? topWrapper.querySelector('.array-block') : null;
     if (topBlock) topBlock.classList.add('popping');
 
     await sleep(300); // matches the .array-block CSS transition duration
+    if (myGeneration !== workspaceGeneration) return null; // navigated away mid-animation
 
     const popped = stackState.pop();
     renderStack();
