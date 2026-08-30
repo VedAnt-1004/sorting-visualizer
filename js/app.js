@@ -1035,6 +1035,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Keeps both the visual .active state and the aria-current attribute in
+    // sync — used by every place that changes which category is selected,
+    // so screen readers always agree with what's visually highlighted.
+    function setActiveSidebarItem(categoryId) {
+        document.querySelectorAll('.sidebar-nav li').forEach(li => {
+            const isMatch = li.getAttribute('data-target') === categoryId;
+            li.classList.toggle('active', isMatch);
+            li.setAttribute('aria-current', isMatch ? 'true' : 'false');
+        });
+    }
+
     // Hero quick-jump badges -> Dashboard, pre-filtered to that category
     document.querySelectorAll('.quick-jump-badge').forEach(badge => {
         badge.addEventListener('click', (e) => {
@@ -1042,24 +1053,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!categoryId) return;
             showScreen('dashboard-screen');
             buildDashboard(categoryId);
-            // Keep the sidebar's active state consistent with where we just landed
-            document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
-            const matchingSidebarItem = document.querySelector(`.sidebar-nav li[data-target="${categoryId}"]`);
-            if (matchingSidebarItem) matchingSidebarItem.classList.add('active');
+            setActiveSidebarItem(categoryId);
         });
     });
 
-    // Sidebar Category Clicks (Option 3 Logic)
+    // Sidebar Category Clicks (Option 3 Logic) — plus Enter/Space, since
+    // these are <li role="button"> elements rather than native <button>s
+    // and don't get keyboard activation for free.
     document.querySelectorAll('.sidebar-nav li').forEach(item => {
-        item.addEventListener('click', (e) => {
-            // Remove active from all, add to clicked
-            document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
-            e.currentTarget.classList.add('active');
-            
-            // Build the new stage
+        const activate = (e) => {
             const categoryId = e.currentTarget.getAttribute('data-target');
-            if (categoryId) {
-                buildDashboard(categoryId);
+            if (!categoryId) return;
+            setActiveSidebarItem(categoryId);
+            buildDashboard(categoryId);
+        };
+        item.addEventListener('click', activate);
+        item.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                activate(e);
             }
         });
     });
@@ -1070,8 +1082,7 @@ document.addEventListener('DOMContentLoaded', () => {
         homeLink.addEventListener('click', () => {
             showScreen('dashboard-screen');
             buildDashboard('array');
-            document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
-            document.querySelector('.sidebar-nav li[data-target="array"]').classList.add('active');
+            setActiveSidebarItem('array');
         });
     }
 
