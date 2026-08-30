@@ -1261,8 +1261,14 @@ button {
     border-radius: 50px;
     font-size: 0.95rem;
     font-weight: 700;
-    z-index: 1000 !important;
-    /* Stay above everything else */
+    z-index: 15 !important;
+    /* Above the visualizer content, but deliberately below the floating
+       dock (L3/20) and Theory Drawer (L4/30) — a status pill shouldn't
+       visually punch through a modal overlay if the drawer opens while
+       a run is in progress. Was hardcoded to 1000 pre-dating the
+       elevation token system; that value made it outrank every L1-L4
+       surface, which is exactly the bug the elevation rule (§3) exists
+       to prevent. */
     border: 1px solid transparent;
     white-space: nowrap;
     transition: all 0.3s ease;
