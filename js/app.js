@@ -5,6 +5,12 @@
 let currentActiveCodes = {}; // Stores code for the currently selected algorithm
 let activePlayer = null; // The StepPlayer currently driving the visualizer, if any
 let currentAlgoId = null; // Which algorithm the workspace is currently showing
+// Incremented every buildWorkspace() call. Structure-mode async operations
+// (tree/graph/stack/queue) capture this at their start and re-check it after
+// each await — if it's changed, the user has navigated to a different
+// workspace mid-animation, and the operation should stop touching the DOM
+// rather than "resurrecting" and overwriting whatever workspace is now showing.
+let workspaceGeneration = 0;
 let lastRenderedStep = null; // The most recent step object, used to re-sync code highlight on tab switch
 
 // --- CODE PANEL: line-by-line rendering + active-line sync ---
@@ -266,6 +272,7 @@ function buildWorkspace(algoId) {
 
     currentAlgoId = algoId;
     lastRenderedStep = null; // fresh workspace, no step to highlight yet
+    workspaceGeneration++; // invalidate any in-flight tree/graph/stack/queue animation from the previous workspace
 
     // Update UI Labels
     const navTitle = document.getElementById('nav-title');
