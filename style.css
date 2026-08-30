@@ -495,12 +495,18 @@ button {
     display: flex;
     align-items: center;
     gap: 10px;
+    cursor: pointer;
 }
 
 .sidebar-nav li.active {
     background: var(--surface-dark-alt);
     color: #3b82f6;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-nav li:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
 }
 
 /* --- Sidebar category dot badges (Phase 2 / spec §1.2) ---
@@ -978,6 +984,11 @@ button {
     background: rgba(255, 255, 255, 0.16);
 }
 
+.theory-close-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
 .theory-drawer h3 {
     font-size: 1.6rem;
     font-weight: 800;
@@ -1092,12 +1103,23 @@ button {
     outline: none;
 }
 
+.dashboard-input:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+    border-color: #3b82f6;
+}
+
 .dashboard-btn {
     padding: 10px 24px;
     border-radius: 8px;
     border: none;
     font-weight: 700;
     color: white;
+}
+
+.dashboard-btn:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
 }
 
 .btn-blue {
