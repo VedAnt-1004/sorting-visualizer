@@ -340,14 +340,11 @@ function buildWorkspace(algoId) {
     const controlsZone = document.getElementById('dynamic-controls');
 
     const playbackControlsHTML = `
-            <div class="control-row center-content playback-row">
-                <button id="prev-btn" class="dashboard-btn btn-secondary" disabled>◀ Prev</button>
-                <button id="play-btn" class="dashboard-btn btn-blue" disabled>▶ Play</button>
-                <button id="next-btn" class="dashboard-btn btn-secondary" disabled>Next ▶</button>
-            </div>
             <div class="control-row center-content scrubber-row">
-                <label class="speed-label" for="step-scrubber">Timeline</label>
-                <input type="range" id="step-scrubber" min="0" max="0" value="0" step="1" disabled>
+                <button id="prev-btn" class="dashboard-btn btn-secondary" disabled>◀</button>
+                <button id="play-btn" class="dashboard-btn btn-blue" disabled>▶ Play</button>
+                <button id="next-btn" class="dashboard-btn btn-secondary" disabled>▶</button>
+                <input type="range" id="step-scrubber" aria-label="Timeline" min="0" max="0" value="0" step="1" disabled>
             </div>`;
 
     if (data.type === "search") {
@@ -355,17 +352,14 @@ function buildWorkspace(algoId) {
             <div class="control-row controls-top-row">
                 <input type="text" id="array-input" class="dashboard-input wireframe-array-input" placeholder="e.g. 3, 1, 4, 1, 5">
                 <input type="number" id="target-input" class="dashboard-input wireframe-target-input" placeholder="Target">
+                <button id="random-btn" class="dashboard-btn btn-secondary">Random</button>
+                <button id="action-btn" class="dashboard-btn btn-blue wireframe-search-btn">Search</button>
+                <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
             </div>
 
             <div class="control-row center-content speed-row">
                 <label class="speed-label" for="speed-slider">Speed</label>
                 <input type="range" id="speed-slider" min="100" max="1000" step="50" value="500">
-            </div>
-            
-            <div class="control-row center-content">
-                <button id="random-btn" class="dashboard-btn btn-secondary">Random</button>
-                <button id="action-btn" class="dashboard-btn btn-blue wireframe-search-btn">Search</button>
-                <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
             </div>
             ${playbackControlsHTML}
         `;
@@ -420,17 +414,14 @@ function buildWorkspace(algoId) {
         controlsZone.innerHTML = `
             <div class="control-row controls-top-row">
                 <input type="text" id="array-input" class="dashboard-input wireframe-array-input" placeholder="e.g. 5, 3, 8, 1, 9">
+                <button id="random-btn" class="dashboard-btn btn-secondary">Random</button>
+                <button id="action-btn" class="dashboard-btn btn-blue">Sort</button>
+                <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
             </div>
 
             <div class="control-row center-content speed-row">
                 <label class="speed-label" for="speed-slider">Speed</label>
                 <input type="range" id="speed-slider" min="100" max="1000" step="50" value="500">
-            </div>
-
-            <div class="control-row center-content">
-                <button id="random-btn" class="dashboard-btn btn-secondary">Random</button>
-                <button id="action-btn" class="dashboard-btn btn-blue">Sort</button>
-                <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
             </div>
             ${playbackControlsHTML}
         `;
