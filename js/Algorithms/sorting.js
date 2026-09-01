@@ -147,3 +147,154 @@ function* insertionSortSteps(inputArr) {
 
     yield { array: [...arr], highlights: { sorted: Array.from({ length: n }, (_, k) => k) }, message: 'Array sorted!', statusClass: 'success', phase: 'done' };
 }
+
+function* mergeSortSteps(inputArr) {
+    const arr = [...inputArr];
+    const n = arr.length;
+
+    yield { array: [...arr], highlights: {}, message: 'Starting Merge Sort...', statusClass: 'searching', phase: 'start' };
+
+    function rangeIndices(left, right) {
+        const out = [];
+        for (let x = left; x <= right; x++) out.push(x);
+        return out;
+    }
+    function outsideRange(left, right) {
+        const out = [];
+        for (let x = 0; x < n; x++) if (x < left || x > right) out.push(x);
+        return out;
+    }
+
+    function* mergeRanges(left, mid, right) {
+        const leftCopy = arr.slice(left, mid + 1);
+        const rightCopy = arr.slice(mid + 1, right + 1);
+        let i = 0, j = 0, k = left;
+
+        while (i < leftCopy.length && j < rightCopy.length) {
+            yield {
+                array: [...arr],
+                highlights: { comparing: [left + i, mid + 1 + j], dimmed: outsideRange(left, right) },
+                message: `Comparing ${leftCopy[i]} and ${rightCopy[j]}...`,
+                statusClass: 'searching',
+                phase: 'merge-compare'
+            };
+
+            if (leftCopy[i] <= rightCopy[j]) {
+                arr[k] = leftCopy[i];
+                i++;
+            } else {
+                arr[k] = rightCopy[j];
+                j++;
+            }
+
+            yield {
+                array: [...arr],
+                highlights: { current: [k], dimmed: outsideRange(left, right) },
+                message: `Placed ${arr[k]} at index [${k}]`,
+                statusClass: 'searching',
+                phase: 'merge-overwrite'
+            };
+            k++;
+        }
+        while (i < leftCopy.length) {
+            arr[k] = leftCopy[i];
+            yield { array: [...arr], highlights: { current: [k], dimmed: outsideRange(left, right) }, message: `Placed ${arr[k]} at index [${k}]`, statusClass: 'searching', phase: 'merge-overwrite' };
+            i++; k++;
+        }
+        while (j < rightCopy.length) {
+            arr[k] = rightCopy[j];
+            yield { array: [...arr], highlights: { current: [k], dimmed: outsideRange(left, right) }, message: `Placed ${arr[k]} at index [${k}]`, statusClass: 'searching', phase: 'merge-overwrite' };
+            j++; k++;
+        }
+    }
+
+    function* mergeSortRange(left, right) {
+        if (right - left <= 0) return;
+        const mid = Math.floor((left + right) / 2);
+
+        yield {
+            array: [...arr],
+            highlights: { current: rangeIndices(left, right), dimmed: outsideRange(left, right) },
+            message: `Splitting range [${left}..${right}] at midpoint ${mid}`,
+            statusClass: 'searching',
+            phase: 'split'
+        };
+
+        yield* mergeSortRange(left, mid);
+        yield* mergeSortRange(mid + 1, right);
+        yield* mergeRanges(left, mid, right);
+    }
+
+    yield* mergeSortRange(0, n - 1);
+
+    yield { array: [...arr], highlights: { sorted: Array.from({ length: n }, (_, k) => k) }, message: 'Array sorted!', statusClass: 'success', phase: 'done' };
+}
+
+function* quickSortSteps(inputArr) {
+    const arr = [...inputArr];
+    const n = arr.length;
+    const sortedIdx = [];
+
+    yield { array: [...arr], highlights: {}, message: 'Starting Quick Sort...', statusClass: 'searching', phase: 'start' };
+
+    function* quickSortRange(low, high) {
+        if (low > high) return;
+        if (low === high) {
+            sortedIdx.push(low);
+            return;
+        }
+
+        const pivotValue = arr[high];
+        yield {
+            array: [...arr],
+            highlights: { current: [high], sorted: [...sortedIdx] },
+            message: `Choosing pivot: ${pivotValue} (last element of range)`,
+            statusClass: 'searching',
+            phase: 'pivot'
+        };
+
+        let i = low - 1;
+        for (let j = low; j < high; j++) {
+            yield {
+                array: [...arr],
+                highlights: { comparing: [j], current: [high], sorted: [...sortedIdx] },
+                message: `Comparing ${arr[j]} with pivot ${pivotValue}...`,
+                statusClass: 'searching',
+                phase: 'compare'
+            };
+
+            if (arr[j] < pivotValue) {
+                i++;
+                if (i !== j) {
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                    yield {
+                        array: [...arr],
+                        highlights: { comparing: [i, j], current: [high], sorted: [...sortedIdx] },
+                        message: `Swapped ${arr[j]} and ${arr[i]}`,
+                        statusClass: 'searching',
+                        phase: 'swap'
+                    };
+                }
+            }
+        }
+
+        [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+        const pivotIndex = i + 1;
+        sortedIdx.push(pivotIndex);
+
+        yield {
+            array: [...arr],
+            highlights: { sorted: [...sortedIdx] },
+            message: `Pivot ${arr[pivotIndex]} placed at its sorted position [${pivotIndex}]`,
+            statusClass: 'searching',
+            phase: 'partition-done'
+        };
+
+        yield* quickSortRange(low, pivotIndex - 1);
+        yield* quickSortRange(pivotIndex + 1, high);
+    }
+
+    yield* quickSortRange(0, n - 1);
+
+    yield { array: [...arr], highlights: { sorted: Array.from({ length: n }, (_, k) => k) }, message: 'Array sorted!', statusClass: 'success', phase: 'done' };
+}
