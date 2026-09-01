@@ -872,17 +872,26 @@ button {
     #workspace-screen.active {
         display: flex;
         flex-direction: column;
-        height: 100vh;
-        overflow: hidden;
-        padding-bottom: 220px;
-        /* Clears the floating dock so it never overlaps the last row of
-           content. Sized for the dock's real rendered height (3 rows +
-           padding + its 20px bottom offset + buffer) — not a guess. */
+        min-height: 100vh;
+        overflow-y: auto;
+        /* Not a rigid height:100vh + overflow:hidden anymore — that
+           combination broke down on real-world short viewports (a ~640px
+           laptop window, browser chrome eating space, etc): the floating
+           dock was position:fixed, entirely independent of the flex
+           layout, so no amount of padding-bottom reservation could stop
+           it overlapping once the arena's minimum size + the dock's real
+           size exceeded whatever vertical space was actually left. Now
+           everything lives in normal flow (see .controls-wrapper below),
+           so overlap is structurally impossible — a short viewport just
+           scrolls the page instead, which is a far better fallback. */
     }
 
     .workspace-split-pane {
-        flex: 1 1 auto;
-        min-height: 0;
+        flex: 1 1 420px;
+        min-height: 420px;
+        /* real floor so the arena/code panel never get crushed to
+           nothing — if the viewport is too short to fit this plus the
+           dock, the page scrolls rather than anything overlapping */
     }
 
     .workspace-left-stage {
@@ -1055,15 +1064,17 @@ button {
     font-size: 0.9rem;
 }
 
-/* --- Floating Bottom Control Dock (spec §2, §3 L3) ---
-   Desktop: genuinely floating/fixed, bottom-centered, glassmorphic.
-   Below 1024px: stays in normal document flow (not fixed) — avoids
-   overlap bugs on short mobile viewports; full icon-only mobile
-   compression is a later responsive pass. */
+/* --- Bottom Control Dock (spec §2, §3 L3) ---
+   Deliberately NOT position:fixed at any width anymore (see the
+   #workspace-screen.active comment above for why) — stays in normal
+   flow so flexbox can never let it overlap a sibling. Styling alone
+   (elevation shadow, glass blur, rounded-lg radius, dark surface)
+   still reads as a floating dock even though it isn't literally
+   floating over content. */
 .controls-wrapper {
     display: flex;
     justify-content: center;
-    margin: 0 auto 20px auto;
+    margin: 20px auto;
 }
 
 .controls-panel {
@@ -1080,23 +1091,6 @@ button {
     flex-direction: column;
     align-items: center;
     gap: 12px;
-}
-
-@media (min-width: 1024px) {
-    .controls-wrapper {
-        position: fixed;
-        bottom: 20px;
-        left: 0;
-        right: 0;
-        z-index: var(--elevation-l3-z);
-        margin: 0;
-        pointer-events: none;
-        /* only the dock itself should capture clicks, not the full-width row */
-    }
-
-    .controls-panel {
-        pointer-events: auto;
-    }
 }
 
 .control-row {
