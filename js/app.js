@@ -102,117 +102,85 @@ function getCardMode(algoType) {
     return (algoType === 'search' || algoType === 'sorting') ? 'algorithm' : 'structure';
 }
 
-// --- 2. DYNAMIC DASHBOARD BUILDER (Option 3 Fix) ---
-// This function clears the dashboard and rebuilds cards from data.js
+// --- Card visual glyphs (dashboard redesign) ---
+// Simple geometric SVGs standing in for the wireframe's photo placeholders —
+// we have no imagery per algorithm, so a colored icon glyph fills the same
+// "card art" role. Colored via currentColor so the surrounding
+// .algo-card-visual (category-tinted) controls the actual hue.
+const ALGO_ICONS = {
+    search: '<svg viewBox="0 0 48 48"><circle cx="20" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="3"/><line x1="29" y1="29" x2="40" y2="40" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
+    sorting: '<svg viewBox="0 0 48 48"><rect x="6" y="28" width="7" height="14" fill="currentColor"/><rect x="17" y="20" width="7" height="22" fill="currentColor"/><rect x="28" y="10" width="7" height="32" fill="currentColor"/><rect x="39" y="24" width="7" height="18" fill="currentColor"/></svg>',
+    stack: '<svg viewBox="0 0 48 48"><rect x="10" y="8" width="28" height="9" rx="2" fill="currentColor"/><rect x="10" y="20" width="28" height="9" rx="2" fill="currentColor" opacity="0.7"/><rect x="10" y="32" width="28" height="9" rx="2" fill="currentColor" opacity="0.45"/></svg>',
+    queue: '<svg viewBox="0 0 48 48"><rect x="4" y="18" width="9" height="12" rx="2" fill="currentColor"/><rect x="16" y="18" width="9" height="12" rx="2" fill="currentColor" opacity="0.7"/><rect x="28" y="18" width="9" height="12" rx="2" fill="currentColor" opacity="0.45"/><path d="M40 18 L46 24 L40 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    tree: '<svg viewBox="0 0 48 48"><line x1="24" y1="12" x2="14" y2="26" stroke="currentColor" stroke-width="2" opacity="0.5"/><line x1="24" y1="12" x2="34" y2="26" stroke="currentColor" stroke-width="2" opacity="0.5"/><line x1="14" y1="26" x2="8" y2="38" stroke="currentColor" stroke-width="2" opacity="0.5"/><line x1="14" y1="26" x2="20" y2="38" stroke="currentColor" stroke-width="2" opacity="0.5"/><circle cx="24" cy="12" r="6" fill="currentColor"/><circle cx="14" cy="26" r="5" fill="currentColor" opacity="0.8"/><circle cx="34" cy="26" r="5" fill="currentColor" opacity="0.8"/><circle cx="8" cy="38" r="4" fill="currentColor" opacity="0.6"/><circle cx="20" cy="38" r="4" fill="currentColor" opacity="0.6"/></svg>',
+    graph: '<svg viewBox="0 0 48 48"><line x1="12" y1="12" x2="36" y2="14" stroke="currentColor" stroke-width="2" opacity="0.5"/><line x1="36" y1="14" x2="30" y2="36" stroke="currentColor" stroke-width="2" opacity="0.5"/><line x1="30" y1="36" x2="10" y2="32" stroke="currentColor" stroke-width="2" opacity="0.5"/><line x1="10" y1="32" x2="12" y2="12" stroke="currentColor" stroke-width="2" opacity="0.5"/><line x1="12" y1="12" x2="30" y2="36" stroke="currentColor" stroke-width="2" opacity="0.35"/><circle cx="12" cy="12" r="5" fill="currentColor"/><circle cx="36" cy="14" r="5" fill="currentColor" opacity="0.8"/><circle cx="30" cy="36" r="5" fill="currentColor" opacity="0.8"/><circle cx="10" cy="32" r="5" fill="currentColor" opacity="0.6"/></svg>'
+};
+
+function getAlgoIconSVG(algoType) {
+    return ALGO_ICONS[algoType] || '';
+}
+
+// Rough fastest-to-slowest ordering for the "Complexity" sort option.
+const COMPLEXITY_RANK = { 'O(1)': 0, 'O(log n)': 1, 'O(n)': 2, 'O(V + E)': 2.5, 'O(n log n)': 3, 'O(n²)': 4 };
+function getComplexityRank(bigO) {
+    return COMPLEXITY_RANK[bigO] !== undefined ? COMPLEXITY_RANK[bigO] : 99;
+}
+
+// --- 2. DYNAMIC DASHBOARD BUILDER ---
+// Rebuilds the card grid for a category. Filtering/sorting (type/mode/sort
+// dropdowns) is handled separately by applyDashboardFilters() so switching
+// those doesn't require rebuilding cards from scratch.
 function buildDashboard(categoryId) {
     const dashboardContainer = document.querySelector('.dashboard-container');
-    const stageHeader = document.querySelector('.dashboard-stage .dashboard-header h2');
-    
-    // 1. Clear current content
     dashboardContainer.innerHTML = '';
-    
-    // 2. Set dynamic header based on sidebar choice
-    if(stageHeader) {
-        stageHeader.innerText = `Workspace: ${categoryId.charAt(0).toUpperCase() + categoryId.slice(1)}`;
-    }
 
-    // 3. Find algorithms matching the category (e.g., 'array', 'stack')
     const relevantAlgos = [];
     for (const key in algorithmDatabase) {
         if (algorithmDatabase[key].category === categoryId) {
-            relevantAlgos.push(algorithmDatabase[key]);
+            relevantAlgos.push(Object.assign({ id: key }, algorithmDatabase[key]));
         }
     }
 
     if (relevantAlgos.length === 0) {
         dashboardContainer.innerHTML = '<div class="coming-soon-panel"><h2>Working on this! More modules arriving soon.</h2><p>Linear Search and Binary Search (Array -> Searching) are active.</p></div>';
+        populateTypeFilter([]);
         return;
     }
 
-    // 4. Group relevant algos by their sub-type (e.g., 'Searching', 'Sorting')
-    const grouped = {};
+    // Populate the Type dropdown with whichever sub-types this category
+    // actually has (e.g. Array: Searching + Sorting; most others: just one).
+    const types = [...new Set(relevantAlgos.map(a => a.type))];
+    populateTypeFilter(types);
+
+    const cardGrid = document.createElement('div');
+    cardGrid.classList.add('card-grid');
+
     relevantAlgos.forEach(algo => {
-        if (!grouped[algo.type]) grouped[algo.type] = [];
-        grouped[algo.type].push(algo);
-    });
+        const cardId = algo.id;
+        const mode = getCardMode(algo.type);
+        const modeLabel = mode === 'algorithm' ? '▶ Algorithm' : '⚡ Structure';
+        const worstComplexity = algo.complexities ? algo.complexities.worst : '';
+        const explanation = getComplexityExplanation(worstComplexity);
+        const iconSVG = getAlgoIconSVG(algo.type);
 
-    // 4b. Filter tabs (spec: top category filter pills) — only worth rendering when
-    // this category actually has more than one sub-type to switch between (e.g.
-    // Array has Searching + Sorting; Stack/Queue/Tree/Graph each have just one,
-    // where a filter row would be pure clutter with nothing to filter).
-    const groupTypes = Object.keys(grouped);
-    if (groupTypes.length > 1) {
-        const filterRow = document.createElement('div');
-        filterRow.classList.add('filter-tabs');
+        // Card is a div[role=button], NOT a real <button> — the complexity tag
+        // inside it is itself a separate focusable/hoverable element, and a
+        // focusable descendant nested inside a real <button> is invalid HTML
+        // and breaks screen-reader semantics.
+        const card = document.createElement('div');
+        card.classList.add('algo-card', `algo-card-${categoryId}`);
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', `Open ${algo.title} workspace`);
+        card.dataset.type = algo.type;
+        card.dataset.mode = mode;
+        card.dataset.complexityRank = getComplexityRank(worstComplexity);
+        card.dataset.title = algo.title;
 
-        const allPill = document.createElement('button');
-        allPill.type = 'button';
-        allPill.classList.add('filter-pill', 'active');
-        allPill.textContent = 'All';
-        allPill.dataset.filter = 'all';
-        filterRow.appendChild(allPill);
-
-        groupTypes.forEach(type => {
-            const pill = document.createElement('button');
-            pill.type = 'button';
-            pill.classList.add('filter-pill');
-            pill.textContent = type.charAt(0).toUpperCase() + type.slice(1);
-            pill.dataset.filter = type;
-            filterRow.appendChild(pill);
-        });
-
-        filterRow.addEventListener('click', (e) => {
-            const pill = e.target.closest('.filter-pill');
-            if (!pill) return;
-            filterRow.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-            pill.classList.add('active');
-            const filter = pill.dataset.filter;
-            dashboardContainer.querySelectorAll('.ds-category').forEach(section => {
-                section.style.display = (filter === 'all' || section.dataset.type === filter) ? '' : 'none';
-            });
-        });
-
-        dashboardContainer.appendChild(filterRow);
-    }
-
-    // 5. Generate the HTML Bento Structure
-    for (const type in grouped) {
-        // Create the ds-category wrapper
-        const categoryWrapper = document.createElement('div');
-        categoryWrapper.classList.add('ds-category');
-        categoryWrapper.dataset.type = type; // used by the filter tabs above
-
-        // Capitalize type name (searching -> Searching)
-        const capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);
-        
-        categoryWrapper.innerHTML = `<h3>${capitalizedType} <span class="header-i-icon">ⓘ</span></h3>`;
-
-        // Create the card-grid
-        const cardGrid = document.createElement('div');
-        cardGrid.classList.add('card-grid');
-
-        // Create the individual algo-cards
-        grouped[type].forEach(algo => {
-            const cardId = algo.id || Object.keys(algorithmDatabase).find(key => algorithmDatabase[key] === algo);
-            const mode = getCardMode(algo.type);
-            const modeLabel = mode === 'algorithm' ? '▶ Algorithm' : '⚡ Structure';
-            const worstComplexity = algo.complexities ? algo.complexities.worst : '';
-            const explanation = getComplexityExplanation(worstComplexity);
-
-            // Card is a div[role=button], NOT a real <button> — the complexity tag
-            // inside it is itself a separate focusable/hoverable element, and a
-            // focusable descendant nested inside a real <button> is invalid HTML
-            // and breaks screen-reader semantics. div[role=button] + explicit
-            // click/keydown handling keeps full keyboard operability without that
-            // nesting violation.
-            const card = document.createElement('div');
-            card.classList.add('algo-card', `algo-card-${categoryId}`);
-            card.setAttribute('role', 'button');
-            card.setAttribute('tabindex', '0');
-            card.setAttribute('aria-label', `Open ${algo.title} workspace`);
-
-            card.innerHTML = `
-                <div class="algo-card-top">
+        card.innerHTML = `
+            <div class="algo-card-visual">${iconSVG}</div>
+            <div class="algo-card-caption">
+                <div class="algo-card-caption-top">
                     <span class="algo-card-title">${algo.title}</span>
                     <span class="arrow">›</span>
                 </div>
@@ -224,41 +192,87 @@ function buildDashboard(categoryId) {
                         <span class="complexity-tooltip" role="tooltip">${explanation}</span>
                     </span>` : ''}
                 </div>
-            `;
+            </div>
+        `;
 
-            // Add click + keyboard activation to open the workspace
-            const openWorkspace = () => {
-                if (cardId && algorithmDatabase[cardId]) {
-                    buildWorkspace(cardId);
-                    showScreen('workspace-screen');
-                    window.scrollTo(0, 0);
-                }
-            };
-            card.addEventListener('click', openWorkspace);
-            card.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openWorkspace();
-                }
-            });
-
-            // Stop the complexity tag's own focus/click from also triggering
-            // card navigation — tapping/clicking it should just reveal the
-            // tooltip, not immediately jump into the workspace.
-            const complexityTag = card.querySelector('.complexity-tag');
-            if (complexityTag) {
-                complexityTag.addEventListener('click', (e) => e.stopPropagation());
-                complexityTag.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
-                });
+        const openWorkspace = () => {
+            if (cardId && algorithmDatabase[cardId]) {
+                buildWorkspace(cardId);
+                showScreen('workspace-screen');
+                window.scrollTo(0, 0);
             }
-
-            cardGrid.appendChild(card);
+        };
+        card.addEventListener('click', openWorkspace);
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openWorkspace();
+            }
         });
 
-        categoryWrapper.appendChild(cardGrid);
-        dashboardContainer.appendChild(categoryWrapper);
+        // Stop the complexity tag's own focus/click from also triggering
+        // card navigation — tapping/clicking it should just reveal the
+        // tooltip, not immediately jump into the workspace.
+        const complexityTag = card.querySelector('.complexity-tag');
+        if (complexityTag) {
+            complexityTag.addEventListener('click', (e) => e.stopPropagation());
+            complexityTag.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+            });
+        }
+
+        cardGrid.appendChild(card);
+    });
+
+    dashboardContainer.appendChild(cardGrid);
+    applyDashboardFilters(); // apply whatever the Mode/Sort dropdowns are currently set to
+}
+
+// Populates the Type dropdown for the current category, resetting it to
+// "All Types" (the available types differ per category, so a stale
+// selection from a previous category wouldn't make sense to keep).
+function populateTypeFilter(types) {
+    const select = document.getElementById('dash-type-filter');
+    if (!select) return;
+    select.innerHTML = '<option value="all">All Types</option>';
+    types.forEach(type => {
+        const opt = document.createElement('option');
+        opt.value = type;
+        opt.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+        select.appendChild(opt);
+    });
+    select.value = 'all';
+    select.disabled = types.length <= 1; // nothing meaningful to filter with only one type
+}
+
+// Reads the current Type/Mode/Sort dropdown values and applies them to
+// whatever cards are currently in the grid — show/hide for type+mode,
+// DOM reordering for sort. Called after every dashboard rebuild AND
+// directly from the dropdowns' own change handlers.
+function applyDashboardFilters() {
+    const cardGrid = document.querySelector('.card-grid');
+    if (!cardGrid) return;
+
+    const typeFilter = document.getElementById('dash-type-filter')?.value || 'all';
+    const modeFilter = document.getElementById('dash-mode-filter')?.value || 'all';
+    const sortBy = document.getElementById('dash-sort-select')?.value || 'default';
+
+    const cards = Array.from(cardGrid.children);
+
+    cards.forEach(card => {
+        const matchesType = typeFilter === 'all' || card.dataset.type === typeFilter;
+        const matchesMode = modeFilter === 'all' || card.dataset.mode === modeFilter;
+        card.style.display = (matchesType && matchesMode) ? '' : 'none';
+    });
+
+    if (sortBy === 'name') {
+        cards.sort((a, b) => a.dataset.title.localeCompare(b.dataset.title));
+        cards.forEach(c => cardGrid.appendChild(c));
+    } else if (sortBy === 'complexity') {
+        cards.sort((a, b) => parseFloat(a.dataset.complexityRank) - parseFloat(b.dataset.complexityRank));
+        cards.forEach(c => cardGrid.appendChild(c));
     }
+    // 'default' — leave cards in their original insertion order, no re-sort needed
 }
 
 // --- 3. WORKSPACE BUILDER (Unchanged) ---
@@ -1033,14 +1047,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Keeps both the visual .active state and the aria-current attribute in
-    // sync — used by every place that changes which category is selected,
-    // so screen readers always agree with what's visually highlighted.
-    function setActiveSidebarItem(categoryId) {
-        document.querySelectorAll('.sidebar-nav li').forEach(li => {
-            const isMatch = li.getAttribute('data-target') === categoryId;
-            li.classList.toggle('active', isMatch);
-            li.setAttribute('aria-current', isMatch ? 'true' : 'false');
+    // Keeps both the visual .active state and aria-selected in sync — used
+    // by every place that changes which category is selected, so screen
+    // readers always agree with what's visually highlighted.
+    function setActiveCrumb(categoryId) {
+        document.querySelectorAll('.dash-crumb').forEach(crumb => {
+            const isMatch = crumb.getAttribute('data-target') === categoryId;
+            crumb.classList.toggle('active', isMatch);
+            crumb.setAttribute('aria-selected', isMatch ? 'true' : 'false');
         });
     }
 
@@ -1051,27 +1065,28 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!categoryId) return;
             showScreen('dashboard-screen');
             buildDashboard(categoryId);
-            setActiveSidebarItem(categoryId);
+            setActiveCrumb(categoryId);
         });
     });
 
-    // Sidebar Category Clicks (Option 3 Logic) — plus Enter/Space, since
-    // these are <li role="button"> elements rather than native <button>s
-    // and don't get keyboard activation for free.
-    document.querySelectorAll('.sidebar-nav li').forEach(item => {
-        const activate = (e) => {
+    // Breadcrumb category switcher — real <button>s, so Enter/Space
+    // activation comes for free (unlike the old <li role="button"> sidebar).
+    document.querySelectorAll('.dash-crumb').forEach(crumb => {
+        crumb.addEventListener('click', (e) => {
             const categoryId = e.currentTarget.getAttribute('data-target');
             if (!categoryId) return;
-            setActiveSidebarItem(categoryId);
+            setActiveCrumb(categoryId);
             buildDashboard(categoryId);
-        };
-        item.addEventListener('click', activate);
-        item.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                activate(e);
-            }
         });
+    });
+
+    // Type / Mode / Sort dropdowns — re-filter/re-sort in place, no need to
+    // rebuild the cards themselves.
+    const dashTypeFilter = document.getElementById('dash-type-filter');
+    const dashModeFilter = document.getElementById('dash-mode-filter');
+    const dashSortSelect = document.getElementById('dash-sort-select');
+    [dashTypeFilter, dashModeFilter, dashSortSelect].forEach(select => {
+        if (select) select.addEventListener('change', applyDashboardFilters);
     });
 
     // Home Logo -> Back to Dashboard (Default state)
@@ -1080,7 +1095,15 @@ document.addEventListener('DOMContentLoaded', () => {
         homeLink.addEventListener('click', () => {
             showScreen('dashboard-screen');
             buildDashboard('array');
-            setActiveSidebarItem('array');
+            setActiveCrumb('array');
+        });
+    }
+
+    // Dashboard topbar Home button -> back to the hero/landing screen
+    const dashHomeBtn = document.getElementById('dash-home-btn');
+    if (dashHomeBtn) {
+        dashHomeBtn.addEventListener('click', () => {
+            showScreen('welcome-screen');
         });
     }
 
