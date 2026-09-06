@@ -81,29 +81,45 @@
     </section>
 
     <section id="dashboard-screen" class="screen hidden">
-        <div class="main-dashboard-wrapper">
-            <aside class="dashboard-sidebar">
-                <h2>Categories</h2>
-                <ul class="sidebar-nav">
-                    <li class="active" data-target="array" role="button" tabindex="0" aria-current="true"><span
-                            class="sidebar-dot sidebar-dot-array"></span> Array</li>
-                    <li data-target="stack" role="button" tabindex="0" aria-current="false"><span
-                            class="sidebar-dot sidebar-dot-stack"></span> Stack</li>
-                    <li data-target="queue" role="button" tabindex="0" aria-current="false"><span
-                            class="sidebar-dot sidebar-dot-queue"></span> Queue</li>
-                    <li data-target="tree" role="button" tabindex="0" aria-current="false"><span
-                            class="sidebar-dot sidebar-dot-tree"></span> Tree</li>
-                    <li data-target="graph" role="button" tabindex="0" aria-current="false"><span
-                            class="sidebar-dot sidebar-dot-graph"></span> Graph</li>
-                </ul>
-            </aside>
-            <main class="dashboard-stage">
-                <header class="dashboard-header">
-                    <h2>Select a Workspace</h2>
-                </header>
-                <div class="dashboard-container"></div>
-            </main>
-        </div>
+        <header class="dash-topbar">
+            <div class="dash-topbar-brand">Algo<span class="hero-brand-accent">Vision</span></div>
+            <button id="dash-home-btn" class="dash-home-btn" aria-label="Back to home">⌂ Home</button>
+        </header>
+
+        <nav class="dash-subnav">
+            <div class="dash-breadcrumb" id="dash-breadcrumb" role="tablist" aria-label="Category">
+                <button class="dash-crumb active" data-target="array" role="tab" aria-selected="true"><span
+                        class="sidebar-dot sidebar-dot-array"></span> Array</button>
+                <button class="dash-crumb" data-target="stack" role="tab" aria-selected="false"><span
+                        class="sidebar-dot sidebar-dot-stack"></span> Stack</button>
+                <button class="dash-crumb" data-target="queue" role="tab" aria-selected="false"><span
+                        class="sidebar-dot sidebar-dot-queue"></span> Queue</button>
+                <button class="dash-crumb" data-target="tree" role="tab" aria-selected="false"><span
+                        class="sidebar-dot sidebar-dot-tree"></span> Tree</button>
+                <button class="dash-crumb" data-target="graph" role="tab" aria-selected="false"><span
+                        class="sidebar-dot sidebar-dot-graph"></span> Graph</button>
+            </div>
+
+            <div class="dash-filters">
+                <select id="dash-type-filter" class="dash-select" aria-label="Filter by sub-type">
+                    <option value="all">All Types</option>
+                </select>
+                <select id="dash-mode-filter" class="dash-select" aria-label="Filter by mode">
+                    <option value="all">All Modes</option>
+                    <option value="algorithm">Algorithm</option>
+                    <option value="structure">Structure</option>
+                </select>
+                <select id="dash-sort-select" class="dash-select" aria-label="Sort order">
+                    <option value="default">Default Order</option>
+                    <option value="name">Name (A–Z)</option>
+                    <option value="complexity">Complexity (fastest first)</option>
+                </select>
+            </div>
+        </nav>
+
+        <main class="dashboard-stage">
+            <div class="dashboard-container"></div>
+        </main>
     </section>
 
     <section id="workspace-screen" class="screen hidden">
