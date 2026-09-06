@@ -82,20 +82,6 @@ function showScreen(screenId) {
     }
 }
 
-// --- Big-O plain-English lookup (spec §5.2 — interactive complexity hover legend) ---
-const BIG_O_EXPLANATIONS = {
-    'O(1)': 'Constant time — same speed no matter how much data there is.',
-    'O(log n)': 'Grows very slowly — cuts the problem in half each step.',
-    'O(n)': 'Grows proportionally with the amount of data.',
-    'O(n log n)': 'Grows fast but stays manageable at scale.',
-    'O(n²)': 'Grows quickly — can get slow on large inputs.',
-    'O(V + E)': 'Scales with the number of nodes and connections in the graph.'
-};
-
-function getComplexityExplanation(bigO) {
-    return BIG_O_EXPLANATIONS[bigO] || 'Describes how runtime grows as input size increases.';
-}
-
 // A card is "Algorithm mode" (StepPlayer-driven run) if its type is search/sorting;
 // everything else (stack/queue/tree/graph) is "Structure mode" (live, no timeline).
 function getCardMode(algoType) {
@@ -160,13 +146,8 @@ function buildDashboard(categoryId) {
         const mode = getCardMode(algo.type);
         const modeLabel = mode === 'algorithm' ? '▶ Algorithm' : '⚡ Structure';
         const worstComplexity = algo.complexities ? algo.complexities.worst : '';
-        const explanation = getComplexityExplanation(worstComplexity);
         const iconSVG = getAlgoIconSVG(algo.type);
 
-        // Card is a div[role=button], NOT a real <button> — the complexity tag
-        // inside it is itself a separate focusable/hoverable element, and a
-        // focusable descendant nested inside a real <button> is invalid HTML
-        // and breaks screen-reader semantics.
         const card = document.createElement('div');
         card.classList.add('algo-card', `algo-card-${categoryId}`);
         card.setAttribute('role', 'button');
@@ -186,11 +167,6 @@ function buildDashboard(categoryId) {
                 </div>
                 <div class="algo-card-tags">
                     <span class="mode-badge">${modeLabel}</span>
-                    ${worstComplexity ? `
-                    <span class="complexity-tag" tabindex="0" aria-label="${worstComplexity} time complexity: ${explanation}">
-                        ${worstComplexity}
-                        <span class="complexity-tooltip" role="tooltip">${explanation}</span>
-                    </span>` : ''}
                 </div>
             </div>
         `;
@@ -209,17 +185,6 @@ function buildDashboard(categoryId) {
                 openWorkspace();
             }
         });
-
-        // Stop the complexity tag's own focus/click from also triggering
-        // card navigation — tapping/clicking it should just reveal the
-        // tooltip, not immediately jump into the workspace.
-        const complexityTag = card.querySelector('.complexity-tag');
-        if (complexityTag) {
-            complexityTag.addEventListener('click', (e) => e.stopPropagation());
-            complexityTag.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
-            });
-        }
 
         cardGrid.appendChild(card);
     });
@@ -986,15 +951,6 @@ function resetSessionHistory() {
 
 // --- 4. EVENT LISTENERS (ON LOAD) ---
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Complexity tag tooltip: Escape dismisses it (spec §5.2). Hover/mouseleave
-    // and blur are already handled by CSS :hover/:focus, this covers the one
-    // case CSS can't: an explicit Escape keypress while a tag is focused.
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && document.activeElement && document.activeElement.classList.contains('complexity-tag')) {
-            document.activeElement.blur();
-        }
-    });
 
     // Theory Drawer (spec §4.1) — persistent edge peek-tab opens a real
     // slide-in drawer (right rail on desktop, bottom sheet on mobile via
