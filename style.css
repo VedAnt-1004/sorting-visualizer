@@ -45,7 +45,7 @@
     /* Secondary dark shade — dark-context dividers/borders (sidebar
        border, array-block default fill, tree/graph node fill) and,
        coincidentally the same value, a dark neutral text/hover color
-       on light surfaces (algo-card-title, filter-pill:hover). */
+       on light surfaces (algo-card-title, dash-crumb.active). */
     --muted-slate: #cbd5e1;
     /* Muted neutral — light text on dark panels, and light icon/border
        accents on light surfaces. Left cool/neutral on purpose — a
@@ -475,69 +475,133 @@ button {
     animation-delay: 0.8s;
 }
 
-/* --- SECTION 4: DASHBOARD LAYOUT (The Glow-Up) --- */
-.main-dashboard-wrapper {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    min-height: 100vh;
-    background-color: var(--canvas-alt);
-    /* Subtle warm depth layer for the whole app */
+/* --- SECTION 4: DASHBOARD LAYOUT (redesign) ---
+   Top utility bar (logo + Home) + a dark breadcrumb subnav (category
+   switcher + type/mode/sort dropdowns) replacing the old sidebar+wrapper
+   grid. */
+.dash-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: var(--canvas-base);
 }
 
-/* SIDEBAR: Deep plum-ink chrome for contrast
-   Phase 2: migrated to the --chrome-ink token (renamed from
-   --sidebar-navy during the color-identity pass) and given explicit L2
-   elevation (§3) — the border-right divider color is intentionally left
-   as-is since it's a directional divider, not a card border/shadow, and
-   isn't covered by the elevation token set. */
-.dashboard-sidebar {
-    background-color: var(--chrome-ink);
-    padding: 40px 25px;
-    border-right: 1px solid var(--surface-dark-alt);
+.dash-topbar-brand {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--panel-dark);
+    letter-spacing: -0.02em;
+}
+
+.dash-home-btn {
+    background: var(--chrome-ink);
     color: white;
-    font-family: var(--font-ui);
+    border: none;
+    padding: 8px 20px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.dash-home-btn:hover {
+    background: var(--chrome-ink-elevated);
+}
+
+.dash-home-btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+.dash-subnav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: var(--chrome-ink);
+    padding: 14px 40px;
     box-shadow: var(--elevation-l2-shadow);
     position: relative;
     z-index: var(--elevation-l2-z);
 }
 
-.dashboard-sidebar h2 {
-    color: #64748b;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
-    padding-left: 10px;
+.dash-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
 }
 
-.sidebar-nav li {
-    padding: 14px 18px;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #94a3b8;
-    list-style: none;
+.dash-crumb {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    background: transparent;
+    color: #a08fae;
+    border: none;
+    padding: 10px 16px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.85rem;
     cursor: pointer;
 }
 
-.sidebar-nav li.active {
-    background: var(--surface-dark-alt);
-    color: var(--accent-primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+/* Connected-chevron look between crumbs — a normal inline flex child
+   rather than absolutely-positioned pseudo-content, so it can't drift
+   or overlap regardless of label length. */
+.dash-crumb+.dash-crumb::before {
+    content: '›';
+    color: #5A4A68;
+    font-weight: 400;
+    margin-right: 2px;
 }
 
-.sidebar-nav li:focus-visible {
+.dash-crumb.active {
+    background: var(--surface-dark-alt);
+    color: var(--accent-primary);
+}
+
+.dash-crumb:hover {
+    color: white;
+}
+
+.dash-crumb:focus-visible {
     outline: 2px solid var(--accent-primary);
     outline-offset: 2px;
 }
 
-/* --- Sidebar category dot badges (Phase 2 / spec §1.2) ---
-   Color-coded per data-structure category, using the chrome-only
-   pastel tokens. Purely decorative identifiers alongside the existing
-   text label — no WCAG text-contrast implication. */
+.dash-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.dash-select {
+    background: var(--chrome-ink-elevated);
+    color: white;
+    border: 1px solid var(--surface-dark-alt);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.dash-select:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.dash-select:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* --- Sidebar-era category dot badges — kept under their original name
+   since the hero's quick-jump badges still use them; also reused inside
+   the new breadcrumb crumbs above. Color-coded per data-structure
+   category, using the chrome-only pastel tokens. --- */
 .sidebar-dot {
     width: 9px;
     height: 9px;
@@ -566,39 +630,10 @@ button {
     background: var(--cat-graph);
 }
 
-/* STAGE: This is the main white area */
 .dashboard-stage {
-    padding: 60px 80px;
-    /* More breathing room on sides */
+    padding: 50px 60px;
     background: var(--canvas-base);
-    /* Slightly different from the wrapper for depth */
-}
-
-.dashboard-header h2 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: var(--panel-dark);
-    margin-bottom: 40px;
-    letter-spacing: -1px;
-}
-
-/* Sub-categories with the Blue Line */
-.ds-category h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #334155;
-    margin-bottom: 25px;
-    padding-left: 15px;
-    border-left: 4px solid var(--accent-primary);
-    /* That specific blue line */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.header-i-icon {
-    color: var(--muted-slate);
-    font-size: 0.9rem;
+    min-height: 60vh;
 }
 
 /* The Cards: Make them pop! */
@@ -619,13 +654,13 @@ button {
 .algo-card {
     background: var(--canvas-alt);
     border: var(--elevation-l2-border);
-    padding: 24px 30px;
     border-radius: var(--radius-md);
     width: 320px;
     /* Slightly wider cards */
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    overflow: hidden;
+    /* clips .algo-card-visual's square corners to the card's rounded ones */
     cursor: pointer;
     box-shadow: var(--elevation-l2-shadow);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -664,7 +699,32 @@ button {
     outline-offset: 3px;
 }
 
-.algo-card-top {
+/* --- Visual glyph area (stands in for the wireframe's photo placeholder;
+   see app.js's ALGO_ICONS for the actual SVGs) --- */
+.algo-card-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background: rgba(255, 255, 255, 0.35);
+    color: var(--chrome-ink);
+    /* icons always render in brand-ink regardless of the card's category
+       background, for consistent legibility across all 5 pastels */
+}
+
+.algo-card-visual svg {
+    width: 64px;
+    height: 64px;
+}
+
+.algo-card-caption {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px 24px;
+}
+
+.algo-card-caption-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -757,44 +817,6 @@ button {
 .complexity-tag:focus-visible .complexity-tooltip {
     opacity: 1;
     visibility: visible;
-}
-
-/* --- Category filter pill tabs (spec: top category filter tabs) ---
-   Only rendered by JS when a category has more than one sub-type to
-   switch between (e.g. Array: Searching/Sorting). */
-.filter-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.filter-pill {
-    background: white;
-    border: var(--elevation-l2-border);
-    color: #64748b;
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding: 8px 20px;
-    border-radius: var(--radius-full);
-    box-shadow: var(--elevation-l2-shadow);
-    transition: all 0.2s ease;
-}
-
-.filter-pill:hover {
-    color: var(--surface-dark-alt);
-    border-color: var(--accent-primary);
-}
-
-.filter-pill:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
-}
-
-.filter-pill.active {
-    background: var(--chrome-ink);
-    color: white;
-    border-color: var(--chrome-ink);
 }
 
 /* --- SECTION 5: WORKSPACE FLOATING NAVBAR ---
@@ -1609,42 +1631,41 @@ code {
         max-width: 420px;
     }
 
-    /* Dashboard: sidebar becomes a horizontal scrollable strip above content */
-    .main-dashboard-wrapper {
-        grid-template-columns: 1fr;
+    /* Dashboard: subnav stacks — breadcrumb becomes a horizontal
+       scrollable strip (same pattern the old sidebar nav used), dropdown
+       filters wrap to their own row below it. */
+    .dash-topbar {
+        padding: 16px 20px;
     }
 
-    .dashboard-sidebar {
-        padding: 20px;
-        border-right: none;
-        border-bottom: 1px solid var(--surface-dark-alt);
+    .dash-subnav {
+        padding: 12px 20px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
     }
 
-    .dashboard-sidebar h2 {
-        margin-bottom: 12px;
-        padding-left: 4px;
-    }
-
-    .sidebar-nav {
-        display: flex;
-        gap: 10px;
+    .dash-breadcrumb {
+        flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         padding-bottom: 4px;
     }
 
-    .sidebar-nav li {
+    .dash-crumb {
         white-space: nowrap;
-        margin-bottom: 0;
+    }
+
+    .dash-filters {
+        flex-wrap: wrap;
+    }
+
+    .dash-select {
+        flex: 1 1 auto;
     }
 
     .dashboard-stage {
         padding: 30px 20px;
-    }
-
-    .dashboard-header h2 {
-        font-size: 1.7rem;
-        margin-bottom: 24px;
     }
 
     /* Cards: stack full-width instead of a fixed 320px */
@@ -1654,21 +1675,6 @@ code {
 
     .card-grid {
         gap: 16px;
-    }
-
-    /* Filter pill tabs: same horizontal-scroll-strip pattern as the sidebar
-       nav above, since a wrapped multi-row pill list eats vertical space
-       that's already tight on mobile. */
-    .filter-tabs {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-bottom: 4px;
-        margin-bottom: 20px;
-    }
-
-    .filter-pill {
-        white-space: nowrap;
     }
 
     /* Workspace navbar: title pill drops to its own row instead of
@@ -1774,12 +1780,13 @@ code {
         padding: 14px 32px;
     }
 
-    .dashboard-header h2 {
-        font-size: 1.4rem;
+    .dash-topbar-brand {
+        font-size: 1.05rem;
     }
 
-    .ds-category h3 {
-        font-size: 1rem;
+    .dash-crumb {
+        font-size: 0.78rem;
+        padding: 8px 12px;
     }
 
     /* Bento card tags: same shrink treatment as the rest of phone typography */
@@ -1794,9 +1801,9 @@ code {
         font-size: 0.7rem;
     }
 
-    .filter-pill {
-        font-size: 0.78rem;
-        padding: 6px 14px;
+    .dash-select {
+        font-size: 0.75rem;
+        padding: 6px 10px;
     }
 
     .theory-drawer h3 {
