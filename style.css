@@ -164,12 +164,6 @@
         --motion-slow: 0ms;
     }
 
-    /* Phase 3: complexity tooltip appears instantly, no fade delay */
-    .complexity-tooltip {
-        transition: none;
-        transition-delay: 0s;
-    }
-
     /* Phase 4: amber pulse becomes a static highlight (still colored,
        still ringed — just no scale animation) */
     .array-block.comparing {
@@ -768,55 +762,6 @@ button {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
-}
-
-.complexity-tag {
-    position: relative;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: var(--radius-full);
-    background: rgba(15, 23, 42, 0.08);
-    color: var(--panel-dark);
-    cursor: help;
-}
-
-.complexity-tag:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
-}
-
-.complexity-tooltip {
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--chrome-ink);
-    color: white;
-    font-family: var(--font-ui);
-    font-weight: 500;
-    font-size: 0.75rem;
-    line-height: 1.4;
-    padding: 8px 12px;
-    border-radius: 8px;
-    box-shadow: var(--elevation-l3-shadow);
-    width: max-content;
-    max-width: 220px;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--motion-fast) ease, visibility 0s linear var(--motion-fast);
-    transition-delay: 200ms;
-    /* spec §5.2 — delayed fade-in avoids flicker on fast mouse passes */
-    z-index: var(--elevation-l4-z);
-    pointer-events: none;
-}
-
-.complexity-tag:hover .complexity-tooltip,
-.complexity-tag:focus .complexity-tooltip,
-.complexity-tag:focus-visible .complexity-tooltip {
-    opacity: 1;
-    visibility: visible;
 }
 
 /* --- SECTION 5: WORKSPACE FLOATING NAVBAR ---
@@ -1790,15 +1735,9 @@ code {
     }
 
     /* Bento card tags: same shrink treatment as the rest of phone typography */
-    .mode-badge,
-    .complexity-tag {
+    .mode-badge {
         font-size: 0.65rem;
         padding: 3px 8px;
-    }
-
-    .complexity-tooltip {
-        max-width: 160px;
-        font-size: 0.7rem;
     }
 
     .dash-select {
