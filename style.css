@@ -851,7 +851,6 @@ button {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 16px;
 }
 
 .workspace-right-stage {
@@ -1123,17 +1122,30 @@ button {
 /* Class name kept as .btn-blue for compatibility with the many places
    app.js generates this class dynamically — renaming it would mean
    touching every one of those call sites for a cosmetic label change.
-   The rendered color is the new terracotta accent, not blue. */
+   The rendered color is the new terracotta accent, not blue. Given a
+   subtle glow so the primary action visually leads the dock rather than
+   competing at equal weight with the utility buttons beside it. */
 .btn-blue {
     background: var(--accent-primary);
+    box-shadow: 0 4px 14px rgba(226, 114, 74, 0.35);
 }
 
 .btn-red {
     background: #ef4444;
 }
 
+/* Ghost/outline style — utility actions (Random, Peek, Prev/Next) recede
+   behind the primary action instead of matching it at equal visual
+   weight, which is what was making the dock feel like a flat wall of
+   equally-loud buttons. */
 .btn-secondary {
-    background: #64748b;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--muted-slate);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
 }
 
 /* Clear inline-confirm (spec §2.2) — first click swaps the button into
@@ -1224,16 +1236,24 @@ button {
 }
 
 /* --- Live Telemetry HUD (spec: Comparisons / Swaps / Current Index) ---
-   Algorithm-mode only — hidden by app.js for Structure-mode workspaces. */
+   Algorithm-mode only — hidden by app.js for Structure-mode workspaces.
+   Overlays the arena's bottom edge (same absolute-positioning technique
+   #status-bar already uses at the top) rather than sitting as a separate
+   stacked panel below it — one visualization zone instead of two boxes. */
 .telemetry-hud {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    gap: 12px;
-    background: var(--panel-dark);
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border-radius: var(--radius-md);
-    border: var(--elevation-l2-border);
-    box-shadow: var(--elevation-l2-shadow);
-    padding: 14px 20px;
-    flex: 0 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    z-index: 5;
 }
 
 .telemetry-stat {
@@ -2064,29 +2084,40 @@ code {
 /* ==========================================
    SECTION 13: VISUALIZER LEGEND
    ========================================== */
-/* Explains the color language used across every workspace (search, sort,
-   stack/queue, tree, graph) so a first-time visitor doesn't have to guess
-   what amber vs. green vs. dimmed means. */
+/* Lives inside the Theory Drawer now (moved out of a permanently-visible
+   bar above the arena) — explains the color language used across every
+   workspace so a first-time visitor doesn't have to guess what amber vs.
+   green vs. dimmed means, without costing screen space every session
+   after the first. */
+
+.drawer-legend {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.drawer-legend h4 {
+    color: var(--muted-slate);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+}
 
 .visualizer-legend {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 8px 20px;
-    max-width: 1100px;
-    margin: 0 auto 16px auto;
-    padding: 0 16px;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .legend-item {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #64748b;
-    white-space: nowrap;
+    gap: 9px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #cbd5e1;
 }
 
 .legend-dot {
@@ -2118,14 +2149,8 @@ code {
 }
 
 @media (max-width: 480px) {
-    .visualizer-legend {
-        gap: 6px 14px;
-        padding: 0 12px;
-    }
-
     .legend-item {
-        font-size: 0.7rem;
-        gap: 5px;
+        font-size: 0.78rem;
     }
 
     .legend-dot {
