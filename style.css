@@ -20,48 +20,47 @@
 :root {
 
     /* --- §1.1 Base Canvas ---
-       Replaced the prototype-phase off-white + navy/blue combo with a
-       warm blush-cream canvas and a deep plum-ink chrome — chosen to
-       harmonize with the palette already locked in below (plum echoes
-       the Graph category's lavender without reusing it outright;
-       terracotta, introduced further down, stays clear of both
-       --state-amber and --state-emerald so it can't be confused with
-       either transient visualizer state). */
-    --canvas-base: #F7EFE9;
-    /* Primary page background — warm blush-cream */
-    --canvas-alt: #EFE2D8;
-    /* Secondary section background — deeper warm sand */
-    --chrome-ink: #241A2E;
-    /* Floating dark sidebar/nav/dock shell — deep plum-espresso.
-       Renamed from --sidebar-navy now that it's no longer navy. */
-    --chrome-ink-elevated: #2F2338;
-    /* Sidebar hover/active row. Renamed from --sidebar-navy-elevated. */
-    --panel-dark: #2A1F33;
+       Palette pivot: mapped to a 5-color reference (Charcoal, Cosmic
+       Latte, Persian Red, Devy's Gray, Oxford Blue) — Oxford Blue as
+       the darkest chrome, Charcoal one step lighter for content panels
+       (mirrors the earlier "chrome slightly darker than panels"
+       relationship), Devy's Gray slotted into the existing
+       --surface-dark-alt role it already matches almost exactly,
+       Cosmic Latte as canvas, Persian Red replacing terracotta as the
+       accent. Token names unchanged — only values moved, same as this
+       system was designed to allow. */
+    --canvas-base: #FAF3E0;
+    /* Primary page background — Cosmic Latte */
+    --canvas-alt: #F0E6D2;
+    /* Secondary section background — deeper tint of Cosmic Latte */
+    --chrome-ink: #0E1A2D;
+    /* Floating dark sidebar/nav/dock shell — Oxford Blue */
+    --chrome-ink-elevated: #16263D;
+    /* Sidebar hover/active row — between Oxford Blue and Charcoal */
+    --panel-dark: #2C3E50;
     /* Content-panel dark surface (theory drawer, code panel, telemetry
-       HUD, visualizer arena) — deliberately a slightly different shade
+       HUD, visualizer arena) — Charcoal. Deliberately a different shade
        from --chrome-ink so chrome and content surfaces stay visually
        distinct. Also doubles as the shared dark "ink" text color. */
-    --surface-dark-alt: #3D2E48;
-    /* Secondary dark shade — dark-context dividers/borders (sidebar
-       border, array-block default fill, tree/graph node fill) and,
-       coincidentally the same value, a dark neutral text/hover color
-       on light surfaces (algo-card-title, dash-crumb.active). */
+    --surface-dark-alt: #4D4D4D;
+    /* Secondary dark shade — Devy's Gray. Dark-context dividers/borders
+       (sidebar border, array-block default fill, tree/graph node fill)
+       and, coincidentally the same value, a dark neutral text/hover
+       color on light surfaces (algo-card-title, dash-crumb.active). */
     --muted-slate: #cbd5e1;
     /* Muted neutral — light text on dark panels, and light icon/border
        accents on light surfaces. Left cool/neutral on purpose — a
-       warm-toned muted color would fight with the terracotta accent
+       warm-toned muted color would fight with the red accent
        wherever both appear near each other (e.g. code text color). */
 
-    /* --- Chrome accent (Phase: color-identity pass) ---
-       Replaces the old raw #3b82f6 used throughout for buttons, links,
-       hover states, and focus rings. Deliberately NOT reused from
-       --state-blue/--cat-array — blue was previously overloaded across
-       chrome AND category AND visualizer-state simultaneously; giving
-       chrome its own distinct hue fixes that overload as a side effect
-       of the aesthetic change, not just a coat of paint. */
-    --accent-primary: #E2724A;
-    --accent-primary-rgb: 226, 114, 74;
-    --accent-primary-dark: #C85F3A;
+    /* --- Chrome accent (palette pivot) ---
+       Persian Red, replacing the terracotta from the previous pass.
+       Deliberately NOT reused from --state-blue/--cat-array — chrome
+       stays clear of any hue already carrying visualizer-state or
+       category meaning. */
+    --accent-primary: #C0392B;
+    --accent-primary-rgb: 192, 57, 43;
+    --accent-primary-dark: #A32E21;
     /* hover/pressed variant, for the few spots that darken on interaction */
 
     /* --- §1.2 Category Palette — CHROME & BADGES ONLY ---
@@ -360,7 +359,7 @@ button {
 }
 
 .hero-highlight {
-    background: linear-gradient(to right, var(--accent-primary), #8b5cf6);
+    background: linear-gradient(to right, var(--accent-primary), var(--panel-dark));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
