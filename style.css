@@ -207,6 +207,10 @@
     box-sizing: border-box;
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     background-color: var(--canvas-base);
     color: var(--panel-dark);
@@ -840,9 +844,12 @@ button {
     grid-template-columns: 60% 40%;
     gap: 24px;
     max-width: 1300px;
-    width: calc(100% - 40px);
+    width: 100%;
+    overflow-x: hidden;
     margin: 0 auto;
     min-height: 0;
+    box-sizing: border-box;
+    padding: 0 20px;
 }
 
 .workspace-left-stage {
@@ -900,28 +907,26 @@ button {
    without a click-to-discover step. --- */
 .theory-peek-tab {
     position: fixed;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
+    top: 80px;
+    right: 20px;
     background: var(--panel-dark);
     color: white;
     border: none;
-    padding: 14px 10px;
-    border-radius: var(--radius-md) 0 0 var(--radius-md);
+    padding: 10px 18px;
+    border-radius: var(--radius-full);
     box-shadow: var(--elevation-l2-shadow);
     font-weight: 600;
     font-size: 0.78rem;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
     display: flex;
     align-items: center;
     gap: 8px;
     z-index: var(--elevation-l2-z);
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .theory-peek-tab:hover {
-    transform: translateY(-50%) translateX(-4px);
+    transform: translateY(-2px);
+    box-shadow: var(--elevation-l3-shadow);
 }
 
 .theory-peek-tab:focus-visible {
@@ -961,11 +966,22 @@ button {
     background: var(--panel-dark);
     padding: 30px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
     box-shadow: var(--elevation-l4-shadow);
     z-index: var(--elevation-l4-z);
     transform: translateX(100%);
     visibility: hidden;
     transition: transform var(--motion-base) ease, visibility 0s linear var(--motion-base);
+}
+
+.theory-drawer::-webkit-scrollbar {
+    width: 8px;
+}
+
+.theory-drawer::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
 }
 
 .theory-drawer.open {
@@ -1067,12 +1083,14 @@ button {
 }
 
 .controls-panel {
-    background: var(--canvas-alt);
+    background: #FFFFFF !important;
     padding: 20px 24px;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     border: var(--elevation-l2-border);
-    border-top: none;
+    border-top: 1px solid rgba(44, 62, 80, 0.14);
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -1089,6 +1107,9 @@ button {
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .dock-zone-setup {
@@ -1117,10 +1138,14 @@ button {
 
 .dashboard-input {
     background: #FFFFFF;
-    border: 1px solid var(--surface-dark-alt);
+    border: 1px solid rgba(44, 62, 80, 0.16);
     padding: 10px 18px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     outline: none;
+    flex: 1 1 130px;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .dashboard-input:focus-visible {
@@ -1131,10 +1156,19 @@ button {
 
 .dashboard-btn {
     padding: 10px 24px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: none;
     font-weight: 700;
     color: white;
+    flex: 0 0 auto;
+    max-width: 100%;
+    box-shadow: 0 2px 6px rgba(44, 62, 80, 0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dashboard-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(44, 62, 80, 0.16);
 }
 
 .dashboard-btn:focus-visible {
@@ -1154,7 +1188,14 @@ button {
 }
 
 .btn-red {
-    background: #ef4444;
+    background: transparent !important;
+    border: 1.5px solid var(--accent-primary);
+    color: var(--accent-primary);
+    box-shadow: none;
+}
+
+.btn-red:hover:not(:disabled) {
+    background: rgba(var(--accent-primary-rgb), 0.08);
 }
 
 /* Ghost/outline style — utility actions (Random, Peek, Prev/Next) recede
@@ -1234,7 +1275,7 @@ button {
 
 /* --- SECTION 7: VISUALIZER STAGE --- */
 .visualizer-arena {
-    background: var(--canvas-alt);
+    background: var(--canvas-base);
     width: 100%;
     flex: 1 1 auto;
     min-height: 360px;
@@ -1247,6 +1288,7 @@ button {
     position: relative;
     /* CRITICAL for the absolute pill */
     border: var(--elevation-l2-border);
+    border-bottom: none;
     overflow: hidden;
 }
 
@@ -1557,13 +1599,33 @@ input[type="range"] {
 .code-panel pre {
     background: #FFFFFF;
     border: 1px solid rgba(0, 0, 0, 0.06);
-    padding: 25px;
+    padding: 32px;
     border-radius: 12px;
     overflow-x: auto;
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
     margin: 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(44, 62, 80, 0.25) transparent;
+}
+
+.code-panel pre::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.code-panel pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.code-panel pre::-webkit-scrollbar-thumb {
+    background: rgba(44, 62, 80, 0.25);
+    border-radius: 4px;
+}
+
+.code-panel pre::-webkit-scrollbar-thumb:hover {
+    background: rgba(44, 62, 80, 0.4);
 }
 
 code {
@@ -1820,8 +1882,10 @@ code {
     }
 
     .theory-peek-tab {
-        font-size: 0.68rem;
-        padding: 10px 7px;
+        top: 78px;
+        right: 12px;
+        font-size: 0.7rem;
+        padding: 8px 14px;
     }
 
     .telemetry-hud {
@@ -1881,6 +1945,22 @@ code {
     padding: 24px 0;
     overflow-y: auto;
     max-height: 420px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(44, 62, 80, 0.25) transparent;
+}
+
+#visualizer-container.stack-mode::-webkit-scrollbar,
+#visualizer-container.tree-mode::-webkit-scrollbar,
+#visualizer-container.graph-mode::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#visualizer-container.stack-mode::-webkit-scrollbar-thumb,
+#visualizer-container.tree-mode::-webkit-scrollbar-thumb,
+#visualizer-container.graph-mode::-webkit-scrollbar-thumb {
+    background: rgba(44, 62, 80, 0.25);
+    border-radius: 4px;
 }
 
 .stack-block-wrapper {
@@ -1997,19 +2077,24 @@ code {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px 10px;
+    padding: 28px 10px 20px;
     overflow-x: auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     max-height: 480px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(44, 62, 80, 0.25) transparent;
 }
 
 .tree-svg {
     width: 100%;
     max-width: 640px;
     height: auto;
+    overflow: visible;
     /* SVG scales via viewBox, so it stays proportional at every screen size
-       without needing separate mobile breakpoints for node/text sizing. */
+       without needing separate mobile breakpoints for node/text sizing.
+       overflow:visible prevents node strokes sitting at the viewBox edge
+       (e.g. the root node) from being hard-clipped. */
 }
 
 .tree-edge {
@@ -2058,17 +2143,21 @@ code {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 20px 10px;
+    padding: 28px 10px 20px;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     max-height: 480px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(44, 62, 80, 0.25) transparent;
 }
 
 .graph-svg {
     width: 100%;
     max-width: 560px;
     height: auto;
-    /* Scales via viewBox, same as tree-svg — no separate mobile sizing needed. */
+    overflow: visible;
+    /* Scales via viewBox, same as tree-svg. overflow:visible prevents
+       node strokes at the viewBox edge from being hard-clipped. */
 }
 
 .graph-edge {
