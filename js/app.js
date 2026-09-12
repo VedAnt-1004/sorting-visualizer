@@ -319,28 +319,29 @@ function buildWorkspace(algoId) {
     const controlsZone = document.getElementById('dynamic-controls');
 
     const playbackControlsHTML = `
-            <div class="control-row center-content scrubber-row">
                 <button id="prev-btn" class="dashboard-btn btn-secondary" disabled>◀</button>
                 <button id="play-btn" class="dashboard-btn btn-blue" disabled>▶ Play</button>
                 <button id="next-btn" class="dashboard-btn btn-secondary" disabled>▶</button>
-                <input type="range" id="step-scrubber" aria-label="Timeline" min="0" max="0" value="0" step="1" disabled>
-            </div>`;
+                <input type="range" id="step-scrubber" aria-label="Timeline" min="0" max="0" value="0" step="1" disabled>`;
 
     if (data.type === "search") {
         controlsZone.innerHTML = `
-            <div class="control-row controls-top-row">
+            <div class="dock-zone dock-zone-setup">
                 <input type="text" id="array-input" class="dashboard-input wireframe-array-input" placeholder="e.g. 3, 1, 4, 1, 5">
                 <input type="number" id="target-input" class="dashboard-input wireframe-target-input" placeholder="Target">
                 <button id="random-btn" class="dashboard-btn btn-secondary">Random</button>
-                <button id="action-btn" class="dashboard-btn btn-blue wireframe-search-btn">Search</button>
                 <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
             </div>
 
-            <div class="control-row center-content speed-row">
+            <div class="dock-zone dock-zone-primary">
+                <button id="action-btn" class="dashboard-btn btn-blue wireframe-search-btn">Search</button>
+            </div>
+
+            <div class="dock-zone dock-zone-playback">
                 <label class="speed-label" for="speed-slider">Speed</label>
                 <input type="range" id="speed-slider" min="100" max="1000" step="50" value="500">
+                ${playbackControlsHTML}
             </div>
-            ${playbackControlsHTML}
         `;
 
         document.getElementById('random-btn').addEventListener('click', () => {
@@ -391,18 +392,21 @@ function buildWorkspace(algoId) {
 
     else if (data.type === "sorting") {
         controlsZone.innerHTML = `
-            <div class="control-row controls-top-row">
+            <div class="dock-zone dock-zone-setup">
                 <input type="text" id="array-input" class="dashboard-input wireframe-array-input" placeholder="e.g. 5, 3, 8, 1, 9">
                 <button id="random-btn" class="dashboard-btn btn-secondary">Random</button>
-                <button id="action-btn" class="dashboard-btn btn-blue">Sort</button>
                 <button id="reset-btn" class="dashboard-btn btn-red">Reset</button>
             </div>
 
-            <div class="control-row center-content speed-row">
+            <div class="dock-zone dock-zone-primary">
+                <button id="action-btn" class="dashboard-btn btn-blue">Sort</button>
+            </div>
+
+            <div class="dock-zone dock-zone-playback">
                 <label class="speed-label" for="speed-slider">Speed</label>
                 <input type="range" id="speed-slider" min="100" max="1000" step="50" value="500">
+                ${playbackControlsHTML}
             </div>
-            ${playbackControlsHTML}
         `;
 
         const generators = {
@@ -452,12 +456,15 @@ function buildWorkspace(algoId) {
         stackState = [];
 
         controlsZone.innerHTML = `
-            <div class="control-row controls-top-row">
+            <div class="dock-zone dock-zone-setup">
                 <input type="number" id="value-input" class="dashboard-input" placeholder="Value to push">
             </div>
 
-            <div class="control-row center-content">
+            <div class="dock-zone dock-zone-primary">
                 <button id="push-btn" class="dashboard-btn btn-blue">Push</button>
+            </div>
+
+            <div class="dock-zone dock-zone-playback">
                 <button id="pop-btn" class="dashboard-btn btn-red">Pop</button>
                 <button id="peek-btn" class="dashboard-btn btn-secondary">Peek</button>
                 <button id="clear-btn" class="dashboard-btn btn-secondary">Clear</button>
@@ -510,12 +517,15 @@ function buildWorkspace(algoId) {
         queueState = [];
 
         controlsZone.innerHTML = `
-            <div class="control-row controls-top-row">
+            <div class="dock-zone dock-zone-setup">
                 <input type="number" id="value-input" class="dashboard-input" placeholder="Value to enqueue">
             </div>
 
-            <div class="control-row center-content">
+            <div class="dock-zone dock-zone-primary">
                 <button id="enqueue-btn" class="dashboard-btn btn-blue">Enqueue</button>
+            </div>
+
+            <div class="dock-zone dock-zone-playback">
                 <button id="dequeue-btn" class="dashboard-btn btn-red">Dequeue</button>
                 <button id="peek-btn" class="dashboard-btn btn-secondary">Peek</button>
                 <button id="clear-btn" class="dashboard-btn btn-secondary">Clear</button>
@@ -567,19 +577,22 @@ function buildWorkspace(algoId) {
         treeRoot = null;
 
         controlsZone.innerHTML = `
-            <div class="control-row controls-top-row">
+            <div class="dock-zone dock-zone-setup">
                 <input type="number" id="value-input" class="dashboard-input" placeholder="Value">
             </div>
 
-            <div class="control-row center-content">
+            <div class="dock-zone dock-zone-primary">
                 <button id="insert-btn" class="dashboard-btn btn-blue">Insert</button>
+            </div>
+
+            <div class="dock-zone dock-zone-playback">
                 <button id="search-btn" class="dashboard-btn btn-secondary">Search</button>
                 <button id="delete-btn" class="dashboard-btn btn-red">Delete</button>
                 <button id="random-btn" class="dashboard-btn btn-secondary">Random Tree</button>
                 <button id="clear-btn" class="dashboard-btn btn-red">Clear</button>
             </div>
 
-            <div class="control-row center-content traversal-row">
+            <div class="dock-zone traversal-row">
                 <button id="inorder-btn" class="dashboard-btn btn-secondary">In-Order</button>
                 <button id="preorder-btn" class="dashboard-btn btn-secondary">Pre-Order</button>
                 <button id="postorder-btn" class="dashboard-btn btn-secondary">Post-Order</button>
@@ -663,24 +676,21 @@ function buildWorkspace(algoId) {
         graphEdges = [];
 
         controlsZone.innerHTML = `
-            <div class="control-row controls-top-row">
+            <div class="dock-zone dock-zone-setup">
                 <input type="text" id="node-input" class="dashboard-input" placeholder="Node (e.g. A)" maxlength="3">
-                <button id="add-node-btn" class="dashboard-btn btn-blue">Add Node</button>
-            </div>
-
-            <div class="control-row controls-top-row">
+                <button id="add-node-btn" class="dashboard-btn btn-secondary">Add Node</button>
                 <input type="text" id="edge-from-input" class="dashboard-input" placeholder="From" maxlength="3">
                 <input type="text" id="edge-to-input" class="dashboard-input" placeholder="To" maxlength="3">
-                <button id="add-edge-btn" class="dashboard-btn btn-blue">Add Edge</button>
+                <button id="add-edge-btn" class="dashboard-btn btn-secondary">Add Edge</button>
             </div>
 
-            <div class="control-row controls-top-row">
+            <div class="dock-zone dock-zone-primary">
                 <input type="text" id="start-node-input" class="dashboard-input" placeholder="Start node" maxlength="3">
-                <button id="bfs-btn" class="dashboard-btn btn-secondary">BFS</button>
-                <button id="dfs-btn" class="dashboard-btn btn-secondary">DFS</button>
+                <button id="bfs-btn" class="dashboard-btn btn-blue">BFS</button>
             </div>
 
-            <div class="control-row center-content">
+            <div class="dock-zone dock-zone-playback">
+                <button id="dfs-btn" class="dashboard-btn btn-secondary">DFS</button>
                 <button id="random-btn" class="dashboard-btn btn-secondary">Random Graph</button>
                 <button id="clear-btn" class="dashboard-btn btn-red">Clear</button>
             </div>
