@@ -775,13 +775,13 @@ button {
     align-items: center;
     gap: 16px;
     background: var(--chrome-ink);
-    padding: 12px 30px;
-    max-width: 1100px;
-    margin: 20px auto;
-    border-radius: var(--radius-full);
+    padding: 16px 40px;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
     position: relative;
-    border: var(--elevation-l3-border);
-    box-shadow: var(--elevation-l3-shadow);
+    border-bottom: var(--elevation-l2-border);
+    box-shadow: var(--elevation-l2-shadow);
     z-index: var(--elevation-l3-z);
 }
 
@@ -836,9 +836,9 @@ button {
    refinement is a later pass; for now this is a safe non-broken fallback
    that already satisfies "not zero-scroll on mobile"). */
 .workspace-split-pane {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: 60% 40%;
+    gap: 24px;
     max-width: 1300px;
     width: calc(100% - 40px);
     margin: 0 auto;
@@ -846,14 +846,12 @@ button {
 }
 
 .workspace-left-stage {
-    flex: 1 1 60%;
     min-width: 0;
     display: flex;
     flex-direction: column;
 }
 
 .workspace-right-stage {
-    flex: 1 1 40%;
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -1055,45 +1053,71 @@ button {
     font-size: 0.9rem;
 }
 
-/* --- Bottom Control Dock (spec §2, §3 L3) ---
-   Deliberately NOT position:fixed at any width anymore (see the
-   #workspace-screen.active comment above for why) — stays in normal
-   flow so flexbox can never let it overlap a sibling. Styling alone
-   (elevation shadow, glass blur, rounded-lg radius, dark surface)
-   still reads as a floating dock even though it isn't literally
-   floating over content. */
+/* --- Control Dock (spec §2) ---
+   Sits flush beneath the arena in normal document flow — never
+   position:fixed, never a separately-floating card. Corners are rounded
+   only at the bottom (top stays square) so it visually continues the
+   arena's shape above it as one seamless stacked unit, matching the
+   0-gap wireframe. Light theme: canvas-toned surface with a visible
+   border instead of the dark glass-panel treatment used elsewhere. */
 .controls-wrapper {
     display: flex;
     justify-content: center;
-    margin: 20px auto;
+    margin: 0;
 }
 
 .controls-panel {
-    background: rgba(11, 17, 32, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    padding: 16px 24px;
-    border-radius: var(--radius-lg);
-    border: var(--elevation-l3-border);
-    box-shadow: var(--elevation-l3-shadow);
-    max-width: 1100px;
-    width: calc(100% - 40px);
+    background: var(--canvas-alt);
+    padding: 20px 24px;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    border: var(--elevation-l2-border);
+    border-top: none;
+    width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    gap: 16px;
 }
 
-.control-row {
+/* Three explicit zones per the wireframe: Setup (inputs/utility) |
+   Primary Action | Playback. Each wraps internally on narrow widths
+   rather than the whole dock reflowing unpredictably row-by-row. */
+.dock-zone {
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
+}
+
+.dock-zone-setup {
+    flex: 1 1 auto;
+}
+
+.dock-zone-primary {
+    flex: 0 0 auto;
+}
+
+.dock-zone-playback {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+}
+
+/* Tree's extra traversal row — always forces onto its own full-width
+   line below the 3 standard zones, regardless of how much horizontal
+   space the zones above it used. */
+.traversal-row {
+    flex-basis: 100%;
     justify-content: center;
+    padding-top: 4px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    margin-top: 4px;
 }
 
 .dashboard-input {
-    background: var(--canvas-base);
-    border: 1px solid var(--muted-slate);
+    background: #FFFFFF;
+    border: 1px solid var(--surface-dark-alt);
     padding: 10px 18px;
     border-radius: 8px;
     outline: none;
@@ -1114,7 +1138,7 @@ button {
 }
 
 .dashboard-btn:focus-visible {
-    outline: 2px solid white;
+    outline: 2px solid var(--panel-dark);
     outline-offset: 2px;
 }
 
@@ -1126,7 +1150,7 @@ button {
    competing at equal weight with the utility buttons beside it. */
 .btn-blue {
     background: var(--accent-primary);
-    box-shadow: 0 4px 14px rgba(226, 114, 74, 0.35);
+    box-shadow: 0 4px 14px rgba(var(--accent-primary-rgb), 0.35);
 }
 
 .btn-red {
@@ -1138,13 +1162,13 @@ button {
    weight, which is what was making the dock feel like a flat wall of
    equally-loud buttons. */
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    color: var(--muted-slate);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    color: var(--panel-dark);
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.08);
 }
 
 /* Clear inline-confirm (spec §2.2) — first click swaps the button into
@@ -1155,25 +1179,18 @@ button {
 }
 
 /* Timeline scrubber (spec §2.1) */
-.scrubber-row {
-    width: 100%;
-    max-width: 480px;
-    align-items: center;
-    gap: 10px;
-}
-
-.scrubber-row .dashboard-btn {
+.dock-zone-playback .dashboard-btn {
     padding: 8px 14px;
     flex: 0 0 auto;
 }
 
-.scrubber-row #step-scrubber {
-    flex: 1;
+.dock-zone-playback #step-scrubber {
+    flex: 1 1 100px;
     width: auto;
     min-width: 100px;
 }
 
-.scrubber-row #step-scrubber:disabled {
+.dock-zone-playback #step-scrubber:disabled {
     opacity: 0.35;
     cursor: not-allowed;
 }
@@ -1188,9 +1205,8 @@ button {
     gap: 8px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    max-width: 1100px;
-    width: calc(100% - 40px);
-    margin: 0 auto 12px auto;
+    width: 100%;
+    margin: 0 0 12px 0;
     padding: 2px 4px;
 }
 
@@ -1218,11 +1234,11 @@ button {
 
 /* --- SECTION 7: VISUALIZER STAGE --- */
 .visualizer-arena {
-    background: var(--panel-dark);
+    background: var(--canvas-alt);
     width: 100%;
     flex: 1 1 auto;
     min-height: 360px;
-    border-radius: 24px;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1230,7 +1246,7 @@ button {
     /* Center the array blocks vertically */
     position: relative;
     /* CRITICAL for the absolute pill */
-    border: 1px solid var(--surface-dark-alt);
+    border: var(--elevation-l2-border);
     overflow: hidden;
 }
 
@@ -1246,11 +1262,12 @@ button {
     transform: translateX(-50%);
     display: flex;
     gap: 20px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-radius: var(--radius-md);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: var(--elevation-l2-shadow);
     padding: 10px 20px;
     z-index: 5;
 }
@@ -1474,7 +1491,7 @@ button {
 }
 
 .speed-label {
-    color: #94a3b8;
+    color: var(--surface-dark-alt);
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -1487,15 +1504,18 @@ input[type="range"] {
 
 /* --- SECTION 8: CODE EDITOR --- */
 .code-panel {
-    background: var(--panel-dark);
+    background: var(--canvas-alt);
     padding: 30px;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     border: var(--elevation-l2-border);
-    box-shadow: var(--elevation-l2-shadow);
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     min-height: 0;
+    overflow: hidden;
+    /* Only .code-panel pre scrolls internally (below) — without this,
+       the outer panel could also grow/scroll independently, producing
+       two visible scrollbars for the same content. */
 }
 
 .code-header {
@@ -1507,12 +1527,26 @@ input[type="range"] {
 }
 
 .tab-btn {
-    background: rgba(247, 239, 233, 0.1);
+    background: rgba(0, 0, 0, 0.04);
     border: var(--elevation-l2-border);
     padding: 6px 16px;
     border-radius: 8px;
     font-weight: 600;
-    color: var(--muted-slate);
+    color: var(--surface-dark-alt);
+}
+
+.copy-btn {
+    background: rgba(0, 0, 0, 0.04);
+    border: var(--elevation-l2-border);
+    color: var(--panel-dark);
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.copy-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
 }
 
 .tab-btn.active {
@@ -1521,7 +1555,8 @@ input[type="range"] {
 }
 
 .code-panel pre {
-    background: #020617;
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     padding: 25px;
     border-radius: 12px;
     overflow-x: auto;
@@ -1533,13 +1568,13 @@ input[type="range"] {
 
 code {
     font-family: var(--font-mono);
-    color: var(--muted-slate);
+    color: var(--panel-dark);
     line-height: 1.6;
 }
 
-/* Step playback controls (Prev / Play-Pause / Next), now merged into
-   .scrubber-row alongside the timeline slider */
-.scrubber-row .dashboard-btn:disabled {
+/* Step playback controls (Prev / Play-Pause / Next), living in
+   .dock-zone-playback alongside the timeline slider */
+.dock-zone-playback .dashboard-btn:disabled {
     opacity: 0.35;
     cursor: not-allowed;
 }
@@ -1649,9 +1684,7 @@ code {
             "brand spacer"
             "center center";
         row-gap: 10px;
-        margin: 16px;
         padding: 12px 20px;
-        border-radius: 24px;
     }
 
     .nav-brand {
@@ -1674,7 +1707,7 @@ code {
     /* Split-pane: stack left/right stages instead of squeezing them
        side-by-side — the true 60/40 split is a desktop-only promise. */
     .workspace-split-pane {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
 
     .workspace-right-stage {
@@ -1693,10 +1726,6 @@ code {
     }
 
     .complexity-badges {
-        flex-wrap: wrap;
-    }
-
-    .control-row {
         flex-wrap: wrap;
     }
 
