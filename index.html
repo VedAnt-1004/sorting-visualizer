@@ -168,8 +168,8 @@
             </div>
         </div>
 
-        <!-- Split-pane per spec §4.1: left stage (arena, with telemetry as
-             an overlay strip inside it) / right stage (code inspector). -->
+        <!-- Split-pane per spec §4.1: left stage (arena + dock, stacked
+             flush with 0 gap) / right stage (code inspector). -->
         <main class="workspace-split-pane">
             <section class="workspace-left-stage">
                 <div class="visualizer-arena">
@@ -191,6 +191,18 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Structure Mode session history (spec §2.2) — hidden/empty
+                     for Algorithm-mode workspaces, populated by app.js. -->
+                <div id="session-history" class="session-history hidden"></div>
+
+                <!-- Control Dock (spec §2). Content is rebuilt per algorithm
+                     by app.js, organized into 3 zones: Setup / Primary /
+                     Playback. Sits flush beneath the arena, 0 gap, confined
+                     to this 60% column — not a separate floating element. -->
+                <div class="controls-wrapper">
+                    <div id="dynamic-controls" class="controls-panel"></div>
+                </div>
             </section>
 
             <aside class="workspace-right-stage">
@@ -207,18 +219,6 @@
                 </div>
             </aside>
         </main>
-
-        <!-- Floating Bottom Control Dock (spec §2). Content is rebuilt per
-             algorithm by app.js — this wrapper just supplies the floating
-             dock chrome. -->
-        <!-- Structure Mode session history (spec §2.2) — hidden/empty for
-             Algorithm-mode workspaces, populated by app.js as stack/queue/
-             tree actions happen. -->
-        <div id="session-history" class="session-history hidden"></div>
-
-        <div class="controls-wrapper">
-            <div id="dynamic-controls" class="controls-panel"></div>
-        </div>
     </section>
 
     <script src="js/data.js"></script>
